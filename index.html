@@ -9,16 +9,16 @@ function sendMove() {
 				MoveType: parseInt(document.getElementById("MoveType").value),
 				CardIndex: parseInt(document.getElementById("CardIndex").value),
 				HintPlayer: document.getElementById("HintPlayer").value,
-				HintCard: parseInt(document.getElementById("HintCard").value),
 				HintInfoType: parseInt(document.getElementById("HintInfoType").value)
 	}
 	
 	var packetString = JSON.stringify(packet)
 	
 	var xmlhttp = new XMLHttpRequest();
-	xmlhttp.open("POST","http://10.1.1.89:8080/" + document.getElementById("request").value,true);
+	xmlhttp.open("POST","/api/" + document.getElementById("request").value,false);
 	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 	xmlhttp.send("data="+packetString);	
+	document.getElementById('response').value = xmlhttp.responseText
 }
 </script>
 
@@ -31,9 +31,10 @@ function sendMove() {
 <tr><td>MoveType</td><td><input type='text' id='MoveType' /></td></tr>
 <tr><td>CardIndex</td><td><input type='text' id='CardIndex' /></td></tr>
 <tr><td>HintPlayer</td><td><input type='text' id='HintPlayer' /></td></tr>
-<tr><td>HintCard</td><td><input type='text' id='HintCard' /></td></tr>
 <tr><td>HintInfoType</td><td><input type='text' id='HintInfoType' /></td></tr>
 </table>
 <input type='submit' value='Make the thing happen' onClick='sendMove()' />
+<br /><br /><br />
+<textarea id='response' rows=20 cols=80></textarea>
 </body>
 </html>
