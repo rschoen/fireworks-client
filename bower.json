@@ -1,0 +1,21 @@
+{
+  "name": "fireworks",
+  "version": "0.1.0",
+  "homepage": "https://github.com/rschoen/fireworks-client",
+  "authors": [
+    "Ryan Schoen <private@private.com>"
+  ],
+  "description": "Client for the Fireworks game.",
+  "main": "index.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  }
+}

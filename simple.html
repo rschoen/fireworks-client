@@ -1,0 +1,40 @@
+<html>
+<head>
+<title>Sample Fireworks Client</title>
+
+<script type='text/javascript'>
+function sendMove() {
+	var packet = {Game: document.getElementById("Game").value,
+				Player: document.getElementById("Player").value,
+				MoveType: parseInt(document.getElementById("MoveType").value),
+				CardIndex: parseInt(document.getElementById("CardIndex").value),
+				HintPlayer: document.getElementById("HintPlayer").value,
+				HintInfoType: parseInt(document.getElementById("HintInfoType").value)
+	}
+	
+	var packetString = JSON.stringify(packet)
+	
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.open("POST","/api/" + document.getElementById("request").value,false);
+	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	xmlhttp.send("data="+packetString);	
+	document.getElementById('response').value = xmlhttp.responseText
+}
+</script>
+
+</head>
+<body>
+<table>
+<tr><td>Action</td><td><select id='request'><option value='join'>join</option><option value='start'>start</option><option value='move'>move</option></select></td></tr>
+<tr><td>Game</td><td><input type='text' id='Game' /></td></tr>
+<tr><td>Player</td><td><input type='text' id='Player' /></td></tr>
+<tr><td>MoveType</td><td><input type='text' id='MoveType' /></td></tr>
+<tr><td>CardIndex</td><td><input type='text' id='CardIndex' /></td></tr>
+<tr><td>HintPlayer</td><td><input type='text' id='HintPlayer' /></td></tr>
+<tr><td>HintInfoType</td><td><input type='text' id='HintInfoType' /></td></tr>
+</table>
+<input type='submit' value='Make the thing happen' onClick='sendMove()' />
+<br /><br /><br />
+<textarea id='response' rows=20 cols=80></textarea>
+</body>
+</html>
