@@ -1,0 +1,255 @@
+
+<dom-module id="fireworks-card">
+
+  <style>
+  :host {
+  perspective: 1000px;
+  display: inline-block;
+  }
+  
+  .card, .back, .front {
+	width: 185px;
+	height: 310px;
+	border-radius: 5px;
+  }
+  
+  .back, .front {
+	backface-visibility: hidden;
+	position: absolute;
+	top: 0;
+	left: 0;
+  }
+  
+  div.card {
+	border: 1px solid #AAA;
+	position: relative;
+	transform-style: preserve-3d;
+	transition: 0.4s;
+  }
+  
+  div.flipped {
+	transform: rotateY(180deg);
+	transform-style: preserve-3d;
+	transition: 0.4s;
+  }
+  
+  div.back {
+	background-color: #AAA;
+	background-image: url("/images/hanabi.jpg");
+	transform: rotateY(180deg);
+	border: 8px solid white;
+	box-sizing: border-box;
+  }
+  
+  div.contentarea {
+	border: 8px solid white;
+	width: 100%;
+	height: 100%;
+	border-radius: 5px;
+	box-sizing: border-box;
+	background-color: #E0F6FF;
+  }
+  
+  div.front {
+	z-index: 4;
+  }
+  
+  div.number {
+	font-size: 4em;
+	font-family: verdana;
+	text-align: right;
+	vertical-align: bottom;
+	position: absolute;
+	left: 130px;
+	top: 225px;
+  }
+  
+  div.number:first-of-type {
+	text-align: left;
+	vertical-align: top;
+	left: 10px;
+	top: 5px;
+  }
+  
+  .color-blue {
+	color: blue;
+  }
+  .color-red {
+	color: red;
+  }
+  .color-green {
+	color: green;
+  }
+  .color-yellow {
+	color: #FD4;
+  }
+  .color-white {
+	color: white;
+	-webkit-text-stroke: 1px #DDD;
+  }
+  
+  .firework {
+	position: absolute;
+  }
+  
+  .color-blue .firework {
+	filter: hue-rotate(250deg);
+	-webkit-filter: hue-rotate(250deg);
+  }
+  .color-red .firework {
+  
+  }
+  .color-green .firework {
+	filter: hue-rotate(140deg);
+	-webkit-filter: hue-rotate(140deg);
+  
+  }
+  .color-yellow .firework {
+	filter: hue-rotate(70deg) saturate(50);
+	-webkit-filter: hue-rotate(70deg) saturate(50);
+  
+  }
+  .color-white .firework {
+	filter: grayscale(100%) brightness(3.5);
+	-webkit-filter: grayscale(100%) brightness(3.5);
+  
+  }
+  
+  
+  .number-1 .firework1 {
+	left: 70px;
+	top: 130px;
+  
+  }
+  .number-1 .firework2 {
+	display: none;
+  }
+  .number-1 .firework3 {
+	display: none;
+  }
+  .number-1 .firework4 {
+	display: none;
+  }
+  .number-1 .firework5 {
+	display: none;
+  }
+  .number-2 .firework1, .number-4 .firework1 {
+	left: 90px;
+	top: 100px;
+  }
+  .number-2 .firework2, .number-4 .firework2 {
+	left: 50px;
+	top: 150px;
+  }
+  .number-2 .firework3 {
+	display: none;
+  }
+  .number-2 .firework4 {
+	display: none;
+  }
+  .number-2 .firework5 {
+	display: none;
+  }
+  .number-3 .firework1, .number-5 .firework1 {
+	left: 40px;
+	top: 100px;
+  }
+  .number-3 .firework2, .number-5 .firework2 {
+	left: 110px;
+	top: 130px;
+  }
+  .number-3 .firework3, .number-5 .firework3 {
+	left: 30px;
+	top: 165px;
+  }
+  .number-3 .firework4 {
+	display: none;
+  }
+  .number-3 .firework5 {
+	display: none;
+  }
+
+  .number-4 .firework3 {
+	left: 30px;
+	top: 90px;
+  }
+  .number-4 .firework4 {
+	left: 110px;
+	top: 170px;
+  }
+  .number-4 .firework5 {
+	display: none;
+  }
+  
+  .number-5 .firework4 {
+	left: 80px;
+	top: 190px;
+  }
+  .number-5 .firework5 {
+	left: 100px;
+	top: 65px;
+  }
+  
+  </style>
+  
+  <template>
+	<div class="card flipped">
+		<div class="back"></div>
+		<div class="front">
+			<div class="contentarea">
+				<div class="number">{{number}}</div>
+				<div class="number">{{number}}</div>
+				<div id="fireworkimages">
+					<img class="firework firework1" src="/images/fireworks.png"></img>
+					<img class="firework firework2" src="/images/fireworks.png"></img>
+					<img class="firework firework3" src="/images/fireworks.png"></img>
+					<img class="firework firework4" src="/images/fireworks.png"></img>
+					<img class="firework firework5" src="/images/fireworks.png"></img>
+				</div>
+			</div>
+		</div>
+	</div>
+	<input type="button" value="Flip" onClick="this.parentNode.flip();" />
+	</div>
+  </template>
+
+  <script>
+    Polymer({
+      is: "fireworks-card",
+
+      properties: {
+        color: {
+			type: String,
+			observer: "_colorChanged"
+		},
+        number: {
+			type: Number,
+			observer: "_numberChanged"
+		}
+      },
+
+      flip: function() {
+		this.children[0].classList.toggle("flipped");
+      },
+	  
+	  _colorChanged: function (newColor, oldColor) {
+		this.children[0].classList.remove("color-" + oldColor);
+		this.children[0].classList.add("color-" + newColor);
+	  },
+	  
+	  _numberChanged: function (newNumber, oldNumber) {
+		this.children[0].classList.remove("number-" + oldNumber);
+		this.children[0].classList.add("number-" + newNumber);
+	  },
+	  
+	  ready: function() {
+		images = this.$.fireworkimages.children;
+		for(i=0; i<images.length; i++) {
+			images[i].style.transform = "rotateZ("+Math.random() * 360+"deg)";
+		}
+	  }
+
+    });
+  </script>
+
+</dom-module>
