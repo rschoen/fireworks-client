@@ -62,10 +62,10 @@
       </paper-scroll-header-panel>
 
       <!-- Main Area -->
-      <paper-scroll-header-panel main condenses keep-condensed-header>
+      <paper-scroll-header-panel main fixed>
 
         <!-- Main Toolbar -->
-        <paper-toolbar id="mainToolbar" class="tall">
+        <paper-toolbar id="mainToolbar">
           <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
           <span class="flex"></span>
 
@@ -85,8 +85,11 @@
 
 		    <section data-route="games">
               <paper-material elevation="1">
-                <h2 class="paper-font-display2">Games</h2>
-                <p>Games list goes here</p>
+                <fireworks-card color="red" number="2" id="myCard"></fireworks-card>
+                <fireworks-card color="blue" number="1" id="myCard"></fireworks-card>
+                <fireworks-card color="green" number="5" id="myCard"></fireworks-card>
+                <fireworks-card color="yellow" number="3" id="myCard"></fireworks-card>
+                <fireworks-card color="white" number="4" id="myCard"></fireworks-card>
               </paper-material>
             </section>
 		  
