@@ -42,16 +42,23 @@
   }
   
   div.contentarea {
-	border: 8px solid white;
+	border: 8px solid #006;
 	width: 100%;
 	height: 100%;
 	border-radius: 5px;
 	box-sizing: border-box;
-	background-color: #E0F6FF;
+	background-color: #005C99;
   }
   
   div.front {
 	z-index: 4;
+  }
+    
+  div.number:first-of-type {
+	text-align: left;
+	vertical-align: top;
+	left: 15px;
+	top: 5px;
   }
   
   div.number {
@@ -63,29 +70,22 @@
 	left: 130px;
 	top: 225px;
   }
-  
-  div.number:first-of-type {
-	text-align: left;
-	vertical-align: top;
-	left: 10px;
-	top: 5px;
-  }
+
   
   .color-blue {
-	color: blue;
+	color: #09F;
   }
   .color-red {
-	color: red;
+	color: #F33;
   }
   .color-green {
-	color: green;
+	color: #090;
   }
   .color-yellow {
 	color: #FD4;
   }
   .color-white {
 	color: white;
-	-webkit-text-stroke: 1px #DDD;
   }
   
   .firework {
@@ -93,15 +93,16 @@
   }
   
   .color-blue .firework {
-	filter: hue-rotate(250deg);
-	-webkit-filter: hue-rotate(250deg);
+	filter: hue-rotate(230deg) brightness(2.5);
+	-webkit-filter: hue-rotate(230deg) brightness(2.5);
   }
   .color-red .firework {
-  
+	filter: brightness(6);
+	-webkit-filter: brightness(6);
   }
   .color-green .firework {
-	filter: hue-rotate(140deg);
-	-webkit-filter: hue-rotate(140deg);
+	filter: hue-rotate(140deg) brightness(1.5);
+	-webkit-filter: hue-rotate(140deg) brightness(1.5);
   
   }
   .color-yellow .firework {
@@ -110,8 +111,8 @@
   
   }
   .color-white .firework {
-	filter: grayscale(100%) brightness(3.5);
-	-webkit-filter: grayscale(100%) brightness(3.5);
+	filter: grayscale(100%) brightness(7);
+	-webkit-filter: grayscale(100%) brightness(7);
   
   }
   
