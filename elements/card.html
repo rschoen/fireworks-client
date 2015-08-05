@@ -25,10 +25,11 @@
 	position: relative;
 	transform-style: preserve-3d;
 	transition: 0.4s;
+	transform: rotateY(180deg);
   }
   
-  div.flipped {
-	transform: rotateY(180deg);
+  div.faceup {
+  	transform: none;
 	transform-style: preserve-3d;
 	transition: 0.4s;
   }
@@ -72,19 +73,19 @@
   }
 
   
-  .color-blue {
+  .color-blue, #known.knowncolor-blue {
 	color: #09F;
   }
-  .color-red {
+  .color-red, #known.knowncolor-red {
 	color: #F33;
   }
-  .color-green {
+  .color-green, #known.knowncolor-green {
 	color: #090;
   }
-  .color-yellow {
+  .color-yellow, #known.knowncolor-yellow {
 	color: #FD4;
   }
-  .color-white {
+  .color-white, #known.knowncolor-white {
 	color: white;
   }
   
@@ -191,15 +192,32 @@
 	top: 65px;
   }
   
+  #known {
+  	color: #777;
+  	position: absolute;
+  	left: 128px;
+  	top: 15px;
+  	border: 1px solid white;
+  	background-color: black;
+  	font-family: verdana;
+  	font-size: 2em;
+  	width: 40px;
+  	height: 40px;
+  	z-index: 5;
+  	text-align: center;
+  	font-weight: bold;
+  }
   </style>
   
   <template>
-	<div class="card flipped">
+	<div class="card">
 		<div class="back"></div>
 		<div class="front">
 			<div class="contentarea">
 				<div class="number">{{number}}</div>
 				<div class="number">{{number}}</div>
+				<div id="known" hidden="{{hideKnownIndicator(knownColor,knownNumber)}}">{{knownNumberDisplay(knownNumber)}}</div>
+				
 				<div id="fireworkimages">
 					<img class="firework firework1" src="/images/fireworks.png"></img>
 					<img class="firework firework2" src="/images/fireworks.png"></img>
@@ -226,11 +244,24 @@
         number: {
 			type: Number,
 			observer: "_numberChanged"
+		},
+		knownColor: {
+			type: String,
+			observer: "_knownColorChanged",
+			value: "none"
+		},
+		knownNumber: {
+			type: Number,
+			value: -1
+		},
+		faceup: {
+			type: Boolean,
+			value: false
 		}
       },
 
       flip: function() {
-		this.children[0].classList.toggle("flipped");
+		this.children[0].classList.toggle("faceup");
       },
 	  
 	  _colorChanged: function (newColor, oldColor) {
@@ -248,7 +279,20 @@
 		for(i=0; i<images.length; i++) {
 			images[i].style.transform = "rotateZ("+Math.random() * 360+"deg)";
 		}
-	  }
+		if(this.faceup) this.children[0].classList.add("faceup");
+	   },
+		
+		hideKnownIndicator: function(color,number) {
+			return (color == "none" && number == -1)
+		},
+		_knownColorChanged: function(newColor, oldColor) {
+			this.$.known.classList.remove("knowncolor-" + oldColor);
+			this.$.known.classList.add("knowncolor-" + newColor);
+		},
+		knownNumberDisplay: function(number) {
+			if (number == -1) return "?";
+			else return number;
+		}
 
     });
   </script>
