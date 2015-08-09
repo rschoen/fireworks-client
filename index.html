@@ -84,13 +84,9 @@
           <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
 		    <section data-route="games">
-              <paper-material elevation="1">
-                <fireworks-card color="red" number="2" id="myCard"></fireworks-card>
-                <fireworks-card color="blue" number="1" id="myCard"></fireworks-card>
-                <fireworks-card color="green" number="5" id="myCard"></fireworks-card>
-                <fireworks-card color="yellow" number="3" id="myCard"></fireworks-card>
-                <fireworks-card color="white" number="4" id="myCard"></fireworks-card>
-              </paper-material>
+              
+		    	<fireworks-game cardsPerhand="5" maxHints="8" gameid="mygame" gamesequence="1" hints="8" bombs="3" cardsLeft="25">
+		    	</fireworks-game>
             </section>
 		  
             <section data-route="users">
