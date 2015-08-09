@@ -1,0 +1,185 @@
+
+<dom-module id="fireworks-game">
+
+  <style>
+  .small-card {
+  	transform: scale(0.25);
+  	transform-origin: 0 0;
+  }
+  
+  fireworks-player {
+  	position: absolute;
+  }
+
+.player0 {
+	transform: scale(2.0);
+	transform-origin: 0 0;
+	left: 10px;
+	top: 500px;
+}
+
+  .player1 {
+	left: 10px;
+	top: 10px;
+}
+
+.player2 {
+	left: 180px;
+	top: 10px;
+}
+
+	
+  .player3 {
+	left: 10px;
+	top: 115px;
+}
+
+.player4 {
+	left: 180px;
+	top: 115px;
+}
+
+
+.hints { 
+	position: absolute;
+	top: 100px;
+	left: 285px;
+}
+.bombs { 
+	position: absolute;
+	top: 130px;
+	left: 285px;
+}
+
+.playarea {
+	position: absolute;
+	left: 5px;
+	top: 240px;
+	width: 100%;
+}
+.playarea fireworks-card {
+	position: absolute;
+	top: 0px;
+}
+.playarea .card1 {
+	left: 10px;
+}
+.playarea .card2 {
+	left: 60px;
+}
+.playarea .card3 {
+	left: 110px;
+}
+.playarea .card4 {
+	left: 160px;
+}
+.playarea .card5 {
+	left: 210px;
+}
+.deck { 
+	left: 280px;
+}
+.discards {
+	position: absolute;
+	left: 0px;
+	top: 100px;
+}
+
+.playarea fireworks-card.row1 { top: 0px; }
+.playarea fireworks-card.row2 { top: 20px; }
+.playarea fireworks-card.row3 { top: 40px; }
+.playarea fireworks-card.row4 { top: 60px; }
+.playarea fireworks-card.row5 { top: 80px; }
+ 
+	
+
+  </style>
+  
+  <template>
+	<fireworks-player name="Jake" number="1" class="player1"></fireworks-player>
+	<fireworks-player name="Tom" number="2" class="player2"></fireworks-player>
+	<fireworks-player name="Luke" number="3" class="player3"></fireworks-player>
+	<fireworks-player name="Eric" number="4" class="player4"></fireworks-player>
+	<div class="otherplayers"></div>
+	<div class="playarea">
+		<fireworks-card color="red" number="2" faceup class="small-card card1"></fireworks-card>
+		<fireworks-card color="blue" number="1" faceup class="small-card card2"></fireworks-card>
+		<fireworks-card color="green" number="1" class="small-card card3" faceup></fireworks-card>
+		<fireworks-card color="yellow" number="3" class="small-card card4" faceup></fireworks-card>
+		<fireworks-card color="white" number="4" class="small-card card5" faceup></fireworks-card>
+		
+		<fireworks-card class="deck small-card">{{cardsLeft}}</fireworks-card>
+		<fireworks-counter count="{{hints}}" lowCount="3" class="hints">?</fireworks-counter>
+		<fireworks-counter count="{{bombs}}" lowCount="1" class="bombs">x</fireworks-counter>
+		<div class="discards">
+		<fireworks-card color="red" number="2" faceup class="small-card row1 card1"></fireworks-card>
+		<fireworks-card color="red" number="1" faceup class="small-card row2 card1"></fireworks-card>
+		<fireworks-card color="blue" number="2" faceup class="small-card row1 card2"></fireworks-card>
+		<fireworks-card color="green" number="2" faceup class="small-card row1 card3"></fireworks-card>
+		<fireworks-card color="green" number="3" faceup class="small-card row2 card3"></fireworks-card>
+		<fireworks-card color="green" number="1" faceup class="small-card row3 card3"></fireworks-card>
+		<fireworks-card color="yellow" number="5" faceup class="small-card row1 card4"></fireworks-card>
+		<fireworks-card color="white" number="2" faceup class="small-card row1 card5"></fireworks-card>
+		</div>
+		
+		</div>
+	<fireworks-player name="Ryan" number="0" class="player0"></fireworks-player>
+	
+	
+</template>
+
+  <script>
+    Polymer({
+      is: "fireworks-game",
+
+      properties: {
+      	cardsPerHand: {
+      		type: Number,
+      		readOnly: true
+      	},
+      	players: {
+      		type: Number,
+      		readOnly: true
+      	},
+      	gameid: {
+      		type: Number,
+      		readOnly: true
+      	},
+      	gamesequence: {
+      		type: Number,
+      		readOnly: true
+      	},
+      	
+      	
+      	hints: {
+      		type: Number,
+      		observer: "_hintsChanged"
+      	},
+      	bombs: {
+      		type: Number,
+      		observer: "_bombsChanged"
+      	},
+      	cardsLeft: {
+      		type: Number,
+      		observer: "_cardsLeftChanged"
+      	}
+      	
+      },
+      
+      _hintsChanged: function(newHints, oldHints) {
+      	// TODO: maybe do an animation here if it decreased?
+      	// TODO: show in red if it's below a certain value
+      },
+      _bombsChanged: function(newBombs, oldBombs) {
+      	// TODO: maybe do an animation here if it decreased?
+      	// TODO: show in red if it's below a certain value
+      },
+      _cardsLeftChanged: function(newCards, oldCards) {
+      	// TODO: maybe do an animation here if it decreased?
+      	// TODO: show in red if it's below a certain value
+      }
+      
+    });
+  </script>
+
+</dom-module>

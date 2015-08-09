@@ -70,6 +70,7 @@
 	position: absolute;
 	left: 130px;
 	top: 225px;
+	font-weight: bold;
   }
 
   
@@ -210,7 +211,7 @@
   </style>
   
   <template>
-	<div class="card">
+	<div class="card" onClick="this.parentNode.flip();">
 		<div class="back"></div>
 		<div class="front">
 			<div class="contentarea">
@@ -228,7 +229,6 @@
 			</div>
 		</div>
 	</div>
-	<input type="button" value="Flip" onClick="this.parentNode.flip();" />
 	</div>
   </template>
 
@@ -256,12 +256,16 @@
 		},
 		faceup: {
 			type: Boolean,
-			value: false
+			value: false,
+			observer: "_faceupChanged"
 		}
       },
 
       flip: function() {
-		this.children[0].classList.toggle("faceup");
+      	this.faceup = !this.faceup;
+      },
+      _faceupChanged: function(newFU, oldFU) {
+		this.children[0].classList.toggle("faceup",newFU);
       },
 	  
 	  _colorChanged: function (newColor, oldColor) {
@@ -279,7 +283,7 @@
 		for(i=0; i<images.length; i++) {
 			images[i].style.transform = "rotateZ("+Math.random() * 360+"deg)";
 		}
-		if(this.faceup) this.children[0].classList.add("faceup");
+		if(this.faceup) { this.children[0].classList.add("faceup"); }
 	   },
 		
 		hideKnownIndicator: function(color,number) {

@@ -1,0 +1,85 @@
+
+<dom-module id="fireworks-player">
+
+<style>
+#player {
+	width: 160px;
+	height: 90px;
+	border-radius: 3px;
+	border: 1px solid #AAA;
+	background: white;
+	will-change: transform;
+	transform-origin: 0 0;
+	
+	transition: 0.4s;
+	z-index: 2;
+}
+
+
+
+.name {
+	position: relative;
+	left: 10px;
+	top: -13px;
+	z-index: 3;
+	background: white;
+	padding: 1px 5px 0;
+	border-radius: 3px;
+	font-size: 0.8em;
+}
+
+.selected {
+	left: 100px;
+	top: 100px;
+	transform: scale(2.0);
+	
+	transition: 0.4s;
+}
+.on-top {
+	z-index: 5;
+}
+  .small-card {
+  	transform: scale(0.25);
+  	transform-origin: 0 0;
+  }
+  fireworks-card { position: absolute; top: 5px; }
+  .card1 { left: 5px; }
+  .card2 { left: 30px; }
+  .card3 { left: 55px; }
+  .card4 { left: 80px; }
+  .card5 { left: 110px; }
+  </style>
+  
+  <template>
+	<div id="player" onClick="//this.classList.toggle('on-top'); this.classList.toggle('selected'); document.getElementById('overlay').classList.toggle('visible'); ">
+	<span class="name">{{name}}</span>
+	<fireworks-card color="red" number="2" class="small-card card1" faceup></fireworks-card>
+    <fireworks-card color="blue" number="1" class="small-card card2" faceup></fireworks-card>
+    <fireworks-card color="green" number="5" class="small-card card3" faceup></fireworks-card>
+    <fireworks-card color="yellow" number="3" class="small-card card4" faceup></fireworks-card>
+    <fireworks-card color="white" number="4" class="small-card card5" faceup></fireworks-card
+	</div>
+  </template>
+
+  <script>
+    Polymer({
+      is: "fireworks-player",
+
+      properties: {
+      	name: {
+      		type: String
+      	},
+      	number: {
+      		type: Number,
+      		observer: "_numberChanged"
+      	}
+      },
+      
+      _numberChanged: function(number, oldNumber) {
+      	this.$.player.classList.add("player" + number);
+      }
+      
+    });
+  </script>
+
+</dom-module>
