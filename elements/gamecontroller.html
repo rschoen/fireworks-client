@@ -1,0 +1,71 @@
+
+<dom-module id="fireworks-gamecontroller">
+
+
+  </style>
+  
+  <template>
+  <iron-ajax
+	id="ajax"
+	method="POST"}
+    url="/api/"
+    handle-as="json"
+    on-response="handleResponse"
+    debounce-duration="300"></iron-ajax>
+	<div id="nameform"><form on-submit="joinGame" action="#">Name: <input type="text" id="localPlayerName" value="Ryan"/><br />Game: <input type=text id="gameid" value="whatevs"/><br /><input type="submit" value="Join"/></form></div>
+	
+</template>
+
+  <script>
+    Polymer({
+      is: "fireworks-gamecontroller",
+
+      properties: {
+      	localPlayerName: {
+      		type: String
+      	},
+      	gameid: {
+      		type: String
+      	},
+      	gamesequence: {
+      		type: Number,
+      		readOnly: true
+      	}
+	},
+	
+	joinGame: function(e) {
+		e.preventDefault();
+		var name = this.$.localPlayerName.value;
+		var gameid = this.$.gameid.value;
+		if(name != "" && gameid != "") {
+			this.localPlayerName = name;
+			this.gameid = gameid;
+			var packet = {Game: gameid,
+				Player: name,
+				MoveType: 0,
+				CardIndex: 0,
+				HintPlayer: "0",
+				HintInfoType: 0
+				}
+	
+		var packetString = JSON.stringify(packet);
+		var ajax = this.$.ajax;
+		ajax.url="/api/join"
+		ajax.body="data="+packetString;
+		window.alert(packetString);
+		ajax.generateRequest();
+		
+		}
+	},
+	
+	handleResponse: function(json) {
+			//TODO: handle the response and create the game 
+			var newGame = new FireworksGame(5, 8, 8, 3, 25);
+			this.removeChild(this.$.nameform);
+			this.appendChild(newGame);
+	}
+      
+    });
+  </script>
+
+</dom-module>
