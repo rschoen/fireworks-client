@@ -12,9 +12,9 @@
     handle-as="json"
     on-response="handleResponse"
     debounce-duration="300"></iron-ajax>
-	<div id="nameform"><form on-submit="joinGame" action="#">Name: <input type="text" id="localPlayerName" value="Ryan"/><br />Game: <input type=text id="gameid" value="whatevs"/><br /><input type="submit" value="Join"/></form></div>
 	
-</template>
+	<div id="destroyable"><div id="nameform"><form on-submit="joinGame" action="#">Name: <input type="text" id="localPlayerName" value="Ryan"/><br />Game: <input type=text id="gameid" value="whatevs"/><br /><input type="submit" value="Join"/></form></div></div>
+  </template>
 
   <script>
     Polymer({
@@ -30,7 +30,11 @@
       	gamesequence: {
       		type: Number,
       		readOnly: true
-      	}
+      	},
+		polling: {
+			type: Boolean,
+			value: false
+		}
 	},
 	
 	joinGame: function(e) {
@@ -40,29 +44,51 @@
 		if(name != "" && gameid != "") {
 			this.localPlayerName = name;
 			this.gameid = gameid;
-			var packet = {Game: gameid,
-				Player: name,
+				
+			var ajax = this.$.ajax;
+			ajax.url="/api/join"
+			ajax.body="data="+this.makeEmptyMove();
+			ajax.generateRequest();
+		
+		}
+	},
+	
+	makeEmptyMove: function()
+	{
+		var emptyMove = {Game: this.gameid,
+				Player: this.localPlayerName,
 				MoveType: 0,
 				CardIndex: 0,
 				HintPlayer: "0",
 				HintInfoType: 0
 				}
 	
-		var packetString = JSON.stringify(packet);
-		var ajax = this.$.ajax;
-		ajax.url="/api/join"
-		ajax.body="data="+packetString;
-		window.alert(packetString);
-		ajax.generateRequest();
-		
-		}
+		return JSON.stringify(emptyMove);
 	},
 	
-	handleResponse: function(json) {
-			//TODO: handle the response and create the game 
-			var newGame = new FireworksGame(5, 8, 8, 3, 25);
-			this.removeChild(this.$.nameform);
-			this.appendChild(newGame);
+	handleResponse: function(request) {
+			json = request.detail.response;
+			// TODO actually send through the deck, piles, and other data
+			var newGame = new FireworksGame(this.localPlayerName, json.Hints, json.Bombs, 0);
+			for(player in json.Players) {
+				// TODO actually send through the player cards
+				newGame.addPlayer(json.Players[player].ID,[]);
+			}
+			this.$.destroyable.innerHTML = "";
+			this.$.destroyable.appendChild(newGame);
+			
+			if(!this.polling)
+			{
+				this.polling = true;
+				this.poll();
+			}
+	},
+	
+	poll: function() {
+		ajax.url="/api/status"
+		ajax.body="data="+this.makeEmptyMove();
+		ajax.generateRequest();
+		if(this.polling) this.async(this.poll, 5000);
 	}
       
     });

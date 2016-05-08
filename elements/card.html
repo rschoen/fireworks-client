@@ -235,7 +235,7 @@
   </template>
 
   <script>
-    Polymer({
+    FireworksCard = Polymer({
       is: "fireworks-card",
 
       properties: {
@@ -262,6 +262,11 @@
 			observer: "_faceupChanged"
 		}
       },
+	  
+	  factoryImpl: function(color, number) {
+		this.color = color;
+		this.number = number;
+	  },
 
       flip: function() {
       	this.faceup = !this.faceup;
