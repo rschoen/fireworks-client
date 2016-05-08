@@ -140,7 +140,7 @@
 </template>
 
   <script>
-    Polymer({
+    FireworksGame = Polymer({
       is: "fireworks-game",
 
       properties: {
@@ -149,14 +149,6 @@
       		readOnly: true
       	},
       	players: {
-      		type: Number,
-      		readOnly: true
-      	},
-      	gameid: {
-      		type: Number,
-      		readOnly: true
-      	},
-      	gamesequence: {
       		type: Number,
       		readOnly: true
       	},
@@ -176,6 +168,14 @@
       	}
       	
       },
+	  
+	  factoryImpl: function(cardsPerHand, maxHints, hints, bombs, cardsLeft) {
+		this.cardsPerHand = cardsPerHand;
+		this.maxHuints = maxHints;
+		this.hints = hints;
+		this.bombs = bombs;
+		this.cardsLeft = cardsLeft;
+	  },
       
       _hintsChanged: function(newHints, oldHints) {
       	// TODO: maybe do an animation here if it decreased?
