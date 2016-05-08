@@ -53,16 +53,12 @@
   <template>
 	<div id="player" onClick="//this.classList.toggle('on-top'); this.classList.toggle('selected'); document.getElementById('overlay').classList.toggle('visible'); ">
 	<span class="name">{{name}}</span>
-	<fireworks-card color="red" number="2" class="small-card card1" faceup></fireworks-card>
-    <fireworks-card color="blue" number="1" class="small-card card2" faceup></fireworks-card>
-    <fireworks-card color="green" number="5" class="small-card card3" faceup></fireworks-card>
-    <fireworks-card color="yellow" number="3" class="small-card card4" faceup></fireworks-card>
-    <fireworks-card color="white" number="4" class="small-card card5" faceup></fireworks-card
+	<div id="cards"></div>
 	</div>
   </template>
 
   <script>
-    Polymer({
+    FireworksPlayer = Polymer({
       is: "fireworks-player",
 
       properties: {
@@ -75,6 +71,16 @@
       	}
       },
       
+	  factoryImpl: function(name,number) {
+		this.name = name;
+		this.number = number;
+	  },
+	  
+	  addCard: function(color, number) {
+		var card = new FireworksCard(color, number);
+		this.$.cards.appendChild(card);
+	  },
+	  
       _numberChanged: function(number, oldNumber) {
       	this.$.player.classList.add("player" + number);
       }

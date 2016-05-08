@@ -100,11 +100,9 @@
   </style>
   
   <template>
-	<fireworks-player name="Jake" number="1" class="player1"></fireworks-player>
-	<fireworks-player name="Tom" number="2" class="player2"></fireworks-player>
-	<fireworks-player name="Luke" number="3" class="player3"></fireworks-player>
-	<fireworks-player name="Eric" number="4" class="player4"></fireworks-player>
-	<div class="otherplayers"></div>
+	<div id="players"></div>
+	
+	</div>
 	<div class="playarea">
 		<fireworks-card color="red" number="2" faceup class="small-card card1"></fireworks-card>
 		<fireworks-card color="blue" number="1" faceup class="small-card card2"></fireworks-card>
@@ -133,8 +131,7 @@
 		<fireworks-card color="white" number="2" faceup class="small-card row1 card5"></fireworks-card>
 		</div>
 		
-		</div>
-	<fireworks-player name="Ryan" number="0" class="player0"></fireworks-player>
+	</div>
 	
 	
 </template>
@@ -143,17 +140,7 @@
     FireworksGame = Polymer({
       is: "fireworks-game",
 
-      properties: {
-      	cardsPerHand: {
-      		type: Number,
-      		readOnly: true
-      	},
-      	players: {
-      		type: Number,
-      		readOnly: true
-      	},
-      	
-      	
+      properties: {      	
       	hints: {
       		type: Number,
       		observer: "_hintsChanged"
@@ -165,16 +152,40 @@
       	cardsLeft: {
       		type: Number,
       		observer: "_cardsLeftChanged"
-      	}
+      	},
+		localPlayerName: {
+			type: String
+		},
+		players: {
+			type: Array
+		}
       	
       },
 	  
-	  factoryImpl: function(cardsPerHand, maxHints, hints, bombs, cardsLeft) {
-		this.cardsPerHand = cardsPerHand;
-		this.maxHuints = maxHints;
+	  factoryImpl: function(localPlayerName, hints, bombs, cardsLeft) {
 		this.hints = hints;
 		this.bombs = bombs;
 		this.cardsLeft = cardsLeft;
+		this.localPlayerName = localPlayerName;
+		this.players = [];
+	  },
+	  
+	
+	  
+	  addPlayer: function(name, hand) {
+		var playerNumber;
+		if(name == this.localPlayerName)
+		{
+			playerNumber = 0;
+		}
+		else {
+			playerNumber = this.players.length;
+		}
+		
+		var player = new FireworksPlayer(name, playerNumber);
+		this.players.push(player);
+		this.$.players.appendChild(player);
+		return player;
 	  },
       
       _hintsChanged: function(newHints, oldHints) {
