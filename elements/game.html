@@ -140,7 +140,11 @@
     FireworksGame = Polymer({
       is: "fireworks-game",
 
-      properties: {      	
+      properties: {
+		started: {
+			type: Boolean,
+			value: false
+		},
       	hints: {
       		type: Number,
       		observer: "_hintsChanged"
@@ -162,12 +166,13 @@
       	
       },
 	  
-	  factoryImpl: function(localPlayerName, hints, bombs, cardsLeft) {
+	  factoryImpl: function(localPlayerName, hints, bombs, cardsLeft, started) {
 		this.hints = hints;
 		this.bombs = bombs;
 		this.cardsLeft = cardsLeft;
 		this.localPlayerName = localPlayerName;
 		this.players = [];
+		this.started = started;
 	  },
 	  
 	
