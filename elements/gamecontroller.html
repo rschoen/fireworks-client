@@ -1,8 +1,8 @@
 
 <dom-module id="fireworks-gamecontroller">
-
-
-  </style>
+<style>
+.hidden { display: none; }
+</style>
   
   <template>
   <iron-ajax
@@ -14,6 +14,7 @@
     debounce-duration="300"></iron-ajax>
 	
 	<div id="destroyable"><div id="nameform"><form on-submit="joinGame" action="#">Name: <input type="text" id="localPlayerName" value="Ryan"/><br />Game: <input type=text id="gameid" value="whatevs"/><br /><input type="submit" value="Join"/></form></div></div>
+	<input type="button" value="Start Game" id="started" class="hidden" on-click="startGame" />
   </template>
 
   <script>
@@ -53,6 +54,13 @@
 		}
 	},
 	
+	startGame: function(e) {
+		var ajax = this.$.ajax;
+		ajax.url="/api/start"
+		ajax.body="data="+this.makeEmptyMove();
+		ajax.generateRequest();
+	},
+	
 	makeEmptyMove: function()
 	{
 		var emptyMove = {Game: this.gameid,
@@ -67,22 +75,30 @@
 	},
 	
 	handleResponse: function(request) {
-			json = request.detail.response;
-			// TODO actually send through the deck, piles, and other data
-			var newGame = new FireworksGame(this.localPlayerName, json.Hints, json.Bombs, 0);
-			for(player in json.Players) {
-				// TODO actually send through the player cards
-				newGame.addPlayer(json.Players[player].ID,[]);
-			}
-			this.$.destroyable.innerHTML = "";
-			this.$.destroyable.appendChild(newGame);
-			
-			if(!this.polling)
-			{
-				this.polling = true;
-				this.poll();
-			}
+		json = request.detail.response;
+		// TODO actually send through the deck, piles, and other data
+		var newGame = new FireworksGame(this.localPlayerName, json.Hints, json.Bombs, 0);
+		for(player in json.Players) {
+			// TODO actually send through the player cards
+			newGame.addPlayer(json.Players[player].ID,[]);
+		}
+		this.$.destroyable.innerHTML = "";
+		this.$.destroyable.appendChild(newGame);
+		
+		if(json.Started) {
+			this.$.started.classList.add("hidden");
+		}
+		else {
+			this.$.started.classList.remove("hidden");
+		}
+
+		if(!this.polling)
+		{
+			this.polling = true;
+			this.poll();
+		}
 	},
+			
 	
 	poll: function() {
 		ajax.url="/api/status"
