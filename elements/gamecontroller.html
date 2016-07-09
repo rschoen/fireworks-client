@@ -77,10 +77,12 @@
 	handleResponse: function(request) {
 		json = request.detail.response;
 		// TODO actually send through the deck, piles, and other data
-		var newGame = new FireworksGame(this.localPlayerName, json.Hints, json.Bombs, 0);
+		var newGame = new FireworksGame(this.localPlayerName, json.Hints, json.Bombs, json.CardsLeft, json.Started);
 		for(player in json.Players) {
-			// TODO actually send through the player cards
-			newGame.addPlayer(json.Players[player].ID,[]);
+			var thisPlayer = newGame.addPlayer(json.Players[player].ID,[]);
+			for(card in json.Players[player].Cards) {
+				thisPlayer.addCard(json.Players[player].Cards[card].Color, json.Players[player].Cards[card].Number);
+			}
 		}
 		this.$.destroyable.innerHTML = "";
 		this.$.destroyable.appendChild(newGame);

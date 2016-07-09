@@ -66,9 +66,12 @@
       		type: String
       	},
       	number: {
-      		type: Number,
-      		observer: "_numberChanged"
-      	}
+      		type: Number
+      	},
+		numCards: {
+			type: Number,
+			value: 0
+		}
       },
       
 	  factoryImpl: function(name,number) {
@@ -78,12 +81,15 @@
 	  
 	  addCard: function(color, number) {
 		var card = new FireworksCard(color, number);
-		this.$.cards.appendChild(card);
-	  },
-	  
-      _numberChanged: function(number, oldNumber) {
-      	this.$.player.classList.add("player" + number);
-      }
+		if(this.number > 0 ) // not the local player
+		{
+			card.flip();
+		}
+		this.numCards++;
+		card.classList.add("card" + this.numCards);
+		Polymer.dom(this.root).appendChild(card)
+		Polymer.dom(this.root).querySelector("#cards").appendChild(card)
+	  }
       
     });
   </script>
