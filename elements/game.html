@@ -103,12 +103,12 @@ fireworks-player {
 	<div id="players"></div>
 	
 	</div>
-	<div class="playarea">
-		<fireworks-card color="red" number="2" faceup class="small-card card1"></fireworks-card>
-		<fireworks-card color="blue" number="1" faceup class="small-card card2"></fireworks-card>
-		<fireworks-card color="green" number="1" class="small-card card3" faceup></fireworks-card>
-		<fireworks-card color="yellow" number="3" class="small-card card4" faceup></fireworks-card>
-		<fireworks-card color="white" number="4" class="small-card card5" faceup></fireworks-card>
+	<div class="playarea" id="playarea">
+		<fireworks-card color="red" number="2" class="small-card card1" faceup placeholder></fireworks-card>
+		<fireworks-card color="green" number="1" class="small-card card2" faceup placeholder></fireworks-card>
+		<fireworks-card color="blue" number="1" class="small-card card3" faceup placeholder></fireworks-card>
+		<fireworks-card color="yellow" number="3" class="small-card card4" faceup placeholder></fireworks-card>
+		<fireworks-card color="white" number="4" class="small-card card5" faceup placeholder></fireworks-card>
 		
 		<fireworks-card class="deck small-card">{{cardsLeft}}</fireworks-card>
 		<fireworks-counter count="{{hints}}" lowCount="3" class="hints">?</fireworks-counter>
@@ -162,13 +162,21 @@ fireworks-player {
 		},
 		players: {
 			type: Array
-		}
+		},
+		piles: {
+			type: Array
+		},
+		discard: {
+			type: Array
+		},
       	
       },
 	  
-	  factoryImpl: function(localPlayerName, hints, bombs, cardsLeft, started) {
+	  factoryImpl: function(localPlayerName, hints, bombs, piles, discard, cardsLeft, started) {
 		this.hints = hints;
 		this.bombs = bombs;
+		this.piles = piles;
+		this.discard = discard;
 		this.cardsLeft = cardsLeft;
 		this.localPlayerName = localPlayerName;
 		this.players = [];
@@ -207,7 +215,17 @@ fireworks-player {
       _cardsLeftChanged: function(newCards, oldCards) {
       	// TODO: maybe do an animation here if it decreased?
       	// TODO: show in red if it's below a certain value
-      }
+      },
+
+	  attached: function() {
+		for(pile in this.piles) {
+			var pileCount = this.piles[pile];
+			if(pileCount > 0) {
+				this.$.playarea.children[pile].setNumber(pileCount);
+				this.$.playarea.children[pile].reveal();
+			}
+		}	
+	  }
       
     });
   </script>
