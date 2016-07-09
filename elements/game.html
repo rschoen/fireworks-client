@@ -3,14 +3,14 @@
 
   <style>
   .small-card {
-//  	transform: scale(0.25);
-//  	transform-origin: 0 0;
+ // 	transform: scale(0.25);
+ // 	transform-origin: 0 0;
   }
   
-  fireworks-player {
+fireworks-player {
   	position: absolute;
-  }
-
+}
+  
 .player0 {
 	transform: scale(2.0);
 	transform-origin: 0 0;
@@ -188,8 +188,11 @@
 		}
 		
 		var player = new FireworksPlayer(name, playerNumber);
+      	player.classList.add("player" + playerNumber);
 		this.players.push(player);
-		this.$.players.appendChild(player);
+		Polymer.dom(this.root).appendChild(player)
+		Polymer.dom(this.root).querySelector("#players").appendChild(player)
+		//this.$.players.appendChild(player);
 		return player;
 	  },
       
