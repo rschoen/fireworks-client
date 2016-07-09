@@ -6,6 +6,8 @@
   perspective: 1000px;
   display: inline-block;
   }
+
+
   
   .card, .back, .front {
 	width: 47px;
@@ -214,6 +216,14 @@
   	text-align: center;
   	font-weight: bold;
   }
+
+  div.placeholder {
+	border: 1px dotted #999;
+	border-radius: 2px;
+  }
+  div.placeholder * {
+	visibility: hidden;
+  }
   </style>
   
   <template>
@@ -263,6 +273,11 @@
 			type: Boolean,
 			value: false,
 			observer: "_faceupChanged"
+		},
+		placeholder: {
+			type: Boolean,
+			value: false,
+			observer: "_placeholderChanged"
 		}
       },
 	  
@@ -274,8 +289,18 @@
       flip: function() {
       	this.faceup = !this.faceup;
       },
+	  reveal: function () {
+		this.placeholder = false;
+	  },
+	  setNumber: function(number) {
+		this.number = number;
+	  },
       _faceupChanged: function(newFU, oldFU) {
 		this.children[0].classList.toggle("faceup",newFU);
+      },
+
+      _placeholderChanged: function(newPH, oldPH) {
+		this.children[0].classList.toggle("placeholder",newPH);
       },
 	  
 	  _colorChanged: function (newColor, oldColor) {
@@ -294,6 +319,7 @@
 			images[i].style.transform = "rotateZ("+Math.random() * 360+"deg)";
 		}
 		if(this.faceup) { this.children[0].classList.add("faceup"); }
+		if(this.placeholder) { this.children[0].classList.add("placeholder"); }
 	   },
 		
 		hideKnownIndicator: function(color,number) {
