@@ -262,6 +262,8 @@
 			var color = target.getColor();
 			this.$.dialogcard.setNumber(number);
 			this.$.dialogcard.setColor(color);
+			this.$.dialogcard.setKnownNumber(target.getKnownNumber());
+			this.$.dialogcard.setKnownColor(target.getKnownColor());
 			this.$.hintnumber.value = "Hint " + number;
 			this.$.hintcolor.value = "Hint " + color;
 			this.hintCardIndex = target.getIndex();
@@ -276,6 +278,7 @@
 			
 			if(this.hintPlayerName == this.localPlayerName) {
 				this.$.dialogcard.setFaceup(false);
+				this.$.dialogcard
 				this.$.hintinputs.classList.add("hidden");
 				this.$.playinputs.classList.remove("hidden");
 				

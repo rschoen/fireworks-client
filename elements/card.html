@@ -331,6 +331,12 @@
 	  setKnownColor: function(color) {
 		this.knownColor = color;
 	  },
+	  getKnownNumber: function() {
+		return this.knownNumber;
+	  },
+	  getKnownColor: function() {
+		return this.knownColor;
+	  },
       _faceupChanged: function(newFU, oldFU) {
 		this.children[0].classList.toggle("faceup",newFU);
       },
@@ -359,7 +365,7 @@
 	   },
 		
 		hideKnownIndicator: function(color,number) {
-			return (color == "" && number < 1)
+			return ((color == "" || color == "none") && number < 1)
 		},
 		_knownColorChanged: function(newColor, oldColor) {
 			this.$.known.classList.remove("knowncolor-" + oldColor);
