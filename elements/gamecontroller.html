@@ -2,6 +2,39 @@
 <dom-module id="fireworks-gamecontroller">
 <style>
 .hidden { display: none; }
+
+#modal.hidden { display: none; }
+
+#overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.3);
+	z-index: 4;
+}
+
+#dialog {
+	position: fixed;
+	width: 200px;
+	height: 100px;
+	top: 50%;
+	left: 50%;
+	margin-top: -50px;
+	margin-left: -100px;
+	border: 1px solid #333;
+	background: white;
+	border-radius: 3px;
+	padding: 20px;
+	text-align: center;
+	z-index: 5;
+}
+
+#dialog fireworks-card {
+	margin-bottom: 10px;
+}
+
 </style>
   
   <template>
@@ -13,8 +46,19 @@
     on-response="handleResponse"
     debounce-duration="300"></iron-ajax>
 	
-	<div id="destroyable"><div id="nameform"><form on-submit="joinGame" action="#">Name: <input type="text" id="localPlayerName" value="Ryan"/><br />Game: <input type=text id="gameid" value="whatevs"/><br /><input type="submit" value="Join"/></form></div></div>
+	<div id="destroyable" on-click="registerClick"><div id="nameform"><form on-submit="joinGame" action="#">Name: <input type="text" id="localPlayerName" value="Ryan"/><br />Game: <input type=text id="gameid" value="whatevs"/><br /><input type="submit" value="Join"/></form></div></div>
 	<input type="button" value="Start Game" id="started" class="hidden" on-click="startGame" />
+	<div id="modal" class="hidden">
+		<div id="overlay" on-click="hideModal">
+		</div>
+		<div id="dialog">
+			<fireworks-card id="dialogcard" faceup></fireworks-card>
+			<div id="inputs">
+				<input id="hintnumber" type="button" value="Hint Number" on-click="giveNumberHint"/>
+				<input id="hintcolor" type="button" value="Hint Color"  on-click="giveColorHint"/>
+			</div>
+		</div>
+	</div>
   </template>
 
   <script>
@@ -35,6 +79,40 @@
 		polling: {
 			type: Boolean,
 			value: false
+		},
+		hintPlayerName: {
+			type: String
+		},
+		hintColor: {
+			type: String
+		},
+		hintNumber: {
+			type: Number
+		},
+		movePlay: {
+			type: Number,
+			readOnly: true,
+			value: 1
+		},
+		moveDiscard: {
+			type: Number,
+			readOnly: true,
+			value: 2
+		},
+		moveHint: {
+			type: Number,
+			readOnly: true,
+			value: 3
+		},
+		infoNumber: {
+			type: Number,
+			readOnly: true,
+			value: 1
+		},
+		infoColor: {
+			type: Number,
+			readOnly: true,
+			value: 2
 		}
 	},
 	
@@ -55,24 +133,36 @@
 	},
 	
 	startGame: function(e) {
+		this.sendData("start",this.makeEmptyMove())
+	},
+	
+	sendData: function(command, data) {
 		var ajax = this.$.ajax;
-		ajax.url="/api/start"
-		ajax.body="data="+this.makeEmptyMove();
+		ajax.url = " /api/" + command;
+		ajax.body = "data=" + data;
 		ajax.generateRequest();
+	},
+	
+	makeMove: function(movetype, cardindex, hintplayer, hintinfotype, hintnumber, hintcolor) {
+		var move = {Game: this.gameid,
+				Player: this.localPlayerName,
+				MoveType: movetype,
+				CardIndex: cardindex,
+				HintPlayer: hintplayer,
+				HintInfoType: hintinfotype,
+				HintNumber: hintnumber,
+				HintColor: hintcolor
+				};
+	
+		return JSON.stringify(move);
 	},
 	
 	makeEmptyMove: function()
 	{
-		var emptyMove = {Game: this.gameid,
-				Player: this.localPlayerName,
-				MoveType: 0,
-				CardIndex: 0,
-				HintPlayer: "0",
-				HintInfoType: 0
-				}
-	
-		return JSON.stringify(emptyMove);
+		return this.makeMove(0, 0, "null", 0, 0, "null");
 	},
+	
+	
 	
 	handleResponse: function(request) {
 		json = request.detail.response;
@@ -109,6 +199,48 @@
 		ajax.body="data="+this.makeEmptyMove();
 		ajax.generateRequest();
 		if(this.polling) this.async(this.poll, 5000);
+	},
+	
+		  
+	registerClick: function(event) {
+		if(event.target.className.indexOf("fireworks-card") > -1) {
+			var target = event.target;
+			while(target.localName != "fireworks-card") {
+				target = target.parentElement;
+			}
+			var number = target.getNumber();
+			var color = target.getColor();
+			this.$.dialogcard.setNumber(number);
+			this.$.dialogcard.setColor(color);
+			this.$.hintnumber.value = "Hint " + number;
+			this.$.hintcolor.value = "Hint " + color;
+			this.$.modal.classList.remove("hidden");
+			
+			while(target.localName != "fireworks-player") {
+				target = target.parentElement;
+			}
+			this.hintPlayerName = target.getName();
+			this.hintNumber = number;
+			this.hintColor = color;
+			
+		}
+	},
+	
+	hideModal: function() {
+		this.$.modal.classList.add("hidden");
+	},
+	
+	giveHint: function(infotype) {
+		var data = this.makeMove(this.moveHint, 0, this.hintPlayerName, infotype, this.hintNumber, this.hintColor);
+		this.sendData("move",data);
+		this.hideModal();
+	},
+	
+	giveNumberHint: function() {
+		this.giveHint(this.infoNumber);
+	},
+	giveColorHint: function() {
+		this.giveHint(this.infoColor);
 	}
       
     });

@@ -35,7 +35,10 @@
   	transform: none;
 	transform-style: preserve-3d;
 	transition: 0.4s;
+	cursor: pointer;
   }
+  
+  
   
   div.back {
 	background-color: #AAA;
@@ -291,6 +294,15 @@
       },
 	  reveal: function () {
 		this.placeholder = false;
+	  },
+	  getColor: function() {
+		return this.color;
+	  },
+	  setColor: function(color) {
+		this.color = color;
+	  },
+	  getNumber: function() {
+		return this.number;
 	  },
 	  setNumber: function(number) {
 		this.number = number;
