@@ -106,11 +106,11 @@
 	color: white;
   }
   
+  /*
   .firework {
 	position: absolute;
 	display: none;
   }
-  /*
   .color-blue .firework {
 	filter: hue-rotate(230deg) brightness(2.5);
 	-webkit-filter: hue-rotate(230deg) brightness(2.5);
@@ -241,14 +241,6 @@
 		<div class="front">
 			<div class="contentarea">
 				<div class="number">{{number}}</div>
-				
-				<div id="fireworkimages">
-					<img class="firework firework1" src="/images/fireworks.png"></img>
-					<img class="firework firework2" src="/images/fireworks.png"></img>
-					<img class="firework firework3" src="/images/fireworks.png"></img>
-					<img class="firework firework4" src="/images/fireworks.png"></img>
-					<img class="firework firework5" src="/images/fireworks.png"></img>
-				</div>
 			</div>
 		</div>
 		<div id="known" hidden="{{hideKnownIndicator(knownColor,knownNumber)}}">{{knownNumberDisplay(knownNumber)}}</div>
@@ -356,10 +348,10 @@
 	  },
 	  
 	  ready: function() {
-		images = this.$.fireworkimages.children;
+		/*images = this.$.fireworkimages.children;
 		for(i=0; i<images.length; i++) {
 			images[i].style.transform = "rotateZ("+Math.random() * 360+"deg)";
-		}
+		}*/
 		if(this.faceup) { this.children[0].classList.add("faceup"); }
 		if(this.placeholder) { this.children[0].classList.add("placeholder"); }
 	   },
