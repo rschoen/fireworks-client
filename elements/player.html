@@ -17,7 +17,7 @@
 
 
 
-.name {
+#name {
 	position: relative;
 	left: 10px;
 	top: -13px;
@@ -26,6 +26,10 @@
 	padding: 1px 5px 0;
 	border-radius: 3px;
 	font-size: 0.8em;
+}
+
+#name.current {
+	background: yellow;
 }
 
 .selected {
@@ -51,8 +55,8 @@
   </style>
   
   <template>
-	<div id="player" onClick="//this.classList.toggle('on-top'); this.classList.toggle('selected'); document.getElementById('overlay').classList.toggle('visible'); ">
-	<span class="name">{{name}}</span>
+	<div id="player"">
+	<span id="name">{{name}}</span>
 	<div id="cards"></div>
 	</div>
   </template>
@@ -93,6 +97,10 @@
 	  
 	  getName: function() {
 		return this.name;
+	  },
+	  
+	  setCurrentPlayer: function() {
+		this.$.name.classList.add("current");
 	  }
       
     });

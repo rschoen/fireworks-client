@@ -44,6 +44,13 @@
 	--spinner-stroke-width: 5px;
 }
 
+#startbutton {
+	position: absolute;
+	width: 300px;
+	height: 100px;
+	text-align: center;
+}
+
 </style>
   
   <template>
@@ -55,8 +62,18 @@
     on-response="handleResponse"
     debounce-duration="300"></iron-ajax>
 	
-	<div id="destroyable" on-click="registerClick"><div id="nameform"><form on-submit="joinGame" action="#">Name: <input type="text" id="localPlayerName" value="Ryan"/><br />Game: <input type=text id="gameid" value="whatevs"/><br /><input type="submit" value="Join"/></form></div></div>
-	<input type="button" value="Start Game" id="started" class="hidden" on-click="startGame" />
+	<div id="destroyable" on-click="registerClick">
+		<div id="nameform">
+			<form on-submit="joinGame" action="#">
+				Name: <input type="text" id="localPlayerName" value="Ryan"/><br />
+				Game: <input type=text id="gameid" value="whatevs"/><br />
+				<input type="submit" value="Join"/>
+			</form>
+		</div>
+	</div>
+	<div id="startbutton">
+		<input type="button" value="Start Game" id="started" class="hidden" on-click="startGame" />
+	</div>
 	<div id="modal" class="hidden">
 		<div id="overlay" on-click="hideModal">
 		</div>
@@ -126,6 +143,9 @@
 			type: Number,
 			readOnly: true,
 			value: 2
+		},
+		currentPlayer: {
+			type: String
 		}
 	},
 	
@@ -147,6 +167,7 @@
 	
 	startGame: function(e) {
 		this.sendData("start",this.makeEmptyMove())
+		this.$.startbutton.classList.add("hidden");
 	},
 	
 	sendData: function(command, data) {
@@ -181,6 +202,10 @@
 		var newGame = new FireworksGame(this.localPlayerName, json.Hints, json.Bombs, json.Piles, json.Discard, json.CardsLeft, json.Started);
 		for(player in json.Players) {
 			var thisPlayer = newGame.addPlayer(json.Players[player].ID,[]);
+			if(json.Players[player].ID == json.CurrentPlayer)
+			{
+				thisPlayer.setCurrentPlayer();
+			}
 			var index = 0;
 			for(card in json.Players[player].Cards) {
 				thisPlayer.addCard(json.Players[player].Cards[card].Color, json.Players[player].Cards[card].Number, index);
@@ -204,6 +229,7 @@
 			this.polling = true;
 			this.poll();
 		}
+		this.currentPlayer = json.CurrentPlayer;
 		this.hideSpinner();
 	},
 			
@@ -217,6 +243,10 @@
 	
 		  
 	registerClick: function(event) {
+		if(this.currentPlayer != this.localPlayerName) {
+			return;
+		}
+	
 		if(event.target.className.indexOf("fireworks-card") > -1) {
 			var target = event.target;
 			while(target.localName != "fireworks-card") {
