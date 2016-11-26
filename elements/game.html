@@ -169,6 +169,10 @@ fireworks-player {
 		discard: {
 			type: Array
 		},
+		otherPlayers: {
+			type: Number,
+			value: 0
+		}
       	
       },
 	  
@@ -192,7 +196,8 @@ fireworks-player {
 			playerNumber = 0;
 		}
 		else {
-			playerNumber = this.players.length;
+			this.otherPlayers++;
+			playerNumber = this.otherPlayers;
 		}
 		
 		var player = new FireworksPlayer(name, playerNumber);
