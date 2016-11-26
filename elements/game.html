@@ -79,7 +79,7 @@ fireworks-player {
 .deck { 
 	left: 280px;
 }
-.discards {
+#discards {
 	position: absolute;
 	left: 0px;
 	top: 75px;
@@ -113,22 +113,7 @@ fireworks-player {
 		<fireworks-card class="deck small-card">{{cardsLeft}}</fireworks-card>
 		<fireworks-counter count="{{hints}}" lowCount="3" class="hints">?</fireworks-counter>
 		<fireworks-counter count="{{bombs}}" lowCount="1" class="bombs">x</fireworks-counter>
-		<div class="discards">
-		<fireworks-card color="red" number="2" faceup class="small-card row1 card1"></fireworks-card>
-		<fireworks-card color="red" number="1" faceup class="small-card row2 card1"></fireworks-card>
-		<fireworks-card color="blue" number="2" faceup class="small-card row1 card2"></fireworks-card>
-		<fireworks-card color="green" number="2" faceup class="small-card row1 card3"></fireworks-card>
-		<fireworks-card color="green" number="3" faceup class="small-card row2 card3"></fireworks-card>
-		<fireworks-card color="green" number="1" faceup class="small-card row3 card3"></fireworks-card>
-                <fireworks-card color="green" number="1" faceup class="small-card row4 card3"></fireworks-card>
-                <fireworks-card color="green" number="1" faceup class="small-card row5 card3"></fireworks-card>
-                <fireworks-card color="green" number="1" faceup class="small-card row6 card3"></fireworks-card>
-                <fireworks-card color="green" number="1" faceup class="small-card row7 card3"></fireworks-card>
-                <fireworks-card color="green" number="1" faceup class="small-card row8 card3"></fireworks-card>
-                <fireworks-card color="green" number="1" faceup class="small-card row9 card3"></fireworks-card>
-                <fireworks-card color="green" number="1" faceup class="small-card row10 card3"></fireworks-card>
-		<fireworks-card color="yellow" number="5" faceup class="small-card row1 card4"></fireworks-card>
-		<fireworks-card color="white" number="2" faceup class="small-card row1 card5"></fireworks-card>
+		<div id="discards">
 		</div>
 		
 	</div>
@@ -172,6 +157,12 @@ fireworks-player {
 		otherPlayers: {
 			type: Number,
 			value: 0
+		},
+		
+		colors: {
+			type: Array,
+			readOnly: true,
+			value: ["red", "green", "blue", "yellow", "white"]
 		}
       	
       },
@@ -211,11 +202,9 @@ fireworks-player {
       
       _hintsChanged: function(newHints, oldHints) {
       	// TODO: maybe do an animation here if it decreased?
-      	// TODO: show in red if it's below a certain value
       },
       _bombsChanged: function(newBombs, oldBombs) {
       	// TODO: maybe do an animation here if it decreased?
-      	// TODO: show in red if it's below a certain value
       },
       _cardsLeftChanged: function(newCards, oldCards) {
       	// TODO: maybe do an animation here if it decreased?
@@ -229,7 +218,25 @@ fireworks-player {
 				this.$.playarea.children[pile].setNumber(pileCount);
 				this.$.playarea.children[pile].reveal();
 			}
-		}	
+		}
+		
+		for(col=0; col<this.colors.length; col++) {
+			var row=1;
+			for(var i in this.discard) {
+				var card = this.discard[i]
+				if(card.Color == this.colors[col])
+				{
+					var newCard = new FireworksCard(card.Color, card.Number, 0);
+					newCard.classList.add("small-card");
+					newCard.classList.add("card"+(col+1));
+					newCard.classList.add("row"+row);
+					newCard.setFaceup(true);
+					Polymer.dom(this.root).appendChild(newCard)
+					Polymer.dom(this.root).querySelector("#discards").appendChild(newCard)
+					row++;
+				}
+			}
+		}
 	  }
       
     });
