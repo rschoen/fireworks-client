@@ -3,8 +3,6 @@
 <style>
 .hidden { display: none; }
 
-#modal.hidden { display: none; }
-
 #overlay {
 	position: fixed;
 	top: 0;
@@ -35,6 +33,17 @@
 	margin-bottom: 10px;
 }
 
+#spinner {
+	position: fixed;
+	width: 100px;
+	height: 100px;
+	top: 50%;
+	left: 50%;
+	margin-top: -50px;
+	margin-left: -50px;
+	--spinner-stroke-width: 5px;
+}
+
 </style>
   
   <template>
@@ -53,11 +62,18 @@
 		</div>
 		<div id="dialog">
 			<fireworks-card id="dialogcard" faceup></fireworks-card>
-			<div id="inputs">
-				<input id="hintnumber" type="button" value="Hint Number" on-click="giveNumberHint"/>
-				<input id="hintcolor" type="button" value="Hint Color"  on-click="giveColorHint"/>
+			<div id="hintinputs">
+				<input id="hintnumber" type="button" value="Hint Number" on-click="giveNumberHint" />
+				<input id="hintcolor" type="button" value="Hint Color"  on-click="giveColorHint" />
+			</div>
+			<div id="playinputs" class="hidden">
+				<input id="play" type="button" value="Play" on-click="play" />
+				<input id="discard" type="button" value="Discard" on-click="discard" />
 			</div>
 		</div>
+	</div>
+	<div id="spinner" class="hidden">
+		<paper-spinner active></paper-spinner>
 	</div>
   </template>
 
@@ -83,11 +99,8 @@
 		hintPlayerName: {
 			type: String
 		},
-		hintColor: {
-			type: String
-		},
-		hintNumber: {
-			type: Number
+		hintCardIndex: {
+			type: Number,
 		},
 		movePlay: {
 			type: Number,
@@ -143,15 +156,13 @@
 		ajax.generateRequest();
 	},
 	
-	makeMove: function(movetype, cardindex, hintplayer, hintinfotype, hintnumber, hintcolor) {
+	makeMove: function(movetype, cardindex, hintplayer, hintinfotype) {
 		var move = {Game: this.gameid,
 				Player: this.localPlayerName,
 				MoveType: movetype,
 				CardIndex: cardindex,
 				HintPlayer: hintplayer,
-				HintInfoType: hintinfotype,
-				HintNumber: hintnumber,
-				HintColor: hintcolor
+				HintInfoType: hintinfotype
 				};
 	
 		return JSON.stringify(move);
@@ -159,7 +170,7 @@
 	
 	makeEmptyMove: function()
 	{
-		return this.makeMove(0, 0, "null", 0, 0, "null");
+		return this.makeMove(0, 0, "null", 0);
 	},
 	
 	
@@ -170,8 +181,10 @@
 		var newGame = new FireworksGame(this.localPlayerName, json.Hints, json.Bombs, json.Piles, json.Discard, json.CardsLeft, json.Started);
 		for(player in json.Players) {
 			var thisPlayer = newGame.addPlayer(json.Players[player].ID,[]);
+			var index = 0;
 			for(card in json.Players[player].Cards) {
-				thisPlayer.addCard(json.Players[player].Cards[card].Color, json.Players[player].Cards[card].Number);
+				thisPlayer.addCard(json.Players[player].Cards[card].Color, json.Players[player].Cards[card].Number, index);
+				index++;
 			}
 		}
 		this.$.destroyable.innerHTML = "";
@@ -191,6 +204,7 @@
 			this.polling = true;
 			this.poll();
 		}
+		this.hideSpinner();
 	},
 			
 	
@@ -214,14 +228,29 @@
 			this.$.dialogcard.setColor(color);
 			this.$.hintnumber.value = "Hint " + number;
 			this.$.hintcolor.value = "Hint " + color;
-			this.$.modal.classList.remove("hidden");
+			this.hintCardIndex = target.getIndex();
 			
 			while(target.localName != "fireworks-player") {
+				if(target.parentElement == null) {
+					return;
+				}
 				target = target.parentElement;
 			}
 			this.hintPlayerName = target.getName();
-			this.hintNumber = number;
-			this.hintColor = color;
+			
+			if(this.hintPlayerName == this.localPlayerName) {
+				this.$.dialogcard.setFaceup(false);
+				this.$.hintinputs.classList.add("hidden");
+				this.$.playinputs.classList.remove("hidden");
+				
+			}
+			else {
+				this.$.dialogcard.setFaceup(true);
+				this.$.hintinputs.classList.remove("hidden");
+				this.$.playinputs.classList.add("hidden");
+			}
+			
+			this.$.modal.classList.remove("hidden");
 			
 		}
 	},
@@ -229,11 +258,18 @@
 	hideModal: function() {
 		this.$.modal.classList.add("hidden");
 	},
+	showSpinner: function() {
+		this.$.spinner.classList.remove("hidden");
+	},
+	hideSpinner: function() {
+		this.$.spinner.classList.add("hidden");
+	},
 	
 	giveHint: function(infotype) {
-		var data = this.makeMove(this.moveHint, 0, this.hintPlayerName, infotype, this.hintNumber, this.hintColor);
+		var data = this.makeMove(this.moveHint, this.hintCardIndex, this.hintPlayerName, infotype);
 		this.sendData("move",data);
 		this.hideModal();
+		this.showSpinner();
 	},
 	
 	giveNumberHint: function() {
@@ -241,8 +277,21 @@
 	},
 	giveColorHint: function() {
 		this.giveHint(this.infoColor);
+	},
+	
+	play: function () {
+		this.playOrDiscard(this.movePlay);
+	},
+	discard: function() {
+		this.playOrDiscard(this.moveDiscard);
+	},
+	playOrDiscard: function(movetype) {
+		var data = this.makeMove(movetype, this.hintCardIndex, this.hintPlayerName, 0);
+		this.sendData("move",data);
+		this.hideModal();
+		this.showSpinner();
 	}
-      
+	
     });
   </script>
 

@@ -79,8 +79,8 @@
 		this.number = number;
 	  },
 	  
-	  addCard: function(color, number) {
-		var card = new FireworksCard(color, number);
+	  addCard: function(color, number, index) {
+		var card = new FireworksCard(color, number, index);
 		if(this.number > 0 ) // not the local player
 		{
 			card.flip();

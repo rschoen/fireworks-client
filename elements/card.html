@@ -13,6 +13,7 @@
 	width: 47px;
 	height: 60px;
 	border-radius: 2px;
+	cursor: pointer;
   }
   
   .back, .front {
@@ -35,7 +36,6 @@
   	transform: none;
 	transform-style: preserve-3d;
 	transition: 0.4s;
-	cursor: pointer;
   }
   
   
@@ -255,7 +255,10 @@
       is: "fireworks-card",
 
       properties: {
-        color: {
+        index: {
+			type: Number
+		},
+		color: {
 			type: String,
 			observer: "_colorChanged"
 		},
@@ -284,14 +287,22 @@
 		}
       },
 	  
-	  factoryImpl: function(color, number) {
+	  factoryImpl: function(color, number, index) {
 		this.color = color;
 		this.number = number;
+		this.index = index;
+	  },
+	  
+	  getIndex: function() {
+		return this.index;
 	  },
 
       flip: function() {
       	this.faceup = !this.faceup;
       },
+	  setFaceup(faceup) {
+		this.faceup = faceup;
+	  },
 	  reveal: function () {
 		this.placeholder = false;
 	  },
