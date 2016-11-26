@@ -45,10 +45,9 @@
 }
 
 #startbutton {
-	position: absolute;
-	width: 300px;
-	height: 100px;
-	text-align: center;
+	position: relative;
+	top: 230px;
+	left: 40px;
 }
 
 </style>
@@ -65,14 +64,14 @@
 	<div id="destroyable" on-click="registerClick">
 		<div id="nameform">
 			<form on-submit="joinGame" action="#">
-				Name: <input type="text" id="localPlayerName" value="Ryan"/><br />
-				Game: <input type=text id="gameid" value="whatevs"/><br />
+				Name: <input type="text" id="localPlayerName" value="{{suggestName}}"/><br />
+				Game: <input type=text id="gameid" value="{{suggestGame}}"/><br />
 				<input type="submit" value="Join"/>
 			</form>
 		</div>
 	</div>
-	<div id="startbutton">
-		<input type="button" value="Start Game" id="started" class="hidden" on-click="startGame" />
+	<div id="startbutton" class="hidden">
+		<input type="button" value="Start Game" id="started" on-click="startGame" />
 	</div>
 	<div id="modal" class="hidden">
 		<div id="overlay" on-click="hideModal">
@@ -146,6 +145,12 @@
 		},
 		currentPlayer: {
 			type: String
+		},
+		suggestName: {
+			type: String
+		},
+		suggestGame: {
+			type: String
 		}
 	},
 	
@@ -163,6 +168,7 @@
 			ajax.generateRequest();
 		
 		}
+		this.$.startbutton.classList.remove("hidden");
 	},
 	
 	startGame: function(e) {
