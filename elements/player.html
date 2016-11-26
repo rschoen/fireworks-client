@@ -89,6 +89,10 @@
 		card.classList.add("card" + this.numCards);
 		Polymer.dom(this.root).appendChild(card)
 		Polymer.dom(this.root).querySelector("#cards").appendChild(card)
+	  },
+	  
+	  getName: function() {
+		return this.name;
 	  }
       
     });
