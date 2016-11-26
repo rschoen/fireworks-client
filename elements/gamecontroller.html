@@ -151,6 +151,10 @@
 		},
 		suggestGame: {
 			type: String
+		},
+		server: {
+			type: String,
+			value: ""
 		}
 	},
 	
@@ -161,12 +165,7 @@
 		if(name != "" && gameid != "") {
 			this.localPlayerName = name;
 			this.gameid = gameid;
-				
-			var ajax = this.$.ajax;
-			ajax.url="/api/join"
-			ajax.body="data="+this.makeEmptyMove();
-			ajax.generateRequest();
-		
+			this.sendData("join",this.makeEmptyMove());
 		}
 		this.$.startbutton.classList.remove("hidden");
 	},
@@ -178,7 +177,7 @@
 	
 	sendData: function(command, data) {
 		var ajax = this.$.ajax;
-		ajax.url = " /api/" + command;
+		ajax.url = this.server+"/api/" + command;
 		ajax.body = "data=" + data;
 		ajax.generateRequest();
 	},
@@ -241,9 +240,7 @@
 			
 	
 	poll: function() {
-		ajax.url="/api/status"
-		ajax.body="data="+this.makeEmptyMove();
-		ajax.generateRequest();
+		this.sendData("status",this.makeEmptyMove());
 		if(this.polling) this.async(this.poll, 5000);
 	},
 	
@@ -278,7 +275,6 @@
 			
 			if(this.hintPlayerName == this.localPlayerName) {
 				this.$.dialogcard.setFaceup(false);
-				this.$.dialogcard
 				this.$.hintinputs.classList.add("hidden");
 				this.$.playinputs.classList.remove("hidden");
 				
