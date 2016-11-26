@@ -214,7 +214,7 @@
 			}
 			var index = 0;
 			for(card in json.Players[player].Cards) {
-				thisPlayer.addCard(json.Players[player].Cards[card].Color, json.Players[player].Cards[card].Number, index);
+				thisPlayer.addCard(json.Players[player].Cards[card].Color, json.Players[player].Cards[card].Number, json.Players[player].Cards[card].KnownColor, json.Players[player].Cards[card].KnownNumber, index);
 				index++;
 			}
 		}
