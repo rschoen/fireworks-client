@@ -49,7 +49,7 @@
 	left: 20px;
     width: 300px;
     text-align: center;
-    z-index: 6;
+    z-index: 3;
 }
 
 #end div {
@@ -317,7 +317,10 @@ input {
 		this.$.destroyable.children[0].remove();
 		Polymer.dom(this.root).querySelector("#destroyable").appendChild(newGame);
     
-        if(json.Players.length > 1)
+        if(json.State != this.stateNotStarted) {
+            this.$.start.classList.add("hidden");
+        }
+        else if(json.Players.length > 1)
         {
             this.$.startbutton.value = "Start game";
             this.$.startbutton.disabled = false;
