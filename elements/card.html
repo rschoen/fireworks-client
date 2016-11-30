@@ -39,10 +39,8 @@
   }
 */
   
-  
   div.back {
 	background-color: #AAA;
-	background-image: url("../images/hanabi.jpg");
 	background-size: 47px 78px;
 /*	transform: rotateY(180deg); */
 	border: 2px solid white;
@@ -51,6 +49,12 @@
 	font-size: 25pt;
 	text-align: center;
 	z-index: 5;
+    padding-top: 5px;
+  }
+  
+  
+  div.showbackground {
+	background-image: url("../images/hanabi.jpg");
   }
   
  .faceup div.back {
@@ -237,7 +241,7 @@
   
   <template>
 	<div class="card" onClick="//this.parentNode.flip();">
-		<div class="back"><content></content></div>
+		<div class="back showbackground" id="back"><content></content></div>
 		<div class="front">
 			<div class="contentarea">
 				<div class="number">{{number}}</div>
@@ -286,7 +290,12 @@
 			type: Boolean,
 			value: false,
 			observer: "_placeholderChanged"
-		}
+		},
+        showBackground: {
+            type: Boolean,
+            value: true,
+            observer: "_showBackgroundChanged"
+        }
       },
 	  
 	  factoryImpl: function(id, color, number, index) {
@@ -295,6 +304,15 @@
 		this.number = number;
 		this.index = index;
 	  },
+      
+      _showBackgroundChanged: function(newvalue, oldvalue) {
+        if(newvalue == true) {
+            this.$.back.classList.add("showbackground");
+        }
+        else {
+            this.$.back.classList.remove("showbackground");
+        }
+      },
 	  
 	  getIndex: function() {
 		return this.index;
