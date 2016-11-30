@@ -44,7 +44,7 @@
 	--spinner-stroke-width: 5px;
 }
 
-#startbutton {
+#start {
 	position: relative;
 	top: 500px;
 	left: 20px;
@@ -84,8 +84,8 @@ input {
     handle-as="json"
     on-response="handleResponse"
     debounce-duration="300"></iron-ajax>
-    <div id="startbutton" class="hidden">
-		<input type="button" value="Start Game" id="started" on-click="startGame" />
+    <div id="start" class="hidden">
+		<input type="button" value="Waiting for players..." id="startbutton" on-click="startGame" disabled />
 	</div>
 	<div id="destroyable" on-click="registerClick">
 		<div id="nameform">
@@ -232,12 +232,12 @@ input {
 			this.gameid = gameid;
 			this.sendData("join",this.makeEmptyMove());
 		}
-		this.$.startbutton.classList.remove("hidden");
+		this.$.start.classList.remove("hidden");
 	},
 	
 	startGame: function(e) {
 		this.sendData("start",this.makeEmptyMove())
-		this.$.startbutton.classList.add("hidden");
+		this.$.start.classList.add("hidden");
 	},
 	
 	sendData: function(command, data) {
@@ -312,14 +312,12 @@ input {
 		}
 		this.$.destroyable.children[0].remove();
 		Polymer.dom(this.root).querySelector("#destroyable").appendChild(newGame);
-	 
-		
-		if(json.Started) {
-			this.$.started.classList.add("hidden");
-		}
-		else {
-			this.$.started.classList.remove("hidden");
-		}
+    
+        if(json.Players.length > 1)
+        {
+            this.$.startbutton.value = "Start game";
+            this.$.startbutton.disabled = false;
+        }
 
 		if(!this.polling)
 		{
