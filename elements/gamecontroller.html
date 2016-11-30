@@ -16,11 +16,10 @@
 #dialog {
 	position: fixed;
 	width: 200px;
-	height: 100px;
 	top: 50%;
 	left: 50%;
-	margin-top: -50px;
-	margin-left: -100px;
+	margin-top: -100px;
+	margin-left: -120px;
 	border: 1px solid #333;
 	background: white;
 	border-radius: 3px;
@@ -46,7 +45,7 @@
 
 #start {
 	position: relative;
-	top: 500px;
+	top: 437px;
 	left: 20px;
     width: 300px;
     text-align: center;
@@ -121,6 +120,11 @@ input {
             <div id="end" class="hidden">
                 <span id="endtext">End text goes here.</span>
                 <div>Final score: <span id="score">0</span></div>
+            </div>
+            <div id="discarddialog" class="hidden">
+                <div id="discardcontainer">
+                </div>
+                <input id="dialogok" type="button" value="Close" on-click="hideModal" />
             </div>
 		</div>
 	</div>
@@ -336,15 +340,23 @@ input {
 	
 		  
 	registerClick: function(event) {
-		if(this.currentPlayer != this.localPlayerName || this.done) {
-			return;
-		}
 	
 		if(event.target.className.indexOf("fireworks-card") > -1) {
 			var target = event.target;
+            
 			while(target.localName != "fireworks-card") {
 				target = target.parentElement;
+                
+                if(target.className.indexOf("discard") > -1) {
+                    this.showDiscardDialog(target);
+                    return;
+                }
 			}
+            
+            
+            if(this.currentPlayer != this.localPlayerName || this.done) {
+                return;
+            }
             
             var targetCard = target;
 			var number = target.getNumber();
@@ -434,6 +446,30 @@ input {
     sanitize: function(string)
     {
         return string.replace(/</gi,'&lt;').replace(/>/gi,'&gt;').replace(/"/gi,'&quot;');
+    },
+    
+    showDiscardDialog: function(card) {
+        var discardHolder = card.parentElement;
+        var discards = [];
+        var color = card.getColor();
+        for(var i=0; i<discardHolder.children.length; i++) {
+            var candidateCard = discardHolder.children[i];
+            if(candidateCard.getColor() == color) {
+                discards.push(candidateCard.getNumber());
+            }
+        }
+        discards.sort();
+        
+        this.$.discardcontainer.innerHTML = "";
+        for(var i in discards)
+        {
+            var newCard = new FireworksCard(-1, card.getColor(), discards[i], -1);
+            newCard.setFaceup(true);
+            Polymer.dom(this.root).appendChild(newCard);
+            Polymer.dom(this.root).querySelector("#discardcontainer").appendChild(newCard);
+        }
+        this.showModal();
+        this.$.discarddialog.classList.remove("hidden");
     }
 	
     });

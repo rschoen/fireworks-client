@@ -15,7 +15,7 @@ fireworks-player {
 	transform: scale(2.0);
 	transform-origin: 0 0;
 	left: 10px;
-	top: 440px;
+	top: 377px;
 }
 
   .player1 {
@@ -86,15 +86,15 @@ fireworks-player {
 }
 
 .playarea fireworks-card.row1 { top: 0px; }
-.playarea fireworks-card.row2 { top: 10px; }
-.playarea fireworks-card.row3 { top: 20px; }
-.playarea fireworks-card.row4 { top: 30px; }
-.playarea fireworks-card.row5 { top: 40px; }
-.playarea fireworks-card.row6 { top: 50px; }
-.playarea fireworks-card.row7 { top: 60px; }
-.playarea fireworks-card.row8 { top: 70px; }
-.playarea fireworks-card.row9 { top: 80px; }
-.playarea fireworks-card.row10 { top: 90px; }
+.playarea fireworks-card.row2 { top: 3px; }
+.playarea fireworks-card.row3 { top: 6px; }
+.playarea fireworks-card.row4 { top: 9px; }
+.playarea fireworks-card.row5 { top: 12px; }
+.playarea fireworks-card.row6 { top: 15px; }
+.playarea fireworks-card.row7 { top: 18px; }
+.playarea fireworks-card.row8 { top: 21px; }
+.playarea fireworks-card.row9 { top: 24px; }
+.playarea fireworks-card.row10 { top: 27px; }
 	
 
   </style>
@@ -222,6 +222,7 @@ fireworks-player {
 				if(card.Color == this.colors[col])
 				{
 					var newCard = new FireworksCard(card.ID, card.Color, card.Number, 0);
+					newCard.classList.add("discard");
 					newCard.classList.add("small-card");
 					newCard.classList.add("card"+(col+1));
 					newCard.classList.add("row"+row);
