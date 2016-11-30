@@ -46,8 +46,32 @@
 
 #startbutton {
 	position: relative;
-	top: 230px;
-	left: 40px;
+	top: 500px;
+	left: 20px;
+    width: 300px;
+    text-align: center;
+    z-index: 6;
+}
+
+#end div {
+    margin-top: 20pt;
+    font-size: 18pt;
+    font-weight: bold;
+}
+
+#error span {
+    color: red;
+}
+#error input {
+    margin-top: 30px;
+}
+
+input {
+    font-size: 16pt;
+}
+
+#nameform {
+    padding: 10px;
 }
 
 </style>
@@ -60,7 +84,9 @@
     handle-as="json"
     on-response="handleResponse"
     debounce-duration="300"></iron-ajax>
-	
+    <div id="startbutton" class="hidden">
+		<input type="button" value="Start Game" id="started" on-click="startGame" />
+	</div>
 	<div id="destroyable" on-click="registerClick">
 		<div id="nameform">
 			<form on-submit="joinGame" action="#">
@@ -70,22 +96,32 @@
 			</form>
 		</div>
 	</div>
-	<div id="startbutton" class="hidden">
-		<input type="button" value="Start Game" id="started" on-click="startGame" />
-	</div>
 	<div id="modal" class="hidden">
 		<div id="overlay" on-click="hideModal">
 		</div>
 		<div id="dialog">
-			<fireworks-card id="dialogcard" faceup></fireworks-card>
-			<div id="hintinputs">
-				<input id="hintnumber" type="button" value="Hint Number" on-click="giveNumberHint" />
-				<input id="hintcolor" type="button" value="Hint Color"  on-click="giveColorHint" />
+			<div id="hintinputs" class="hidden">
+                <fireworks-card id="hintscard" faceup></fireworks-card>
+                <div>
+                    <input id="hintnumber" type="button" value="Hint Number" on-click="giveNumberHint" />
+                    <input id="hintcolor" type="button" value="Hint Color"  on-click="giveColorHint" />
+                </div>
 			</div>
 			<div id="playinputs" class="hidden">
-				<input id="play" type="button" value="Play" on-click="play" />
-				<input id="discard" type="button" value="Discard" on-click="discard" />
+                <fireworks-card id="playcard"></fireworks-card>
+                <div>
+                    <input id="play" type="button" value="Play" on-click="play" />
+                    <input id="discard" type="button" value="Discard" on-click="discard" />
+                </div>
 			</div>
+            <div id="error" class="hidden">
+                <span id="errortext">Error text goes here.</span>
+                <input id="errorok" type="button" value="Close" on-click="hideModal" />
+            </div>
+            <div id="end" class="hidden">
+                <span id="endtext">End text goes here.</span>
+                <div>Final score: <span id="score">0</span></div>
+            </div>
 		</div>
 	</div>
 	<div id="spinner" class="hidden">
@@ -143,6 +179,31 @@
 			readOnly: true,
 			value: 2
 		},
+		stateNotStarted: {
+			type: Number,
+			readOnly: true,
+			value: 1
+		},
+		stateStarted: {
+			type: Number,
+			readOnly: true,
+			value: 2
+		},
+		stateBombedOut: {
+			type: Number,
+			readOnly: true,
+			value: 3
+		},
+		statePerfect: {
+			type: Number,
+			readOnly: true,
+			value: 4
+		},
+		stateDeckEmpty: {
+			type: Number,
+			readOnly: true,
+			value: 5
+		},
 		currentPlayer: {
 			type: String
 		},
@@ -155,7 +216,11 @@
 		server: {
 			type: String,
 			value: ""
-		}
+		},
+        done: {
+            type: Boolean,
+            value: false
+        }
 	},
 	
 	joinGame: function(e) {
@@ -203,8 +268,36 @@
 	
 	handleResponse: function(request) {
 		var json = request.detail.response;
+        if(json.error != undefined)
+        {
+            this.$.errortext.innerHTML = this.sanitize(json.error);
+            this.$.error.classList.remove("hidden");
+            this.showModal();
+            return;
+        }
+        if(json.State != this.stateNotStarted && json.State != this.stateStarted)
+        {
+            this.done = true;
+            var text;
+            if(json.State == this.stateBombedOut) { 
+                text = "You exploded all of your bombs!";
+            } else if(json.State == this.statePerfect) {
+                text = "You got a perfect score!";
+            } else if(json.State == this.stateDeckEmpty) {
+                text = "You ran out of moves!";
+            }
+            var score = 0;
+            for(pile in json.Piles)
+            {
+                score += json.Piles[pile];
+            }
+            this.$.endtext.innerHTML = text;
+            this.$.score.innerHTML = score;
+            this.$.end.classList.remove("hidden");
+            this.showModal();
+        }
 		
-		var newGame = new FireworksGame(this.localPlayerName, json.Hints, json.Bombs, json.Piles, json.Discard, json.CardsLeft, json.Started);
+		var newGame = new FireworksGame(this.localPlayerName, json.Hints, json.Bombs, json.Piles, json.Discard, json.CardsLeft);
 		for(player in json.Players) {
 			var thisPlayer = newGame.addPlayer(json.Players[player].ID,[]);
 			if(json.Players[player].ID == json.CurrentPlayer)
@@ -213,7 +306,7 @@
 			}
 			var index = 0;
 			for(card in json.Players[player].Cards) {
-				thisPlayer.addCard(json.Players[player].Cards[card].Color, json.Players[player].Cards[card].Number, json.Players[player].Cards[card].KnownColor, json.Players[player].Cards[card].KnownNumber, index);
+				thisPlayer.addCard(json.Players[player].Cards[card].ID, json.Players[player].Cards[card].Color, json.Players[player].Cards[card].Number, json.Players[player].Cards[card].KnownColor, json.Players[player].Cards[card].KnownNumber, index);
 				index++;
 			}
 		}
@@ -240,12 +333,12 @@
 	
 	poll: function() {
 		this.sendData("status",this.makeEmptyMove());
-		if(this.polling) this.async(this.poll, 5000);
+		if(this.polling && !this.done) this.async(this.poll, 5000);
 	},
 	
 		  
 	registerClick: function(event) {
-		if(this.currentPlayer != this.localPlayerName) {
+		if(this.currentPlayer != this.localPlayerName || this.done) {
 			return;
 		}
 	
@@ -254,15 +347,10 @@
 			while(target.localName != "fireworks-card") {
 				target = target.parentElement;
 			}
+            
+            var targetCard = target;
 			var number = target.getNumber();
 			var color = target.getColor();
-			this.$.dialogcard.setNumber(number);
-			this.$.dialogcard.setColor(color);
-			this.$.dialogcard.setKnownNumber(target.getKnownNumber());
-			this.$.dialogcard.setKnownColor(target.getKnownColor());
-			this.$.hintnumber.value = "Hint " + number;
-			this.$.hintcolor.value = "Hint " + color;
-			this.hintCardIndex = target.getIndex();
 			
 			while(target.localName != "fireworks-player") {
 				if(target.parentElement == null) {
@@ -271,27 +359,47 @@
 				target = target.parentElement;
 			}
 			this.hintPlayerName = target.getName();
+                        
+            var dialogcard;
+            if(this.hintPlayerName == this.localPlayerName) {
+                dialogcard = this.$.playcard;
+            } else {
+                dialogcard = this.$.hintscard;
+            }
+            
+			dialogcard.setNumber(number);
+			dialogcard.setColor(color);
+			dialogcard.setKnownNumber(targetCard.getKnownNumber());
+			dialogcard.setKnownColor(targetCard.getKnownColor());
+			this.hintCardIndex = targetCard.getIndex();
 			
 			if(this.hintPlayerName == this.localPlayerName) {
-				this.$.dialogcard.setFaceup(false);
-				this.$.hintinputs.classList.add("hidden");
 				this.$.playinputs.classList.remove("hidden");
 				
 			}
 			else {
-				this.$.dialogcard.setFaceup(true);
+                this.$.hintnumber.value = "Hint " + number;
+                this.$.hintcolor.value = "Hint " + color;
 				this.$.hintinputs.classList.remove("hidden");
-				this.$.playinputs.classList.add("hidden");
 			}
-			
-			this.$.modal.classList.remove("hidden");
-			
+			this.showModal();
+	
 		}
 	},
 	
 	hideModal: function() {
+        if(this.done) {
+            return;
+        }
 		this.$.modal.classList.add("hidden");
+        for(i=0; i<this.$.dialog.children.length; i++)
+        {
+            this.$.dialog.children[i].classList.add("hidden");
+        }
 	},
+    showModal: function() {
+        this.$.modal.classList.remove("hidden");
+    },
 	showSpinner: function() {
 		this.$.spinner.classList.remove("hidden");
 	},
@@ -324,7 +432,11 @@
 		this.sendData("move",data);
 		this.hideModal();
 		this.showSpinner();
-	}
+	},
+    sanitize: function(string)
+    {
+        return string.replace(/</gi,'&lt;').replace(/>/gi,'&gt;').replace(/"/gi,'&quot;');
+    }
 	
     });
   </script>
