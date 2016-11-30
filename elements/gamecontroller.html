@@ -61,7 +61,7 @@
 #error span {
     color: red;
 }
-#error input {
+#error div {
     margin-top: 30px;
 }
 
@@ -90,7 +90,7 @@ input {
 		<div id="nameform">
 			<form on-submit="joinGame" action="#">
 				Name: <input type="text" id="localPlayerName" value="{{suggestName}}"/><br />
-				Game: <input type=text id="gameid" value="{{suggestGame}}"/><br />
+				Game: <input type="text" id="gameid" value="{{suggestGame}}"/><br />
 				<input type="submit" value="Join"/>
 			</form>
 		</div>
@@ -115,7 +115,9 @@ input {
 			</div>
             <div id="error" class="hidden">
                 <span id="errortext">Error text goes here.</span>
-                <input id="errorok" type="button" value="Close" on-click="hideModal" />
+                <div>
+                    <input id="errorok" type="button" value="Close" on-click="hideModal" />
+                </div>
             </div>
             <div id="end" class="hidden">
                 <span id="endtext">End text goes here.</span>
@@ -212,10 +214,12 @@ input {
 			type: String
 		},
 		suggestName: {
-			type: String
+			type: String,
+            observer: "_checkAutoSubmit"
 		},
 		suggestGame: {
-			type: String
+			type: String,
+            observer: "_checkAutoSubmit"
 		},
 		server: {
 			type: String,
@@ -228,7 +232,7 @@ input {
 	},
 	
 	joinGame: function(e) {
-		e.preventDefault();
+		if (e) e.preventDefault();
 		var name = this.$.localPlayerName.value;
 		var gameid = this.$.gameid.value;
 		if(name != "" && gameid != "") {
@@ -236,7 +240,6 @@ input {
 			this.gameid = gameid;
 			this.sendData("join",this.makeEmptyMove());
 		}
-		this.$.start.classList.remove("hidden");
 	},
 	
 	startGame: function(e) {
@@ -317,13 +320,16 @@ input {
 		this.$.destroyable.children[0].remove();
 		Polymer.dom(this.root).querySelector("#destroyable").appendChild(newGame);
     
-        if(json.State != this.stateNotStarted) {
-            this.$.start.classList.add("hidden");
+        if(json.State == this.stateNotStarted) {
+            this.$.start.classList.remove("hidden");
         }
-        else if(json.Players.length > 1)
-        {
-            this.$.startbutton.value = "Start game";
-            this.$.startbutton.disabled = false;
+        else {
+            this.$.start.classList.add("hidden");
+            if(json.Players.length > 1)
+            {
+                this.$.startbutton.value = "Start game";
+                this.$.startbutton.disabled = false;
+            }
         }
 
 		if(!this.polling)
@@ -473,6 +479,13 @@ input {
         }
         this.showModal();
         this.$.discarddialog.classList.remove("hidden");
+    },
+    
+    _checkAutoSubmit: function(oldvalue, newvalue) {
+        if(this.suggestName != "" && this.suggestGame != "" )
+        {
+            this.joinGame();
+        }
     }
 	
     });
