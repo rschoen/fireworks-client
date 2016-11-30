@@ -322,14 +322,14 @@ input {
     
         if(json.State == this.stateNotStarted) {
             this.$.start.classList.remove("hidden");
-        }
-        else {
-            this.$.start.classList.add("hidden");
             if(json.Players.length > 1)
             {
                 this.$.startbutton.value = "Start game";
                 this.$.startbutton.disabled = false;
             }
+        }
+        else {
+            this.$.start.classList.add("hidden");
         }
 
 		if(!this.polling)
