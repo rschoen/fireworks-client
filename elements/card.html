@@ -254,6 +254,9 @@
       is: "fireworks-card",
 
       properties: {
+        id: {
+            type: Number
+        },
         index: {
 			type: Number
 		},
@@ -286,7 +289,8 @@
 		}
       },
 	  
-	  factoryImpl: function(color, number, index) {
+	  factoryImpl: function(id, color, number, index) {
+        this.id = id;
 		this.color = color;
 		this.number = number;
 		this.index = index;

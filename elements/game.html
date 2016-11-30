@@ -126,10 +126,6 @@ fireworks-player {
       is: "fireworks-game",
 
       properties: {
-		started: {
-			type: Boolean,
-			value: false
-		},
       	hints: {
       		type: Number,
       		observer: "_hintsChanged"
@@ -167,7 +163,7 @@ fireworks-player {
       	
       },
 	  
-	  factoryImpl: function(localPlayerName, hints, bombs, piles, discard, cardsLeft, started) {
+	  factoryImpl: function(localPlayerName, hints, bombs, piles, discard, cardsLeft) {
 		this.hints = hints;
 		this.bombs = bombs;
 		this.piles = piles;
@@ -175,7 +171,6 @@ fireworks-player {
 		this.cardsLeft = cardsLeft;
 		this.localPlayerName = localPlayerName;
 		this.players = [];
-		this.started = started;
 	  },
 	  
 	
@@ -226,7 +221,7 @@ fireworks-player {
 				var card = this.discard[i]
 				if(card.Color == this.colors[col])
 				{
-					var newCard = new FireworksCard(card.Color, card.Number, 0);
+					var newCard = new FireworksCard(card.ID, card.Color, card.Number, 0);
 					newCard.classList.add("small-card");
 					newCard.classList.add("card"+(col+1));
 					newCard.classList.add("row"+row);
