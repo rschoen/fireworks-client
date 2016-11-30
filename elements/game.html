@@ -110,7 +110,7 @@ fireworks-player {
 		<fireworks-card color="yellow" number="3" class="small-card card4" faceup placeholder></fireworks-card>
 		<fireworks-card color="white" number="4" class="small-card card5" faceup placeholder></fireworks-card>
 		
-		<fireworks-card class="deck small-card">{{cardsLeft}}</fireworks-card>
+		<fireworks-card class="deck small-card" id="deck">{{cardsLeft}}</fireworks-card>
 		<fireworks-counter count="{{hints}}" lowCount="3" class="hints">?</fireworks-counter>
 		<fireworks-counter count="{{bombs}}" lowCount="1" class="bombs">x</fireworks-counter>
 		<div id="discards">
@@ -204,6 +204,10 @@ fireworks-player {
       _cardsLeftChanged: function(newCards, oldCards) {
       	// TODO: maybe do an animation here if it decreased?
       	// TODO: show in red if it's below a certain value
+        if(newCards == 0)
+        {
+            this.$.deck.showBackground = false;
+        }
       },
 
 	  attached: function() {
