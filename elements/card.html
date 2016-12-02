@@ -32,6 +32,10 @@
 	transform: rotateY(180deg);*/
   }
   
+  div.card.highlight {
+    border: 1px solid #0F0;
+  }
+  
 /*  div.faceup {
   	transform: none;
 	transform-style: preserve-3d;
@@ -388,7 +392,16 @@
 		knownNumberDisplay: function(number) {
 			if (number < 1) return "?";
 			else return number;
-		}
+		},
+        setHighlighted: function (highlight) {
+            if(highlight == true) {
+                this.children[0].classList.add("highlight");
+            }
+            else {
+                this.children[0].classList.remove("highlight");
+            }
+        }
+        
 
     });
   </script>
