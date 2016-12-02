@@ -304,7 +304,7 @@ input {
             this.showModal();
         }
 		
-		var newGame = new FireworksGame(this.localPlayerName, json.Hints, json.Bombs, json.Piles, json.Discard, json.CardsLeft);
+		var newGame = new FireworksGame(this.localPlayerName, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified);
 		for(player in json.Players) {
 			var thisPlayer = newGame.addPlayer(json.Players[player].ID,[]);
 			if(json.Players[player].ID == json.CurrentPlayer)
@@ -313,8 +313,11 @@ input {
 			}
 			var index = 0;
 			for(card in json.Players[player].Cards) {
-				thisPlayer.addCard(json.Players[player].Cards[card].ID, json.Players[player].Cards[card].Color, json.Players[player].Cards[card].Number, json.Players[player].Cards[card].KnownColor, json.Players[player].Cards[card].KnownNumber, index);
-				index++;
+				var card = thisPlayer.addCard(json.Players[player].Cards[card].ID, json.Players[player].Cards[card].Color, json.Players[player].Cards[card].Number, json.Players[player].Cards[card].KnownColor, json.Players[player].Cards[card].KnownNumber, index);
+                if(newGame.cardShouldBeHighlighted(card.id)) {
+                    card.setHighlighted(true);
+                }
+                index++;
 			}
 		}
 		this.$.destroyable.children[0].remove();

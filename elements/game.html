@@ -147,6 +147,9 @@ fireworks-player {
 		piles: {
 			type: Array
 		},
+        pileCards: {
+            type: Array
+        },
 		discard: {
 			type: Array
 		},
@@ -159,18 +162,24 @@ fireworks-player {
 			type: Array,
 			readOnly: true,
 			value: ["red", "green", "blue", "yellow", "white"]
-		}
+		},
+        
+        modifiedCards: {
+            type: Array
+        }
       	
       },
 	  
-	  factoryImpl: function(localPlayerName, hints, bombs, piles, discard, cardsLeft) {
+	  factoryImpl: function(localPlayerName, hints, bombs, piles, pileCards, discard, cardsLeft, modifiedCards) {
 		this.hints = hints;
 		this.bombs = bombs;
 		this.piles = piles;
+        this.pileCards = pileCards;
 		this.discard = discard;
 		this.cardsLeft = cardsLeft;
 		this.localPlayerName = localPlayerName;
 		this.players = [];
+        this.modifiedCards = modifiedCards;
 	  },
 	  
 	
@@ -216,6 +225,13 @@ fireworks-player {
 			if(pileCount > 0) {
 				this.$.playarea.children[pile].setNumber(pileCount);
 				this.$.playarea.children[pile].reveal();
+                
+                for(i in this.pileCards) {
+                    if(this.pileCards[i].Color == this.colors[pile] && this.cardShouldBeHighlighted(this.pileCards[i].ID))
+                    {
+                        this.$.playarea.children[pile].setHighlighted(true);
+                    }
+                }
 			}
 		}
 		
@@ -231,13 +247,29 @@ fireworks-player {
 					newCard.classList.add("card"+(col+1));
 					newCard.classList.add("row"+row);
 					newCard.setFaceup(true);
+                    if(this.cardShouldBeHighlighted(card.ID)) {
+                        newCard.setHighlighted(true);
+                    }
 					Polymer.dom(this.root).appendChild(newCard)
 					Polymer.dom(this.root).querySelector("#discards").appendChild(newCard)
 					row++;
 				}
 			}
 		}
-	  }
+	  },
+      
+      cardShouldBeHighlighted: function(cardIndex) {
+        if(this.modifiedCards)
+        {
+            for(i in this.modifiedCards) {
+                if(this.modifiedCards[i] == cardIndex)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+      }
       
     });
   </script>
