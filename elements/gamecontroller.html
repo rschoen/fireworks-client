@@ -89,7 +89,6 @@ input {
 	<div id="destroyable" on-click="registerClick">
 		<div id="nameform">
 			<form on-submit="joinGame" action="#">
-				Name: <input type="text" id="localPlayerName" value="{{suggestName}}"/><br />
 				Game: <input type="text" id="gameid" value="{{suggestGame}}"/><br />
 				<input type="submit" value="Join"/>
 			</form>
@@ -140,9 +139,12 @@ input {
       is: "fireworks-gamecontroller",
 
       properties: {
-      	localPlayerName: {
+      	localPlayer: {
       		type: String
       	},
+        playerToken: {
+            type: String
+        },
       	gameid: {
       		type: String
       	},
@@ -154,7 +156,7 @@ input {
 			type: Boolean,
 			value: false
 		},
-		hintPlayerName: {
+		hintPlayer: {
 			type: String
 		},
 		hintCardIndex: {
@@ -211,11 +213,7 @@ input {
 			value: 5
 		},
 		currentPlayer: {
-			type: String
-		},
-		suggestName: {
-			type: String,
-            observer: "_checkAutoSubmit"
+			type: Number
 		},
 		suggestGame: {
 			type: String,
@@ -233,10 +231,8 @@ input {
 	
 	joinGame: function(e) {
 		if (e) e.preventDefault();
-		var name = this.$.localPlayerName.value;
 		var gameid = this.$.gameid.value;
-		if(name != "" && gameid != "") {
-			this.localPlayerName = name;
+		if(gameid != "") {
 			this.gameid = gameid;
 			this.sendData("join",this.makeEmptyMove());
 		}
@@ -256,11 +252,12 @@ input {
 	
 	makeMove: function(movetype, cardindex, hintplayer, hintinfotype) {
 		var move = {Game: this.gameid,
-				Player: this.localPlayerName,
+				Player: this.localPlayer,
 				MoveType: movetype,
 				CardIndex: cardindex,
 				HintPlayer: hintplayer,
-				HintInfoType: hintinfotype
+				HintInfoType: hintinfotype,
+                Token: this.playerToken
 				};
 	
 		return JSON.stringify(move);
@@ -268,7 +265,7 @@ input {
 	
 	makeEmptyMove: function()
 	{
-		return this.makeMove(0, 0, "null", 0);
+		return this.makeMove(0, 0, "", 0);
 	},
 	
 	
@@ -304,10 +301,10 @@ input {
             this.showModal();
         }
 		
-		var newGame = new FireworksGame(this.localPlayerName, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified);
+		var newGame = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified);
 		for(player in json.Players) {
-			var thisPlayer = newGame.addPlayer(json.Players[player].ID,[]);
-			if(json.Players[player].ID == json.CurrentPlayer)
+			var thisPlayer = newGame.addPlayer(json.Players[player].GoogleID,json.Players[player].Name,[]);
+			if(json.Players[player].GoogleID == json.CurrentPlayer)
 			{
 				thisPlayer.setCurrentPlayer();
 			}
@@ -366,7 +363,7 @@ input {
 			}
             
             
-            if(this.currentPlayer != this.localPlayerName || this.done) {
+            if(this.currentPlayer != this.localPlayer || this.done) {
                 return;
             }
             
@@ -380,10 +377,10 @@ input {
 				}
 				target = target.parentElement;
 			}
-			this.hintPlayerName = target.getName();
+			this.hintPlayer = target.getID();
                         
             var dialogcard;
-            if(this.hintPlayerName == this.localPlayerName) {
+            if(this.hintPlayer == this.localPlayer) {
                 dialogcard = this.$.playcard;
             } else {
                 dialogcard = this.$.hintscard;
@@ -395,7 +392,7 @@ input {
 			dialogcard.setKnownColor(targetCard.getKnownColor());
 			this.hintCardIndex = targetCard.getIndex();
 			
-			if(this.hintPlayerName == this.localPlayerName) {
+			if(this.hintPlayer == this.localPlayer) {
 				this.$.playinputs.classList.remove("hidden");
 				
 			}
@@ -430,7 +427,7 @@ input {
 	},
 	
 	giveHint: function(infotype) {
-		var data = this.makeMove(this.moveHint, this.hintCardIndex, this.hintPlayerName, infotype);
+		var data = this.makeMove(this.moveHint, this.hintCardIndex, this.hintPlayer, infotype);
 		this.sendData("move",data);
 		this.hideModal();
 		this.showSpinner();
@@ -450,7 +447,7 @@ input {
 		this.playOrDiscard(this.moveDiscard);
 	},
 	playOrDiscard: function(movetype) {
-		var data = this.makeMove(movetype, this.hintCardIndex, this.hintPlayerName, 0);
+		var data = this.makeMove(movetype, this.hintCardIndex, this.hintPlayer, 0);
 		this.sendData("move",data);
 		this.hideModal();
 		this.showSpinner();
@@ -489,6 +486,11 @@ input {
         {
             this.joinGame();
         }
+    },
+    
+    setPlayer: function(id, token) {
+        this.localPlayer = id
+        this.playerToken = token
     }
 	
     });

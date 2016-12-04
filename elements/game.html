@@ -138,7 +138,7 @@ fireworks-player {
       		type: Number,
       		observer: "_cardsLeftChanged"
       	},
-		localPlayerName: {
+		localPlayer: {
 			type: String
 		},
 		players: {
@@ -170,23 +170,23 @@ fireworks-player {
       	
       },
 	  
-	  factoryImpl: function(localPlayerName, hints, bombs, piles, pileCards, discard, cardsLeft, modifiedCards) {
+	  factoryImpl: function(player, hints, bombs, piles, pileCards, discard, cardsLeft, modifiedCards) {
 		this.hints = hints;
 		this.bombs = bombs;
 		this.piles = piles;
         this.pileCards = pileCards;
 		this.discard = discard;
 		this.cardsLeft = cardsLeft;
-		this.localPlayerName = localPlayerName;
+		this.localPlayer = player;
 		this.players = [];
         this.modifiedCards = modifiedCards;
 	  },
 	  
 	
 	  
-	  addPlayer: function(name, hand) {
+	  addPlayer: function(id, name, hand) {
 		var playerNumber;
-		if(name == this.localPlayerName)
+		if(id == this.localPlayer)
 		{
 			playerNumber = 0;
 		}
@@ -195,7 +195,7 @@ fireworks-player {
 			playerNumber = this.otherPlayers;
 		}
 		
-		var player = new FireworksPlayer(name, playerNumber);
+		var player = new FireworksPlayer(id, name, playerNumber);
       	player.classList.add("player" + playerNumber);
 		this.players.push(player);
 		Polymer.dom(this.root).appendChild(player)
