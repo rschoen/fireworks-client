@@ -66,6 +66,9 @@
       is: "fireworks-player",
 
       properties: {
+        id: {
+            type: String
+        },
       	name: {
       		type: String
       	},
@@ -78,7 +81,8 @@
 		}
       },
       
-	  factoryImpl: function(name,number) {
+	  factoryImpl: function(id, name, number) {
+        this.id = id;
 		this.name = name;
 		this.number = number;
 	  },
@@ -101,6 +105,10 @@
 	  getName: function() {
 		return this.name;
 	  },
+      
+      getID: function () {
+        return this.id;
+      },
 	  
 	  setCurrentPlayer: function() {
 		this.$.name.classList.add("current");

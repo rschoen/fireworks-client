@@ -26,6 +26,11 @@
 
   <link rel="stylesheet" href="styles/main.css">
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  
+  <!-- Google Sign-in -->
+  <meta name="google-signin-client_id" content="168641906858-8egtsbds49ifcjgq7g6n4757q70k14h4.apps.googleusercontent.com">
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  
 
   <link rel="import" href="elements/elements.html">
 </head>
@@ -70,7 +75,10 @@
           <span class="flex"></span>
 
           <!-- Toolbar icons -->
-          <paper-icon-button icon="refresh"></paper-icon-button>
+          <div id="signin">
+            <div class="g-signin2" data-onsuccess="onSignIn"></div>
+            <div class="hidden"><a href="#" onclick="signOut();" style="text-decoration: none; color: #FFF;">Sign out</a></div>
+          </div>
 
           <!-- Application name -->
           <div class="middle middle-container center horizontal layout">
@@ -84,7 +92,7 @@
           <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
 		    <section data-route="games">
-				<fireworks-gamecontroller suggest-name="{{params.name}}" suggest-game="{{params.game}}" server="http://fellyeah.dlinkddns.com:8181"></fireworks-gamecontroller>
+				<fireworks-gamecontroller suggest-name="{{params.name}}" suggest-game="{{params.game}}" server="http://fellyeah.dlinkddns.com:8181" id="gamecontroller"></fireworks-gamecontroller>
             </section>
 		  
             <section data-route="users">

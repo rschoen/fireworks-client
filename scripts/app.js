@@ -45,3 +45,20 @@
   };
 
 })(document);
+
+function onSignIn(googleUser) {
+  var profile = googleUser.getBasicProfile();
+  var id_token = googleUser.getAuthResponse().id_token;
+  document.getElementById("gamecontroller").setPlayer(profile.getId(), id_token);
+  
+  document.getElementById("signin").children[0].classList.add("hidden");
+  document.getElementById("signin").children[1].classList.remove("hidden");
+}
+
+function signOut() {
+  var auth2 = gapi.auth2.getAuthInstance();
+  auth2.signOut().then(function () {
+    document.getElementById("signin").children[0].classList.remove("hidden");
+    document.getElementById("signin").children[1].classList.add("hidden");
+  });
+}
