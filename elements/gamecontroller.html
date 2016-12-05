@@ -34,20 +34,20 @@
 
 #spinner {
 	position: fixed;
-	width: 100px;
-	height: 100px;
+	width: 30px;
+	height: 30px;
 	top: 50%;
 	left: 50%;
-	margin-top: -50px;
-	margin-left: -50px;
+	margin-top: -15px;
+	margin-left: -15px;
 	--spinner-stroke-width: 5px;
 }
 
 #start {
 	position: relative;
-	top: 437px;
-	left: 20px;
-    width: 300px;
+	top: 420px;
+    height: 0px;
+    width: 285px;
     text-align: center;
     z-index: 3;
 }
@@ -73,6 +73,15 @@ input {
     padding: 10px;
 }
 
+#destroyable {
+    height: 505px;
+}
+
+#gameid { 
+    width: 150px;
+    margin-bottom: 20px;
+}
+
 </style>
   
   <template>
@@ -87,13 +96,21 @@ input {
 		<input type="button" value="Waiting for players..." id="startbutton" on-click="startGame" disabled />
 	</div>
 	<div id="destroyable" on-click="registerClick">
-		<div id="nameform">
-			<form on-submit="joinGame" action="#">
-				Game: <input type="text" id="gameid" value="{{suggestGame}}"/><br />
-				<input type="submit" value="Join"/>
-			</form>
-		</div>
+        <span>Please log in to join a game.</span>
 	</div>
+    <div id="gameslist" class="hidden">
+        <div>Open games:<ul id="opengames">
+            <template is="dom-repeat" items="{{openGames}}" as="item">
+            <li><a href$="{{gameTag(item.name)}}" on-tap="gameTapped">[[item.name]]</a> - <span>[[item.players]]</span>
+            </template>
+        </ul></div>
+        <div>Your games:<ul id="yourgames">
+            <template is="dom-repeat" items="{{yourGames}}" as="item">
+            <li><a href$="{{gameTag(item.name)}}" on-tap="gameTapped">[[item.name]]</a> - <span>[[item.players]]</span>
+            </template>
+        </ul></div>
+        <input type="button" value="Create new game" on-tap="newGameDialog" />
+    </div>
 	<div id="modal" class="hidden">
 		<div id="overlay" on-click="hideModal">
 		</div>
@@ -127,6 +144,12 @@ input {
                 </div>
                 <input id="dialogok" type="button" value="Close" on-click="hideModal" />
             </div>
+            <div id="newgame" class="hidden">
+			<form on-submit="submitJoinGame" action="#">
+				Pick a unique room name: <input type="text" id="gameid" value="{{suggestGame}}"/><br />
+				<input type="submit" value="Create"/>
+			</form>
+		</div>
 		</div>
 	</div>
 	<div id="spinner" class="hidden">
@@ -216,8 +239,7 @@ input {
 			type: Number
 		},
 		suggestGame: {
-			type: String,
-            observer: "_checkAutoSubmit"
+			type: String
 		},
 		server: {
 			type: String,
@@ -226,17 +248,39 @@ input {
         done: {
             type: Boolean,
             value: false
+        },
+        openGames: {
+            type: Array
+        },
+        yourGames: {
+            type: Array
         }
 	},
+    
+    gameTag: function(gameName) {
+        return "#!/games/"+gameName
+    },
+    
+    newGameDialog: function() {
+        this.$.newgame.classList.remove("hidden");
+        this.showModal();
+    },
 	
-	joinGame: function(e) {
-		if (e) e.preventDefault();
-		var gameid = this.$.gameid.value;
-		if(gameid != "") {
-			this.gameid = gameid;
-			this.sendData("join",this.makeEmptyMove());
-		}
+	joinGame: function(gameid) {
+		this.gameid = gameid;
+		this.sendData("join",this.makeEmptyMove());
+        this.$.gameslist.classList.add("hidden");
 	},
+    
+    submitJoinGame: function(e) { 
+        e.preventDefault();
+        this.hideModal();
+        this.showSpinner();
+        var gameid = this.$.gameid.value;
+		if(gameid != "") {
+			this.joinGame(gameid);
+		}
+    },
 	
 	startGame: function(e) {
 		this.sendData("start",this.makeEmptyMove())
@@ -268,8 +312,6 @@ input {
 		return this.makeMove(0, 0, "", 0);
 	},
 	
-	
-	
 	handleResponse: function(request) {
 		var json = request.detail.response;
         if(json.error != undefined)
@@ -277,6 +319,23 @@ input {
             this.$.errortext.innerHTML = this.sanitize(json.error);
             this.$.error.classList.remove("hidden");
             this.showModal();
+            return;
+        }
+        if(typeof json.OpenGames !== 'undefined') {
+            this.yourGames = Array();
+            this.openGames = Array();
+            for(var i in json.PlayersGames) {
+                this.push('yourGames',{ name: json.PlayersGames[i].Name, players: json.PlayersGames[i].Players })
+            }
+            for(var i in json.OpenGames) {
+                this.push('openGames',{ name: json.OpenGames[i].Name, players: json.OpenGames[i].Players })
+            }
+            
+            this.hideSpinner();
+            this.$.gameslist.classList.remove("hidden");
+            return;
+        }
+        if(!json.State) {
             return;
         }
         if(json.State != this.stateNotStarted && json.State != this.stateStarted)
@@ -317,7 +376,10 @@ input {
                 index++;
 			}
 		}
-		this.$.destroyable.children[0].remove();
+        this.$.destroyable.classList.remove("hidden");
+		if(this.$.destroyable.children[0]) {
+            this.$.destroyable.children[0].remove();
+        }
 		Polymer.dom(this.root).querySelector("#destroyable").appendChild(newGame);
     
         if(json.State == this.stateNotStarted) {
@@ -347,6 +409,9 @@ input {
 		if(this.polling && !this.done) this.async(this.poll, 5000);
 	},
 	
+    gameTapped: function(e) {
+        this.joinGame(e.model.item.name);
+    },
 		  
 	registerClick: function(event) {
 	
@@ -481,16 +546,18 @@ input {
         this.$.discarddialog.classList.remove("hidden");
     },
     
-    _checkAutoSubmit: function(oldvalue, newvalue) {
-        if(this.suggestName != "" && this.suggestGame != "" )
-        {
-            this.joinGame();
-        }
-    },
-    
     setPlayer: function(id, token) {
         this.localPlayer = id
         this.playerToken = token
+        this.showSpinner();
+        this.$.destroyable.classList.add("hidden");
+        
+        if(this.suggestGame) {
+            this.joinGame(this.suggestGame);
+        }
+        else {
+            this.sendData("list", this.makeEmptyMove());
+        }
     }
 	
     });

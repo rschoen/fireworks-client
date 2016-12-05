@@ -92,7 +92,9 @@
           <iron-pages attr-for-selected="data-route" selected="{{route}}">
 
 		    <section data-route="games">
-				<fireworks-gamecontroller suggest-name="{{params.name}}" suggest-game="{{params.game}}" server="http://fellyeah.dlinkddns.com:8181" id="gamecontroller"></fireworks-gamecontroller>
+                <paper-material elevation="1">
+                    <fireworks-gamecontroller suggest-name="{{params.name}}" suggest-game="{{params.game}}" server="http://fellyeah.dlinkddns.com:8181" id="gamecontroller"></fireworks-gamecontroller>
+                </paper-material>
             </section>
 		  
             <section data-route="users">

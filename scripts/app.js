@@ -61,4 +61,5 @@ function signOut() {
     document.getElementById("signin").children[0].classList.remove("hidden");
     document.getElementById("signin").children[1].classList.add("hidden");
   });
+  location.reload();
 }
