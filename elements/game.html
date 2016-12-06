@@ -184,7 +184,7 @@ fireworks-player {
 	  
 	
 	  
-	  addPlayer: function(id, name, hand) {
+	  addPlayer: function(id, name, lastMove, hand) {
 		var playerNumber;
 		if(id == this.localPlayer)
 		{
@@ -195,7 +195,7 @@ fireworks-player {
 			playerNumber = this.otherPlayers;
 		}
 		
-		var player = new FireworksPlayer(id, name, playerNumber);
+		var player = new FireworksPlayer(id, name, lastMove, playerNumber);
       	player.classList.add("player" + playerNumber);
 		this.players.push(player);
 		Polymer.dom(this.root).appendChild(player)
