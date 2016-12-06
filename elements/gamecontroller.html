@@ -362,7 +362,7 @@ input {
 		
 		var newGame = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified);
 		for(player in json.Players) {
-			var thisPlayer = newGame.addPlayer(json.Players[player].GoogleID,json.Players[player].Name,[]);
+			var thisPlayer = newGame.addPlayer(json.Players[player].GoogleID, json.Players[player].Name, json.Players[player].LastMove, []);
 			if(json.Players[player].GoogleID == json.CurrentPlayer)
 			{
 				thisPlayer.setCurrentPlayer();

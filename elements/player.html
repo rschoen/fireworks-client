@@ -56,7 +56,7 @@
   
   <template>
 	<div id="player"">
-	<span id="name">{{name}}</span>
+	<span id="name">[[_displayName(name,lastMove)]]</span>
 	<div id="cards"></div>
 	</div>
   </template>
@@ -78,12 +78,16 @@
 		numCards: {
 			type: Number,
 			value: 0
-		}
+		},
+        lastMove: {
+            type: String
+        }
       },
       
-	  factoryImpl: function(id, name, number) {
+	  factoryImpl: function(id, name, lastMove, number) {
         this.id = id;
 		this.name = name;
+        this.lastMove = lastMove;
 		this.number = number;
 	  },
 	  
@@ -112,7 +116,15 @@
 	  
 	  setCurrentPlayer: function() {
 		this.$.name.classList.add("current");
-	  }
+	  },
+      
+      _displayName: function(name,lastMove) {
+        var display = name
+        if(lastMove != "") {
+            display += " " + lastMove;
+        }
+        return display;
+      }
       
     });
   </script>
