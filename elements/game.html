@@ -196,7 +196,10 @@ fireworks-player {
 		}
 		
 		var player = new FireworksPlayer(id, name, lastMove, playerNumber);
-      	player.classList.add("player" + playerNumber);
+    player.classList.add("player" + playerNumber);
+    if(playerNumber == 0) {
+      player.localPlayer = true;
+    }
 		this.players.push(player);
 		Polymer.dom(this.root).appendChild(player)
 		Polymer.dom(this.root).querySelector("#players").appendChild(player)
