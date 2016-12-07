@@ -47,15 +47,26 @@
 //  	transform-origin: 0 0;
   }
   fireworks-card { position: absolute; top: 5px; }
-  .card1 { left: 5px; }
-  .card2 { left: 30px; }
-  .card3 { left: 55px; }
-  .card4 { left: 80px; }
-  .card5 { left: 110px; }
+  .card1 { margin-left: 66%; z-index: 5; }
+  .card2 { margin-left: 50.25%; z-index: 4; }
+  .card3 { margin-left: 34.5%; z-index: 3; }
+  .card4 { margin-left: 18.75%; z-index: 2; }
+  .card5 { margin-left: 3%; z-index: 1; }
+  
+  .local .card1 { margin-left: 3%; z-index: 1; }
+  .local .card2 { margin-left: 18.75%; z-index: 2; }
+  .local .card3 { margin-left: 34.5%; z-index: 3; }
+  .local .card4 { margin-left: 50.25%; z-index: 4; }
+  .local .card5 { margin-left: 66%; z-index: 5; }
+  
+  /* TODO: still needed
+  - check z-index with dialogs and make consistent.
+  - check that it still looks right for the other person, truly.
+  - try on mobile just to be sure
   </style>
   
   <template>
-	<div id="player"">
+	<div id="player">
 	<span id="name">[[_displayName(name,lastMove)]]</span>
 	<div id="cards"></div>
 	</div>
@@ -75,12 +86,17 @@
       	number: {
       		type: Number
       	},
-		numCards: {
-			type: Number,
-			value: 0
-		},
+	      numCards: {
+	          type: Number,
+	          value: 0
+        },
         lastMove: {
             type: String
+        },
+        localPlayer: {
+            type: Boolean,
+            value: false,
+            observer: "_localPlayerChanged"
         }
       },
       
@@ -113,6 +129,15 @@
       getID: function () {
         return this.id;
       },
+    
+    _localPlayerChanged: function(newvalue) {
+      if(newvalue) {
+        this.$.player.classList.add("local");
+      }
+      else {
+        this.$.player.classList.remove("local");
+      }
+    },
 	  
 	  setCurrentPlayer: function() {
 		this.$.name.classList.add("current");
