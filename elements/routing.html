@@ -9,9 +9,14 @@
     page('/', function () {
       app.route = 'games';
     });
-	
-	page('/games', function () {
+    
+    page('/fireworks', function () {
       app.route = 'games';
+    });
+	
+	page('/games', function (data) {
+      app.route = 'games';
+	  app.params = data.params;
     });
 	
     page('/games/:game', function (data) {
