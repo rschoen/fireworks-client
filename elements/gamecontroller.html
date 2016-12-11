@@ -239,7 +239,8 @@ input {
 			type: Number
 		},
 		suggestGame: {
-			type: String
+			type: String,
+            observer: "_suggestGameChanged"
 		},
 		server: {
 			type: String,
@@ -254,11 +255,15 @@ input {
         },
         yourGames: {
             type: Array
+        },
+        signedIn: {
+            type: Boolean,
+            value: false
         }
 	},
     
     gameTag: function(gameName) {
-        return "#!/games/"+gameName
+        return "games/"+gameName
     },
     
     newGameDialog: function() {
@@ -359,6 +364,11 @@ input {
             this.$.end.classList.remove("hidden");
             this.showModal();
         }
+        
+        if(this.suggestGame != json.GameID) {
+            this.suggestGame = json.GameID
+            history.pushState(null, null, "#!/games/" + json.GameID)
+        }
 		
 		var newGame = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified);
 		for(player in json.Players) {
@@ -376,11 +386,9 @@ input {
                 index++;
 			}
 		}
-        this.$.destroyable.classList.remove("hidden");
-		if(this.$.destroyable.children[0]) {
-            this.$.destroyable.children[0].remove();
-        }
+		this.destroyGame();
 		Polymer.dom(this.root).querySelector("#destroyable").appendChild(newGame);
+        this.$.destroyable.classList.remove("hidden");
     
         if(json.State == this.stateNotStarted) {
             this.$.start.classList.remove("hidden");
@@ -405,8 +413,11 @@ input {
 			
 	
 	poll: function() {
+        if(!this.polling) {
+            return;
+        }
 		this.sendData("status",this.makeEmptyMove());
-		if(this.polling && !this.done) this.async(this.poll, 5000);
+		if(!this.done) this.async(this.poll, 5000);
 	},
 	
     gameTapped: function(e) {
@@ -551,12 +562,36 @@ input {
         this.playerToken = token
         this.showSpinner();
         this.$.destroyable.classList.add("hidden");
+        this.signedIn = true
+        this.gameChanged();
+        
+    },
+    
+    _suggestGameChanged: function(newvalue, oldvalue) {
+        this.gameChanged();
+    },
+    
+    gameChanged: function() {
+        if(!this.signedIn) {
+            return
+        }
         
         if(this.suggestGame) {
             this.joinGame(this.suggestGame);
         }
         else {
+            this.polling = false
+            this.showSpinner();
+            this.destroyGame();
             this.sendData("list", this.makeEmptyMove());
+        }
+    },
+    
+    destroyGame: function () {
+    
+        this.$.destroyable.classList.add("hidden");
+        if(this.$.destroyable.children[0]) {
+            this.$.destroyable.children[0].remove();
         }
     }
 	
