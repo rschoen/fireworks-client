@@ -45,11 +45,10 @@
 
 #start {
 	position: relative;
-	top: 420px;
+	top: -90px;
     height: 0px;
     width: 285px;
     text-align: center;
-    z-index: 3;
 }
 
 #end div {
@@ -92,11 +91,12 @@ input {
     handle-as="json"
     on-response="handleResponse"
     debounce-duration="300"></iron-ajax>
-    <div id="start" class="hidden">
-		<input type="button" value="Waiting for players..." id="startbutton" on-click="startGame" disabled />
-	</div>
+
 	<div id="destroyable" on-click="registerClick">
         <span>Please log in to join a game.</span>
+	</div>
+    <div id="start" class="hidden">
+		<input type="button" value="Waiting for players..." id="startbutton" on-click="startGame" disabled />
 	</div>
     <div id="gameslist" class="hidden">
         <div>Open games:<ul id="opengames">
