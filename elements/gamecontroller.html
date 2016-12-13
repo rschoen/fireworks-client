@@ -259,6 +259,9 @@ input {
         signedIn: {
             type: Boolean,
             value: false
+        },
+        turn: {
+            type: Number
         }
 	},
     
@@ -368,8 +371,13 @@ input {
         if(this.suggestGame != json.GameID) {
             this.suggestGame = json.GameID
             history.pushState(null, null, "#!/games/" + json.GameID)
+            this.turn = -1;
         }
 		
+        if(this.turn == json.Turn) {
+            return;
+        }
+        
 		var newGame = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified);
 		for(player in json.Players) {
 			var thisPlayer = newGame.addPlayer(json.Players[player].GoogleID, json.Players[player].Name, json.Players[player].LastMove, []);
@@ -407,8 +415,14 @@ input {
 			this.polling = true;
 			this.poll();
 		}
-		this.currentPlayer = json.CurrentPlayer;
+		this.currentPlayer = json.CurrentPlayer;     
 		this.hideSpinner();
+        
+        if(this.currentPlayer == this.localPlayer && this.turn != json.Turn && "vibrate" in navigator)
+        {
+            navigator.vibrate([100, 100, 100]);
+        }
+        this.turn = json.Turn
 	},
 			
 	
