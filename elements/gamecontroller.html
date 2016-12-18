@@ -379,7 +379,17 @@ input {
         }
         
 		var newGame = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified);
-		for(player in json.Players) {
+        
+        var playerIndex = -1;
+        for(player in json.Players) {
+			if(json.Players[player].GoogleID == this.localPlayer)
+			{
+				playerIndex = parseInt(player);
+			}
+        }
+        
+		for(i in json.Players) {
+            player = (playerIndex + parseInt(i)) % json.Players.length;
 			var thisPlayer = newGame.addPlayer(json.Players[player].GoogleID, json.Players[player].Name, json.Players[player].LastMove, []);
 			if(json.Players[player].GoogleID == json.CurrentPlayer)
 			{
