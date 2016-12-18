@@ -18,7 +18,7 @@ fireworks-player {
 	top: 377px;
 }
 
-  .player1 {
+.player1 {
 	left: 10px;
 	top: 10px;
 }
@@ -28,10 +28,37 @@ fireworks-player {
 	top: 10px;
 }
 
-	
-  .player3 {
+.players4 .player1 {
 	left: 10px;
 	top: 95px;
+}
+
+.players4 .player2 {
+    left: 95px;
+    top: 10px;
+}
+
+.players4 .player3 {
+	left: 180px;
+	top: 95px;
+}
+
+
+.players5 .player1 {
+	left: 10px;
+	top: 95px;
+}
+
+
+.players5 .player2 {
+	left: 10px;
+	top: 10px;
+}
+
+	
+.players5 .player3 {
+	left: 180px;
+	top: 10px;
 }
 
 .player4 {
@@ -127,16 +154,13 @@ fireworks-player {
 
       properties: {
       	hints: {
-      		type: Number,
-      		observer: "_hintsChanged"
+      		type: Number
       	},
       	bombs: {
-      		type: Number,
-      		observer: "_bombsChanged"
+      		type: Number
       	},
       	cardsLeft: {
-      		type: Number,
-      		observer: "_cardsLeftChanged"
+      		type: Number
       	},
 		localPlayer: {
 			type: String
@@ -153,10 +177,6 @@ fireworks-player {
 		discard: {
 			type: Array
 		},
-		otherPlayers: {
-			type: Number,
-			value: 0
-		},
 		
 		colors: {
 			type: Array,
@@ -166,9 +186,17 @@ fireworks-player {
         
         modifiedCards: {
             type: Array
-        }
+        },
       	
       },
+      
+      
+      observers: [
+        'hintsChanged(hints)',
+        'bombsChanged(bombs)',
+        'cardsLeftChanged(cardsLeft)',
+        'numPlayersChanged(players.length)'
+      ],
 	  
 	  factoryImpl: function(player, hints, bombs, piles, pileCards, discard, cardsLeft, modifiedCards) {
 		this.hints = hints;
@@ -185,35 +213,27 @@ fireworks-player {
 	
 	  
 	  addPlayer: function(id, name, lastMove, hand) {
-		var playerNumber;
-		if(id == this.localPlayer)
-		{
-			playerNumber = 0;
-		}
-		else {
-			this.otherPlayers++;
-			playerNumber = this.otherPlayers;
-		}
+		var playerNumber = this.players.length
 		
 		var player = new FireworksPlayer(id, name, lastMove, playerNumber);
-    player.classList.add("player" + playerNumber);
-    if(playerNumber == 0) {
-      player.localPlayer = true;
-    }
-		this.players.push(player);
+        player.classList.add("player" + playerNumber);
+        if(playerNumber == 0) {
+          player.localPlayer = true;
+        }
+		this.push("players",player);
 		Polymer.dom(this.root).appendChild(player)
 		Polymer.dom(this.root).querySelector("#players").appendChild(player)
 		//this.$.players.appendChild(player);
 		return player;
 	  },
       
-      _hintsChanged: function(newHints, oldHints) {
+      hintsChanged: function(newHints, oldHints) {
       	// TODO: maybe do an animation here if it decreased?
       },
-      _bombsChanged: function(newBombs, oldBombs) {
+      bombsChanged: function(newBombs, oldBombs) {
       	// TODO: maybe do an animation here if it decreased?
       },
-      _cardsLeftChanged: function(newCards, oldCards) {
+      cardsLeftChanged: function(newCards, oldCards) {
       	// TODO: maybe do an animation here if it decreased?
       	// TODO: show in red if it's below a certain value
         if(newCards == 0)
@@ -272,6 +292,11 @@ fireworks-player {
             }
         }
         return false;
+      },
+      
+      numPlayersChanged: function(numPlayers) {
+        this.$.players.classList.toggle("players4", (numPlayers == 4));
+        this.$.players.classList.toggle("players5", (numPlayers == 5));
       }
       
     });
