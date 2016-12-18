@@ -84,11 +84,6 @@ var initSigninV2 = function() {
   // Listen for changes to current user.
   auth2.currentUser.listen(userChanged);
 
-  // Sign in the user if they are currently signed in.
-  if (auth2.isSignedIn.get() == true) {
-    auth2.signIn();
-  }
-
   // Start with the current live values.
   refreshValues();
 };
