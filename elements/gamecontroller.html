@@ -101,12 +101,12 @@ input {
     <div id="gameslist" class="hidden">
         <div>Open games:<ul id="opengames">
             <template is="dom-repeat" items="{{openGames}}" as="item">
-            <li><a href$="{{gameTag(item.name)}}" on-tap="gameTapped">[[item.name]]</a> - <span>[[item.players]]</span>
+            <li><a href$="{{gameTag(item.id)}}" on-tap="gameTapped">[[item.name]]</a> - <span>[[item.players]]</span>
             </template>
         </ul></div>
         <div>Your games:<ul id="yourgames">
             <template is="dom-repeat" items="{{yourGames}}" as="item">
-            <li><a href$="{{gameTag(item.name)}}" on-tap="gameTapped">[[item.name]]</a> - <span>[[item.players]]</span>
+            <li><a href$="{{gameTag(item.id)}}" on-tap="gameTapped">[[item.name]]</a> - <span>[[item.players]]</span>
             </template>
         </ul></div>
         <input type="button" value="Create new game" on-tap="newGameDialog" />
@@ -146,7 +146,7 @@ input {
             </div>
             <div id="newgame" class="hidden">
 			<form on-submit="submitJoinGame" action="#">
-				Pick a unique room name: <input type="text" id="gameid" value="{{suggestGame}}"/><br />
+				Name your game: <input type="text" id="gameid" value="{{suggestGame}}"/><br />
 				<input type="submit" value="Create"/>
 			</form>
 		</div>
@@ -262,6 +262,9 @@ input {
         },
         turn: {
             type: Number
+        },
+        joinedGame: {
+            type: String
         }
 	},
     
@@ -275,6 +278,10 @@ input {
     },
 	
 	joinGame: function(gameid) {
+        if(this.joinedGame == gameid) {
+            return;
+        }
+        this.joinedGame = gameid;
 		this.gameid = gameid;
 		this.sendData("join",this.makeEmptyMove());
         this.$.gameslist.classList.add("hidden");
@@ -333,14 +340,18 @@ input {
             this.yourGames = Array();
             this.openGames = Array();
             for(var i in json.PlayersGames) {
-                this.push('yourGames',{ name: json.PlayersGames[i].Name, players: json.PlayersGames[i].Players })
+                thisGame = json.PlayersGames[i];
+                this.push('yourGames',{ id: thisGame.ID, name: thisGame.Name, players: thisGame.Players })
             }
             for(var i in json.OpenGames) {
-                this.push('openGames',{ name: json.OpenGames[i].Name, players: json.OpenGames[i].Players })
+                thisGame = json.OpenGames[i];
+                this.push('openGames',{ id: thisGame.ID, name: thisGame.Name, players: thisGame.Players })
             }
             
             this.hideSpinner();
             this.$.gameslist.classList.remove("hidden");
+            this.joinedGame = '';
+            this.turn = -1;
             return;
         }
         if(!json.State) {
@@ -368,9 +379,9 @@ input {
             this.showModal();
         }
         
-        if(this.suggestGame != json.GameID) {
-            this.suggestGame = json.GameID
-            history.pushState(null, null, "#!/games/" + json.GameID)
+        if(this.suggestGame != json.ID) {
+            this.suggestGame = json.ID
+            history.pushState(null, null, "#!/games/" + json.ID)
             this.turn = -1;
         }
 		
@@ -445,7 +456,7 @@ input {
 	},
 	
     gameTapped: function(e) {
-        this.joinGame(e.model.item.name);
+        this.joinGame(e.model.item.id);
     },
 		  
 	registerClick: function(event) {
