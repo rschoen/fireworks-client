@@ -15,7 +15,7 @@
 
 #dialog {
 	position: fixed;
-	width: 200px;
+	width: 230px;
 	top: 50%;
 	left: 50%;
 	margin-top: -100px;
@@ -23,7 +23,7 @@
 	border: 1px solid #333;
 	background: white;
 	border-radius: 3px;
-	padding: 20px;
+	padding: 15px;
 	text-align: center;
 	z-index: 5;
 }
@@ -68,17 +68,24 @@ input {
     font-size: 16pt;
 }
 
-#nameform {
-    padding: 10px;
-}
 
 #destroyable {
     height: 505px;
 }
 
 #gameid { 
-    width: 150px;
     margin-bottom: 20px;
+}
+#buttoncontainer {
+    text-align: right;
+}
+#newgame {
+
+    text-align: left;
+}
+paper-button {
+    background: #006;
+    color: white;
 }
 
 </style>
@@ -92,11 +99,11 @@ input {
     on-response="handleResponse"
     debounce-duration="300"></iron-ajax>
 
-	<div id="destroyable" on-click="registerClick">
+	<div id="destroyable" on-tap="registerClick">
         <span>Please log in to join a game.</span>
 	</div>
     <div id="start" class="hidden">
-		<input type="button" value="Waiting for players..." id="startbutton" on-click="startGame" disabled />
+        <paper-button id="startbutton" on-tap="startGame" disabled raised>Waiting for players...</paper-button>
 	</div>
     <div id="gameslist" class="hidden">
         <div>Open games:<ul id="opengames">
@@ -109,30 +116,30 @@ input {
             <li><a href$="{{gameTag(item.id)}}" on-tap="gameTapped">[[item.name]]</a> - <span>[[item.players]]</span>
             </template>
         </ul></div>
-        <input type="button" value="Create new game" on-tap="newGameDialog" />
+        <paper-button raised on-tap="newGameDialog">Create new game</paper-button>
     </div>
 	<div id="modal" class="hidden">
-		<div id="overlay" on-click="hideModal">
+		<div id="overlay" on-tap="hideModal">
 		</div>
 		<div id="dialog">
 			<div id="hintinputs" class="hidden">
                 <fireworks-card id="hintscard" faceup></fireworks-card>
                 <div>
-                    <input id="hintnumber" type="button" value="Hint Number" on-click="giveNumberHint" />
-                    <input id="hintcolor" type="button" value="Hint Color"  on-click="giveColorHint" />
+                    <paper-button raised id="hintnumber" on-tap="giveNumberHint">Hint number</paper-button>
+                    <paper-button raised id="hintcolor" on-tap="giveColorHint">Hint color</paper-button>
                 </div>
 			</div>
 			<div id="playinputs" class="hidden">
                 <fireworks-card id="playcard"></fireworks-card>
                 <div>
-                    <input id="play" type="button" value="Play" on-click="play" />
-                    <input id="discard" type="button" value="Discard" on-click="discard" />
+                    <paper-button raised id="play" on-tap="play">Play</paper-button>
+                    <paper-button raised id="discard" on-tap="discard">Discard</paper-button>
                 </div>
 			</div>
             <div id="error" class="hidden">
                 <span id="errortext">Error text goes here.</span>
                 <div>
-                    <input id="errorok" type="button" value="Close" on-click="hideModal" />
+                    <paper-button raised id="errorok" on-tap="hideModal">OK</paper-button>
                 </div>
             </div>
             <div id="end" class="hidden">
@@ -142,14 +149,14 @@ input {
             <div id="discarddialog" class="hidden">
                 <div id="discardcontainer">
                 </div>
-                <input id="dialogok" type="button" value="Close" on-click="hideModal" />
+                <paper-button id="dialogok" on-tap="hideModal">OK</paper-button>
             </div>
             <div id="newgame" class="hidden">
-			<form on-submit="submitJoinGame" action="#">
-				Name your game: <input type="text" id="gameid" value="{{suggestGame}}"/><br />
-				<input type="submit" value="Create"/>
-			</form>
-		</div>
+				<paper-input id="gameid" label="Game name" value="[[suggestGame]]"></paper-input>
+                <div class="buttoncontainer">
+				<paper-button raised on-tap="submitJoinGame">Create game</paper-button>
+                </div>
+		    </div>
 		</div>
 	</div>
 	<div id="spinner" class="hidden">
@@ -289,6 +296,7 @@ input {
     
     submitJoinGame: function(e) { 
         e.preventDefault();
+        this.suggestGame = this.$.gameid.value;
         this.hideModal();
         this.showSpinner();
         var gameid = this.$.gameid.value;
@@ -423,7 +431,7 @@ input {
             this.$.start.classList.remove("hidden");
             if(json.Players.length > 1)
             {
-                this.$.startbutton.value = "Start game";
+                Polymer.dom(this.$.startbutton).innerHTML = "Start game";
                 this.$.startbutton.disabled = false;
             }
         }
@@ -508,8 +516,8 @@ input {
 				
 			}
 			else {
-                this.$.hintnumber.value = "Hint " + number;
-                this.$.hintcolor.value = "Hint " + color;
+                Polymer.dom(this.$.hintnumber).innerHTML = "Hint " + number;
+                Polymer.dom(this.$.hintcolor).innerHTML = "Hint " + color;
 				this.$.hintinputs.classList.remove("hidden");
 			}
 			this.showModal();
