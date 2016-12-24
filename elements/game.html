@@ -297,6 +297,9 @@ fireworks-player {
       numPlayersChanged: function(numPlayers) {
         this.$.players.classList.toggle("players4", (numPlayers == 4));
         this.$.players.classList.toggle("players5", (numPlayers == 5));
+        for(i=0; i<this.players.length; i++) {
+        	this.players[i].setNumberOfPlayers(numPlayers)
+        }
       }
       
     });

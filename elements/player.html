@@ -53,11 +53,17 @@
   .local .card3 { margin-left: 35%; z-index: 3; }
   .local .card4 { margin-left: 52.5%; z-index: 4; }
   .local .card5 { margin-left: 70%; z-index: 5; }
+
+  .fourcards .card1 { margin-left: 70%; z-index: 5; }
+  .fourcards .card2 { margin-left: 46.67%; z-index: 4; }
+  .fourcards .card3 { margin-left: 23.33%; z-index: 3; }
+  .fourcards .card4 { margin-left: 0%; z-index: 2; }
   
-  /* TODO: still needed
-  - check z-index with dialogs and make consistent.
-  - check that it still looks right for the other person, truly.
-  - try on mobile just to be sure
+  .fourcards.local .card1 { margin-left: 0%; z-index: 1; }
+  .fourcards.local .card2 { margin-left: 23.33%; z-index: 2; }
+  .fourcards.local .card3 { margin-left: 46.67%; z-index: 3; }
+  .fourcards.local .card4 { margin-left: 70%; z-index: 4; }
+  
   </style>
   
   <template>
@@ -144,6 +150,10 @@
             display += " " + lastMove;
         }
         return display;
+      },
+
+      setNumberOfPlayers: function(players) {
+        this.$.player.classList.toggle("fourcards", players>3);
       }
       
     });
