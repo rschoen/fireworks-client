@@ -316,6 +316,10 @@ paper-button {
 		ajax.body = "data=" + data;
 		ajax.generateRequest();
 	},
+
+    requestStats: function() {
+        this.sendData("stats",this.makeEmptyMove());
+    },
 	
 	makeMove: function(movetype, cardindex, hintplayer, hintinfotype) {
 		var move = {Game: this.gameid,
@@ -337,7 +341,11 @@ paper-button {
 	
 	handleResponse: function(request) {
 		var json = request.detail.response;
-        if(json.error != undefined)
+        if(json == null) {
+            return;
+        }
+
+        if(typeof json.error !== 'undefined')
         {
             this.$.errortext.innerHTML = this.sanitize(json.error);
             this.$.error.classList.remove("hidden");
@@ -360,6 +368,10 @@ paper-button {
             this.$.gameslist.classList.remove("hidden");
             this.joinedGame = '';
             this.turn = -1;
+            return;
+        }
+        if(typeof json.Stats !== 'undefined') {
+            document.getElementById("stats").processJSON(json);
             return;
         }
         if(!json.State) {
@@ -636,6 +648,9 @@ paper-button {
         if(this.$.destroyable.children[0]) {
             this.$.destroyable.children[0].remove();
         }
+    },
+    ready: function() {
+        this.requestStats();
     }
 	
     });
