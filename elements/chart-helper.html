@@ -1,0 +1,29 @@
+
+<dom-module id="fireworks-chart-helper">
+
+<style>
+</style>
+  
+  <template>
+  <div id="chart"></div>
+  </template>
+
+  <script>
+
+    Polymer({
+      is: "fireworks-chart-helper",
+
+      properties: {
+      	chart: {
+      		type: Object
+      	}
+      },
+
+      ready: function() {
+        this.$.chart.appendChild(this.chart);
+      }
+
+    });
+  </script>
+
+</dom-module>
