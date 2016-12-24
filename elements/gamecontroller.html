@@ -4,7 +4,7 @@
 .hidden { display: none; }
 
 #overlay {
-	position: fixed;
+	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -14,7 +14,7 @@
 }
 
 #dialog {
-	position: fixed;
+	position: absolute;
 	width: 230px;
 	top: 50%;
 	left: 50%;
@@ -630,7 +630,8 @@ paper-button {
         if(!this.signedIn) {
             return
         }
-        
+        this.done = false
+        this.hideModal();
         if(this.suggestGame) {
             this.joinGame(this.suggestGame);
         }
