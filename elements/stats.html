@@ -2,6 +2,10 @@
 <dom-module id="fireworks-stats">
 
 <style>
+google-chart {
+  width: 500px;
+  height: 200px;
+}
 </style>
   
   <template>
@@ -13,17 +17,21 @@
   </template>
   </ul>
 
-    <template is="dom-repeat" items="{{users}}" as="item">
+ <div id="chart"><div></div></div>
+
+    <template is="dom-repeat" items="{{users}}" as="item" id="usertemplate">
       <h2>[[item.name]]</h2>
       <ul>
       <template is="dom-repeat" items="{{item.stats}}" as="userStat">
         <li><span>[[userStat.name]]</span>: <span>[[userStat.stat]]</span>
       </template>
       </ul>
+      <fireworks-chart-helper chart="[[item.chart]]"></fireworks-chart-helper>
     </template>
-    </template>
+  </template>
 
   <script>
+
     Polymer({
       is: "fireworks-stats",
 
@@ -53,7 +61,7 @@
 
         for(i in json.Players) {
           u = json.Players[i].Stats
-          user = {name: json.Players[i].Name, stats: Array()};
+          user = {id: json.Players[i].ID, name: json.Players[i].Name, stats: Array()};
 
           user.stats.push({name: "Started games", stat: u.StartedGames})
           user.stats.push({name: "Finished games", stat: u.FinishedGames})
@@ -69,10 +77,52 @@
           user.stats.push({name: "Hints", stat: u.Hints})
           user.stats.push({name: "Discards", stat: u.Discards})
 
+          user.chart = this.createStatsChart(u.Scores)
           this.push('users', user);
         }
-      }
+        this.createAndAttachStatsChart("chart",s.Scores)
+      },
 
+      _computeDataRows: function(scores) {
+        rows = Array();
+        for(i in scores) {
+          rows.push( [i, scores[i]] )
+        }
+        text = JSON.stringify(rows);
+        return "[ " + text.slice(1);
+      },
+
+      createStatsChart: function(data) {
+        var chartAttributes = {
+          'id': "mychart",
+          'type': 'column',
+          'options': '{"title": "Overall score distribution", "legend": {"position": "none"}, "hAxis": {"showTextEvery": "2"}, "height": "200", "width": "500"}',
+          'rows': this._computeDataRows(data),
+          'cols': '[{"label": "Data", "type": "string"},{"label": "Value", "type": "number"}]',
+        };
+
+        var chart = document.createElement('google-chart');
+
+        for (var key in chartAttributes) {
+          chart.setAttribute(key, chartAttributes[key]);
+        }
+        Polymer.dom(this.root).appendChild(chart);
+        return chart;
+      },
+
+      createAndAttachStatsChart: function(id, data) {
+        var chartContainer = document.getElementById(id);
+        chartContainer.children[0].remove();
+        chartContainer.appendChild(this.createStatsChart(data));
+      },
+
+      _userChartName: function(id) {
+        return "user"+id
+      },
+
+      _callback: function(chart) {
+        window.alert(chart);
+      }
 
     });
   </script>
