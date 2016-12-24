@@ -68,12 +68,12 @@
         <!-- Drawer Content -->
         <paper-menu class="list" attr-for-selected="data-route" selected="{{route}}" on-iron-activate="onMenuSelect">
 	      <a data-route="games" href="/games">
-            <iron-icon icon="list"></iron-icon>
+            <iron-icon icon="icons:content-copy"></iron-icon>
             <span>Games</span>
           </a>	
-          <a data-route="users" href="/users">
-            <iron-icon icon="social:group"></iron-icon>
-            <span>Users</span>
+          <a data-route="stats" href="/stats">
+            <iron-icon icon="editor:format-list-numbered"></iron-icon>
+            <span>Stats</span>
           </a>
   		  
           <a data-route="instructions" href="/instructions">
@@ -114,10 +114,10 @@
                 </paper-material>
             </section>
 		  
-            <section data-route="users">
+            <section data-route="stats">
               <paper-material elevation="1">
-                <h2 class="paper-font-display2">Users</h2>
-                <p>Users list and stats coming soon!</p>
+                <h2 class="paper-font-display2">Stats</h2>
+                <fireworks-stats id=stats></fireworks-stats>
               </paper-material>
             </section>
 

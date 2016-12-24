@@ -1,0 +1,80 @@
+
+<dom-module id="fireworks-stats">
+
+<style>
+</style>
+  
+  <template>
+  <paper-button raised on-tap='requestStats'>Refresh</paper-button>
+	<h2>Overall</h2>
+  <ul>
+  <template is="dom-repeat" items="{{globalStats}}" as="item">
+    <li><span>[[item.name]]</span>: <span>[[item.stat]]</span>
+  </template>
+  </ul>
+
+    <template is="dom-repeat" items="{{users}}" as="item">
+      <h2>[[item.name]]</h2>
+      <ul>
+      <template is="dom-repeat" items="{{item.stats}}" as="userStat">
+        <li><span>[[userStat.name]]</span>: <span>[[userStat.stat]]</span>
+      </template>
+      </ul>
+    </template>
+    </template>
+
+  <script>
+    Polymer({
+      is: "fireworks-stats",
+
+      properties: {
+      	globalStats: {
+      		type: Array
+      	},
+        users: {
+          type: Array
+        }
+      },
+
+      requestStats: function () {
+        document.getElementById("gamecontroller").requestStats();
+      },
+      
+      processJSON: function(json) {
+        this.globalStats = Array();
+        this.users = Array();
+        s = json.Stats
+        this.push('globalStats', {name: "Started games", stat: s.StartedGames})
+        this.push('globalStats', {name: "Finished games", stat: s.FinishedGames})
+        this.push('globalStats', {name: "Perfect games", stat: s.FinishedGames - (s.BombsLosses + s.TurnsLosses + s.NoPlaysLosses)})
+        this.push('globalStats', {name: "Bombed out", stat: s.BombsLosses})
+        this.push('globalStats', {name: "Ran out of turns", stat: s.TurnsLosses})
+        this.push('globalStats', {name: "No plays left", stat: s.NoPlaysLosses})
+
+        for(i in json.Players) {
+          u = json.Players[i].Stats
+          user = {name: json.Players[i].Name, stats: Array()};
+
+          user.stats.push({name: "Started games", stat: u.StartedGames})
+          user.stats.push({name: "Finished games", stat: u.FinishedGames})
+          user.stats.push({name: "Perfect games", stat: u.FinishedGames - (s.BombsLosses + u.TurnsLosses + u.NoPlaysLosses)})
+          user.stats.push({name: "Bombed out", stat: u.BombsLosses})
+          user.stats.push({name: "Ran out of turns", stat: u.TurnsLosses})
+          user.stats.push({name: "No plays left", stat: u.NoPlaysLosses})
+
+          user.stats.push({name: "Turns taken", stat: u.Moves})
+          user.stats.push({name: "Average turn time", stat: u.TurnTime / u.Moves + " seconds"})
+          user.stats.push({name: "Successful plays", stat: u.Plays})
+          user.stats.push({name: "Bombs", stat: u.Bombs})
+          user.stats.push({name: "Hints", stat: u.Hints})
+          user.stats.push({name: "Discards", stat: u.Discards})
+
+          this.push('users', user);
+        }
+      }
+
+
+    });
+  </script>
+
+</dom-module>
