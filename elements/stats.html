@@ -57,13 +57,13 @@
 
           user.stats.push({name: "Started games", stat: u.StartedGames})
           user.stats.push({name: "Finished games", stat: u.FinishedGames})
-          user.stats.push({name: "Perfect games", stat: u.FinishedGames - (s.BombsLosses + u.TurnsLosses + u.NoPlaysLosses)})
+          user.stats.push({name: "Perfect games", stat: u.FinishedGames - (u.BombsLosses + u.TurnsLosses + u.NoPlaysLosses)})
           user.stats.push({name: "Bombed out", stat: u.BombsLosses})
           user.stats.push({name: "Ran out of turns", stat: u.TurnsLosses})
           user.stats.push({name: "No plays left", stat: u.NoPlaysLosses})
 
           user.stats.push({name: "Turns taken", stat: u.Moves})
-          user.stats.push({name: "Average turn time", stat: u.TurnTime / u.Moves + " seconds"})
+          user.stats.push({name: "Average turn time", stat: Math.round(u.TurnTime / u.Moves * 10,2)/10 + " seconds"})
           user.stats.push({name: "Successful plays", stat: u.Plays})
           user.stats.push({name: "Bombs", stat: u.Bombs})
           user.stats.push({name: "Hints", stat: u.Hints})
