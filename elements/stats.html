@@ -3,43 +3,54 @@
 
 <style>
 google-chart {
-  width: 500px;
+  width: 350px;
   height: 200px;
+  margin-top: 10px;
 }
-.hidden { 
-display: none;
+#heading { 
+  font-size: 35pt;
+  margin-right: 145px;
 }
-
-div.stat {
-  width: 75px;
-  height: 75px; 
-  display: inline-block;
-  margin: 10px;
-  padding: 5px;
-  border: 1px solid #AAA;
-}
-div.stat div { display: block; width: 100%; text-align: center; vertical-align: middle;}
-div.name { font-size: 10pt; height: 30px;}
-div.percent { font-size: 12pt; height: 30px; }
-div.subtext { font-size: 8pt; height: 15px;}
+table { font-size: 11px; border-collapse: collapse; }
+table td, table th { border: 1px solid #AAA; padding: 3px; }
+td { text-align: center; }
+td.name { text-align: left; }
 </style>
   
   <template>
-  <paper-button raised on-tap='requestStats'>Refresh</paper-button>
-	<h2>Overall</h2>
-  <template is="dom-repeat" items="{{globalStats}}" as="item">
-  <div class="stat"><div class='name'>[[item.name]]</div><div class='percent'>[[_computePercentage(item)]]</div><div class='subtext'>[[_computeSubtext(item)]]</div></div>
+  <span id='heading'>Stats</span><paper-button raised on-tap='requestStats'>Refresh</paper-button>
+  <h2>Game results</h2>
+  <table class="stats">
+  <tr><th></th><th>Games</th><th>Perfect</th><th>Bombed</th><th>No Turns</th><th>No Plays</th><th>Avg Score</th></tr>
+  <template is="dom-repeat" items="{{stats}}" as="item">
+  <tr>
+  <td class='name'>[[item.name]]</td>
+  <td><span>[[item.games]]</span></td>
+  <td><span>[[item.perfectGames]]</span> <span>[[_computePercent(item.perfectGames,item.games)]]</span></td>
+  <td><span>[[item.bombedGames]]</span> <span>[[_computePercent(item.bombedGames,item.games)]]</span></td>
+  <td><span>[[item.noTurnsGames]]</span> <span>[[_computePercent(item.noTurnsGames,item.games)]]</span></td>
+  <td><span>[[item.noPlaysGames]]</span> <span>[[_computePercent(item.noPlaysGames,item.games)]]</span></td>
+  <td><span>[[item.score]]</span></td>
+  </tr>
+  </template>
+  </table>
+  <div id="chart"><div></div></div>
+	<h2>Turn stats</h2>
+  <table class="stats">
+  <tr><th></th><th>Moves</th><th>Plays</th><th>Bombs</th><th>Discards</th><th>Hints</th><th>Avg. Time</tr>
+  <template is="dom-repeat" items="{{stats}}" as="item">
+  <tr>
+  <td class='name'>[[item.name]]</td>
+  <td><span>[[item.moves]]</span></td>
+  <td><span>[[item.plays]]</span> <span>[[_computePercent(item.plays,item.moves)]]</span></td>
+  <td><span>[[item.bombs]]</span> <span>[[_computePercent(item.bombs,item.moves)]]</span></td>
+  <td><span>[[item.discards]]</span> <span>[[_computePercent(item.discards,item.moves)]]</span></td>
+  <td><span>[[item.hints]]</span> <span>[[_computePercent(item.hints,item.moves)]]</span></td>
+  <td><span>[[item.time]]</span>s</span></td>
+  </tr>
+  </table>
   </template>
 
- <div id="chart"><div></div></div>
-
-    <template is="dom-repeat" items="{{users}}" as="item" id="usertemplate">
-      <h2>[[item.name]]</h2>
-      <template is="dom-repeat" items="{{item.stats}}" as="userStat">
-  <div class="stat"><div class='name'>[[userStat.name]]</div><div class='percent'>[[_computePercentage(userStat)]]</div><div class='subtext'>[[_computeSubtext(userStat)]]</div></div>
-      </template>
-      <fireworks-chart-helper chart="[[item.chart]]"></fireworks-chart-helper>
-    </template>
   </template>
 
   <script>
@@ -48,51 +59,27 @@ div.subtext { font-size: 8pt; height: 15px;}
       is: "fireworks-stats",
 
       properties: {
-      	globalStats: {
+      	stats: {
       		type: Array
-      	},
-        users: {
-          type: Array
-        }
+      	}
       },
 
       requestStats: function () {
         document.getElementById("gamecontroller").requestStats();
-        this.$.chart.classList.add("hidden")
-        this.globalStats = Array();
-        this.users = Array();
       },
       
       processJSON: function(json) {
-        this.globalStats = Array();
-        this.users = Array();
-        s = json.Stats
-        this.push('globalStats', {name: "Games completed", num: s.FinishedGames, den: s.StartedGames})
-        this.push('globalStats', {name: "Perfect", num: s.FinishedGames - (s.BombsLosses + s.TurnsLosses + s.NoPlaysLosses), den: s.FinishedGames})
-        this.push('globalStats', {name: "Bombed out", num: s.BombsLosses, den: s.FinishedGames})
-        this.push('globalStats', {name: "Ran out of turns", num: s.TurnsLosses, den: s.FinishedGames})
-        this.push('globalStats', {name: "No plays left", num: s.NoPlaysLosses, den: s.FinishedGames})
+        this.stats = Array();
+        globalStats = this.makeStatsArray(json.Stats);
+        globalStats.name = "Overall"
+        this.push("stats", globalStats)
 
-        for(i in json.Players) {
-          u = json.Players[i].Stats
-          user = {id: json.Players[i].ID, name: json.Players[i].Name, stats: Array()};
-
-          user.stats.push({name: "Games completed", num: u.FinishedGames, den: u.StartedGames})
-          user.stats.push({name: "Perfect", num: u.FinishedGames - (u.BombsLosses + u.TurnsLosses + u.NoPlaysLosses), den: u.StartedGames})
-          user.stats.push({name: "Bombed out", num: u.BombsLosses, den: u.StartedGames})
-          user.stats.push({name: "Ran out of turns", num: u.TurnsLosses, den: u.StartedGames})
-          user.stats.push({name: "No plays left", num: u.NoPlaysLosses, den: u.StartedGames})
-
-          user.stats.push({name: "Mean turn time", value: Math.round(u.TurnTime / u.Moves * 10,2)/10, units: "seconds"})
-          user.stats.push({name: "Plays", num: u.Plays, den: u.Moves})
-          user.stats.push({name: "Bombs", num: u.Bombs, den: u.Moves})
-          user.stats.push({name: "Hints", num: u.Hints, den: u.Moves})
-          user.stats.push({name: "Discards", num: u.Discards, den: u.Moves})
-
-          user.chart = this.createStatsChart(u.Scores)
-          this.push('users', user);
+        for(var i=0; i<json.Players.length; i++) {
+          userStats = this.makeStatsArray(json.Players[i].Stats);
+          userStats.name = json.Players[i].Name;
+          this.push("stats", userStats)
         }
-        this.createAndAttachStatsChart("chart",s.Scores)
+        this.createAndAttachStatsChart("chart",json.Stats.Scores)
       },
 
       _computeDataRows: function(scores) {
@@ -108,7 +95,7 @@ div.subtext { font-size: 8pt; height: 15px;}
         var chartAttributes = {
           'id': "mychart",
           'type': 'column',
-          'options': '{"title": "Overall score distribution", "legend": {"position": "none"}, "hAxis": {"showTextEvery": "2"}, "height": "200", "width": "500"}',
+          'options': '{"title": "Overall score distribution", "chartArea": {"width": "85%", "height": "70%"}, "legend": {"position": "none"}, "hAxis": {"showTextEvery": "2"}, "height": "200", "width": "350"}',
           'rows': this._computeDataRows(data),
           'cols': '[{"label": "Data", "type": "string"},{"label": "Value", "type": "number"}]',
         };
@@ -129,24 +116,34 @@ div.subtext { font-size: 8pt; height: 15px;}
         chartContainer.classList.remove("hidden")
       },
 
-      _computePercentage(stat) {
-        if(typeof stat.value === 'undefined')
-        {
-          return Math.round(stat.num / stat.den * 100) + "%"
-        }
-        else {
-          return stat.value
-        }
+      makeStatsArray: function(s) {
+        gs = Array();
+        gs.games = s.FinishedGames
+        gs.perfectGames = s.FinishedGames - (s.BombsLosses + s.TurnsLosses + s.NoPlaysLosses)
+        gs.bombedGames = s.BombsLosses
+        gs.noTurnsGames = s.TurnsLosses
+        gs.noPlaysGames = s.NoPlaysLosses
+        gs.moves = s.Moves
+        gs.plays = s.Plays
+        gs.bombs = s.Bombs
+        gs.hints = s.Hints
+        gs.discards = s.Discards
+        gs.score = this.getMeanScore(s.Scores)
+        gs.time = Math.round(s.TurnTime / s.Moves * 10)/10
+        return gs
       },
 
-      _computeSubtext(stat) {
-        if(typeof stat.value === 'undefined')
-        {
-          return stat.num + " / " + stat.den
+      getMeanScore(scores){
+        total = 0
+        for(i in scores) {
+          total += i * scores[i];
         }
-        else {
-          return stat.units
-        }
+        return total
+      },
+
+      _computePercent(num, den) {
+        percent = Math.round(num / den * 100)
+        return "(" + percent + "%)"
       }
 
     });
