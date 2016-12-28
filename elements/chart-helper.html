@@ -20,6 +20,10 @@
       },
 
       ready: function() {
+        if(this.$.chart.children.length > 0)
+        {
+          this.$.chart.children[0].remove();
+        }
         this.$.chart.appendChild(this.chart);
       }
 

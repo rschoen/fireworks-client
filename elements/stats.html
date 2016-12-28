@@ -6,26 +6,38 @@ google-chart {
   width: 500px;
   height: 200px;
 }
+.hidden { 
+display: none;
+}
+
+div.stat {
+  width: 75px;
+  height: 75px; 
+  display: inline-block;
+  margin: 10px;
+  padding: 5px;
+  border: 1px solid #AAA;
+}
+div.stat div { display: block; width: 100%; text-align: center; vertical-align: middle;}
+div.name { font-size: 10pt; height: 30px;}
+div.percent { font-size: 12pt; height: 30px; }
+div.subtext { font-size: 8pt; height: 15px;}
 </style>
   
   <template>
   <paper-button raised on-tap='requestStats'>Refresh</paper-button>
 	<h2>Overall</h2>
-  <ul>
   <template is="dom-repeat" items="{{globalStats}}" as="item">
-    <li><span>[[item.name]]</span>: <span>[[item.stat]]</span>
+  <div class="stat"><div class='name'>[[item.name]]</div><div class='percent'>[[_computePercentage(item)]]</div><div class='subtext'>[[_computeSubtext(item)]]</div></div>
   </template>
-  </ul>
 
  <div id="chart"><div></div></div>
 
     <template is="dom-repeat" items="{{users}}" as="item" id="usertemplate">
       <h2>[[item.name]]</h2>
-      <ul>
       <template is="dom-repeat" items="{{item.stats}}" as="userStat">
-        <li><span>[[userStat.name]]</span>: <span>[[userStat.stat]]</span>
+  <div class="stat"><div class='name'>[[userStat.name]]</div><div class='percent'>[[_computePercentage(userStat)]]</div><div class='subtext'>[[_computeSubtext(userStat)]]</div></div>
       </template>
-      </ul>
       <fireworks-chart-helper chart="[[item.chart]]"></fireworks-chart-helper>
     </template>
   </template>
@@ -46,36 +58,36 @@ google-chart {
 
       requestStats: function () {
         document.getElementById("gamecontroller").requestStats();
+        this.$.chart.classList.add("hidden")
+        this.globalStats = Array();
+        this.users = Array();
       },
       
       processJSON: function(json) {
         this.globalStats = Array();
         this.users = Array();
         s = json.Stats
-        this.push('globalStats', {name: "Started games", stat: s.StartedGames})
-        this.push('globalStats', {name: "Finished games", stat: s.FinishedGames})
-        this.push('globalStats', {name: "Perfect games", stat: s.FinishedGames - (s.BombsLosses + s.TurnsLosses + s.NoPlaysLosses)})
-        this.push('globalStats', {name: "Bombed out", stat: s.BombsLosses})
-        this.push('globalStats', {name: "Ran out of turns", stat: s.TurnsLosses})
-        this.push('globalStats', {name: "No plays left", stat: s.NoPlaysLosses})
+        this.push('globalStats', {name: "Games completed", num: s.FinishedGames, den: s.StartedGames})
+        this.push('globalStats', {name: "Perfect", num: s.FinishedGames - (s.BombsLosses + s.TurnsLosses + s.NoPlaysLosses), den: s.FinishedGames})
+        this.push('globalStats', {name: "Bombed out", num: s.BombsLosses, den: s.FinishedGames})
+        this.push('globalStats', {name: "Ran out of turns", num: s.TurnsLosses, den: s.FinishedGames})
+        this.push('globalStats', {name: "No plays left", num: s.NoPlaysLosses, den: s.FinishedGames})
 
         for(i in json.Players) {
           u = json.Players[i].Stats
           user = {id: json.Players[i].ID, name: json.Players[i].Name, stats: Array()};
 
-          user.stats.push({name: "Started games", stat: u.StartedGames})
-          user.stats.push({name: "Finished games", stat: u.FinishedGames})
-          user.stats.push({name: "Perfect games", stat: u.FinishedGames - (u.BombsLosses + u.TurnsLosses + u.NoPlaysLosses)})
-          user.stats.push({name: "Bombed out", stat: u.BombsLosses})
-          user.stats.push({name: "Ran out of turns", stat: u.TurnsLosses})
-          user.stats.push({name: "No plays left", stat: u.NoPlaysLosses})
+          user.stats.push({name: "Games completed", num: u.FinishedGames, den: u.StartedGames})
+          user.stats.push({name: "Perfect", num: u.FinishedGames - (u.BombsLosses + u.TurnsLosses + u.NoPlaysLosses), den: u.StartedGames})
+          user.stats.push({name: "Bombed out", num: u.BombsLosses, den: u.StartedGames})
+          user.stats.push({name: "Ran out of turns", num: u.TurnsLosses, den: u.StartedGames})
+          user.stats.push({name: "No plays left", num: u.NoPlaysLosses, den: u.StartedGames})
 
-          user.stats.push({name: "Turns taken", stat: u.Moves})
-          user.stats.push({name: "Average turn time", stat: Math.round(u.TurnTime / u.Moves * 10,2)/10 + " seconds"})
-          user.stats.push({name: "Successful plays", stat: u.Plays})
-          user.stats.push({name: "Bombs", stat: u.Bombs})
-          user.stats.push({name: "Hints", stat: u.Hints})
-          user.stats.push({name: "Discards", stat: u.Discards})
+          user.stats.push({name: "Mean turn time", value: Math.round(u.TurnTime / u.Moves * 10,2)/10, units: "seconds"})
+          user.stats.push({name: "Plays", num: u.Plays, den: u.Moves})
+          user.stats.push({name: "Bombs", num: u.Bombs, den: u.Moves})
+          user.stats.push({name: "Hints", num: u.Hints, den: u.Moves})
+          user.stats.push({name: "Discards", num: u.Discards, den: u.Moves})
 
           user.chart = this.createStatsChart(u.Scores)
           this.push('users', user);
@@ -112,16 +124,29 @@ google-chart {
 
       createAndAttachStatsChart: function(id, data) {
         var chartContainer = document.getElementById(id);
-        chartContainer.children[0].remove();
         chartContainer.appendChild(this.createStatsChart(data));
+        chartContainer.children[0].remove();
+        chartContainer.classList.remove("hidden")
       },
 
-      _userChartName: function(id) {
-        return "user"+id
+      _computePercentage(stat) {
+        if(typeof stat.value === 'undefined')
+        {
+          return Math.round(stat.num / stat.den * 100) + "%"
+        }
+        else {
+          return stat.value
+        }
       },
 
-      _callback: function(chart) {
-        window.alert(chart);
+      _computeSubtext(stat) {
+        if(typeof stat.value === 'undefined')
+        {
+          return stat.num + " / " + stat.den
+        }
+        else {
+          return stat.units
+        }
       }
 
     });
