@@ -76,7 +76,8 @@ input {
 #gameid { 
     margin-bottom: 20px;
 }
-#buttoncontainer {
+.buttoncontainer {
+
     text-align: right;
 }
 #newgame {
@@ -86,6 +87,29 @@ input {
 paper-button {
     background: #006;
     color: white;
+}
+paper-button.secondary {
+    background: white;
+    color: black;
+}
+
+.smallinput {
+    width: 20px;
+    display: inline-block;
+    text-align: center;
+}
+#collapse {
+    margin: 20px 0;
+}
+#collapse div {
+    height: 32px;
+}
+#collapse div#publiccontainer {
+    height: 20px;
+}
+#collapse select {
+    border: 1px solid #CCC;
+    font-size: 11pt;
 }
 
 </style>
@@ -159,9 +183,22 @@ paper-button {
                 <paper-button id="dialogok" on-tap="hideModal">OK</paper-button>
             </div>
             <div id="newgame" class="hidden">
-				<paper-input id="gameid" label="Game name" value="[[suggestGame]]"></paper-input>
+				<paper-input id="gameid" label="Game name" maxlength=20 char-counter></paper-input>
+                <iron-collapse id="collapse">
+                  <div><select id="mode">
+                    <option value=1>Regular game</option>
+                    <option value=2>With rainbows</option>
+                    <option value=3>Rainbow wildcard</option>
+                    <option value=4>Craynabi</option>
+                    </select></div>
+                    <div id="publiccontainer">Public game: <paper-checkbox id="public" checked></paper-checkbox></div>
+                    <div>Starting hints: <paper-input id="startinghints" class="smallinput" no-label-float auto-validate pattern="[0-9]*" value=8 maxlength=2></paper-input></div>
+                    <div>Starting bombs: <paper-input id="startingbombs" class="smallinput" no-label-float auto-validate pattern="[0-9]*" value=3 maxlength=2></paper-input></div>
+                </iron-collapse>
+               
                 <div class="buttoncontainer">
-				<paper-button raised on-tap="submitJoinGame">Create game</paper-button>
+                <paper-button raised toggles class="secondary" onclick="document.querySelector('#collapse').toggle();">Options</paper-button>
+				<paper-button raised on-tap="submitJoinGame">Create</paper-button>
                 </div>
 		    </div>
 		</div>
