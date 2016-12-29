@@ -205,8 +205,17 @@ fireworks-player {
 		},
 		
 		colors: {
+			type: Array
+		},
+		
+		normalColors: {
 			type: Array,
 			value: ["red", "green", "blue", "yellow", "white"]
+		},
+		
+		rainbowColors: {
+			type: Array,
+			value: ["red", "green", "blue", "yellow", "white", "rainbow"]
 		},
 
 		modeRegular: {
@@ -295,8 +304,11 @@ fireworks-player {
 
 	  attached: function() {
 	  	if (this.hasRainbows()) {
-        	this.push("colors","rainbow");
+        	this.colors = this.rainbowColors
         	this.$.playarea.classList.add("rainbows");
+        }
+        else {
+        	this.colors = this.normalColors;
         }
 
 		for(pile in this.piles) {

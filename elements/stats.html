@@ -21,15 +21,14 @@ td.name { text-align: left; }
   <span id='heading'>Stats</span><paper-button raised on-tap='requestStats'>Refresh</paper-button>
   <h2>Game results</h2>
   <table class="stats">
-  <tr><th></th><th>Games</th><th>Perfect</th><th>Bombed</th><th>No Turns</th><th>No Plays</th><th>Avg Score</th></tr>
+  <tr><th></th><th>Games</th><th>Perfect</th><th>Bombed out</th><th>Out of plays</th><th>Avg score</th></tr>
   <template is="dom-repeat" items="{{stats}}" as="item">
   <tr>
   <td class='name'>[[item.name]]</td>
   <td><span>[[item.games]]</span></td>
   <td><span>[[item.perfectGames]]</span> <span>[[_computePercent(item.perfectGames,item.games)]]</span></td>
   <td><span>[[item.bombedGames]]</span> <span>[[_computePercent(item.bombedGames,item.games)]]</span></td>
-  <td><span>[[item.noTurnsGames]]</span> <span>[[_computePercent(item.noTurnsGames,item.games)]]</span></td>
-  <td><span>[[item.noPlaysGames]]</span> <span>[[_computePercent(item.noPlaysGames,item.games)]]</span></td>
+  <td><span>[[item.outOfPlays]]</span> <span>[[_computePercent(item.outOfPlays,item.games)]]</span></td>
   <td><span>[[item.score]]</span></td>
   </tr>
   </template>
@@ -37,7 +36,7 @@ td.name { text-align: left; }
   <div id="chart"><div></div></div>
 	<h2>Turn stats</h2>
   <table class="stats">
-  <tr><th></th><th>Moves</th><th>Plays</th><th>Bombs</th><th>Discards</th><th>Hints</th><th>Avg. Time</tr>
+  <tr><th></th><th>Moves</th><th>Plays</th><th>Bombs</th><th>Discards</th><th>Hints</th><th>Avg time</tr>
   <template is="dom-repeat" items="{{stats}}" as="item">
   <tr>
   <td class='name'>[[item.name]]</td>
@@ -95,7 +94,7 @@ td.name { text-align: left; }
         var chartAttributes = {
           'id': "mychart",
           'type': 'column',
-          'options': '{"title": "Overall score distribution", "chartArea": {"width": "85%", "height": "70%"}, "legend": {"position": "none"}, "hAxis": {"showTextEvery": "2"}, "height": "200", "width": "350"}',
+          'options': '{"title": "Overall score distribution", "chartArea": {"width": "80%", "height": "70%"}, "legend": {"position": "none"}, "hAxis": {"showTextEvery": "2"}, "height": "200", "width": "350"}',
           'rows': this._computeDataRows(data),
           'cols': '[{"label": "Data", "type": "string"},{"label": "Value", "type": "number"}]',
         };
@@ -121,8 +120,7 @@ td.name { text-align: left; }
         gs.games = s.FinishedGames
         gs.perfectGames = s.FinishedGames - (s.BombsLosses + s.TurnsLosses + s.NoPlaysLosses)
         gs.bombedGames = s.BombsLosses
-        gs.noTurnsGames = s.TurnsLosses
-        gs.noPlaysGames = s.NoPlaysLosses
+        gs.outOfPlays = s.TurnsLosses + s.NoPlaysLosses
         gs.moves = s.Moves
         gs.plays = s.Plays
         gs.bombs = s.Bombs
@@ -135,13 +133,18 @@ td.name { text-align: left; }
 
       getMeanScore(scores){
         total = 0
+        games = 0
         for(i in scores) {
           total += i * scores[i];
+          games += scores[i]
         }
-        return total
+        return total/games
       },
 
       _computePercent(num, den) {
+        if(den==0) {
+          return ""
+        }
         percent = Math.round(num / den * 100)
         return "(" + percent + "%)"
       }
