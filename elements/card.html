@@ -99,126 +99,101 @@
   }
 
   
-  .color-blue, #known.knowncolor-blue {
+  .color-blue, #known.knowncolor-blue, .rainbow4, .rainbow9, .knownrainbow4 {
 	color: #09F;
   }
-  .color-red, #known.knowncolor-red {
+  .color-red, #known.knowncolor-red, .rainbow1, .rainbow6, .knownrainbow1 {
 	color: #F33;
   }
-  .color-green, #known.knowncolor-green {
+  .color-green, #known.knowncolor-green, .rainbow3, .rainbow8, .knownrainbow3 {
 	color: #090;
   }
-  .color-yellow, #known.knowncolor-yellow {
+  .color-yellow, #known.knowncolor-yellow, .rainbow2, .rainbow7, .knownrainbow2 {
 	color: #FD4;
   }
-  .color-white, #known.knowncolor-white {
+  .color-white, #known.knowncolor-white, .rainbow5, .rainbow10, .knownrainbow5 {
 	color: white;
   }
-  
-  /*
-  .firework {
-	position: absolute;
-	display: none;
+
+  .rainbowcontainer, .knownrainbowcontainer {
+  	display: none;
+  	position: relative;
   }
-  .color-blue .firework {
-	filter: hue-rotate(230deg) brightness(2.5);
-	-webkit-filter: hue-rotate(230deg) brightness(2.5);
+  .color-rainbow .rainbowcontainer, .knowncolor-rainbow .knownrainbowcontainer {
+  	display: block;
   }
-  .color-red .firework {
-	filter: brightness(6);
-	-webkit-filter: brightness(6);
-  }
-  .color-green .firework {
-	filter: hue-rotate(140deg) brightness(1.5);
-	-webkit-filter: hue-rotate(140deg) brightness(1.5);
-  
-  }
-  .color-yellow .firework {
-	filter: hue-rotate(70deg) saturate(50);
-	-webkit-filter: hue-rotate(70deg) saturate(50);
-  
-  }
-  .color-white .firework {
-	filter: grayscale(100%) brightness(7);
-	-webkit-filter: grayscale(100%) brightness(7);
-  
-  }
-  
-  
-  .number-1 .firework1 {
-	left: 70px;
-	top: 130px;
-  
-  }
-  .number-1 .firework2 {
-	display: none;
-  }
-  .number-1 .firework3 {
-	display: none;
-  }
-  .number-1 .firework4 {
-	display: none;
-  }
-  .number-1 .firework5 {
-	display: none;
-  }
-  .number-2 .firework1, .number-4 .firework1 {
-	left: 90px;
-	top: 100px;
-  }
-  .number-2 .firework2, .number-4 .firework2 {
-	left: 50px;
-	top: 150px;
-  }
-  .number-2 .firework3 {
-	display: none;
-  }
-  .number-2 .firework4 {
-	display: none;
-  }
-  .number-2 .firework5 {
-	display: none;
-  }
-  .number-3 .firework1, .number-5 .firework1 {
-	left: 40px;
-	top: 100px;
-  }
-  .number-3 .firework2, .number-5 .firework2 {
-	left: 110px;
-	top: 130px;
-  }
-  .number-3 .firework3, .number-5 .firework3 {
-	left: 30px;
-	top: 165px;
-  }
-  .number-3 .firework4 {
-	display: none;
-  }
-  .number-3 .firework5 {
-	display: none;
+  .color-rainbow .nonrainbow, .knowncolor-rainbow .knownnonrainbow {
+  	display: none;
   }
 
-  .number-4 .firework3 {
-	left: 30px;
-	top: 90px;
+  .contentarea .rainbowcontainer div {
+  	height: 5px;
+  	overflow: hidden;
   }
-  .number-4 .firework4 {
-	left: 110px;
-	top: 170px;
+
+  .knownrainbowcontainer div {
+  	height: 2px;
+  	overflow: hidden;
   }
-  .number-4 .firework5 {
-	display: none;
+
+  .rainbowcontainer div span {
+  	position: relative;
   }
-  
-  .number-5 .firework4 {
-	left: 80px;
-	top: 190px;
+
+  .knownrainbowcontainer div span {
+  	position: relative;
   }
-  .number-5 .firework5 {
-	left: 100px;
-	top: 65px;
-  }*/
-  
+
+  .rainbow1 {
+  	margin-top: 10px;
+  }
+  .rainbow1 span {
+  	top: -10px;
+  }
+  .rainbow2 span {
+  	top: -15px;
+  }
+  .rainbow3 span {
+  	top: -20px;
+  }
+  .rainbow4 span {
+  	top: -25px;
+  }
+  .rainbow5 span {
+  	top: -30px;
+  }
+  .rainbow6 span {
+  	top: -35px;
+  }
+  .rainbow7 span {
+  	top: -40px;
+  }
+  .rainbow8 span {
+  	top: -45px;
+  }
+  .rainbow9 span {
+  	top: -50px;
+  }
+  .rainbow10 span {
+  	top: -55px;
+  }
+
+  .knownrainbow1 span {
+
+  }
+  .knownrainbow2 span {
+  	top: -2px;
+  }
+  .knownrainbow3 span {
+  	top: -4px;
+  }
+  .knownrainbow4 span {
+  	top: -6px;
+  }
+  .knownrainbow5 span {
+  	top: -8px;
+  }
+
   #known {
   	color: #999;
   	position: absolute;
@@ -249,11 +224,32 @@
 		<div class="back showbackground" id="back"><content></content></div>
 		<div class="front">
 			<div class="contentarea">
-				<div class="number">{{number}}</div>
+				<div class="number nonrainbow">[[number]]</div>
+				<div class="number rainbowcontainer">
+					<div class="rainbow1"><span>[[number]]</span></div>
+					<div class="rainbow2"><span>[[number]]</span></div>
+					<div class="rainbow3"><span>[[number]]</span></div>
+					<div class="rainbow4"><span>[[number]]</span></div>
+					<div class="rainbow5"><span>[[number]]</span></div>
+					<div class="rainbow6"><span>[[number]]</span></div>
+					<div class="rainbow7"><span>[[number]]</span></div>
+					<div class="rainbow8"><span>[[number]]</span></div>
+					<div class="rainbow9"><span>[[number]]</span></div>
+					<div class="rainbow10"><span>[[number]]</span></div>
+				</div>
 			</div>
 		</div>
-		<div id="known" hidden="{{hideKnownIndicator(knownColor,knownNumber)}}">{{knownNumberDisplay(knownNumber)}}</div>
-				
+		<div id="known" hidden="{{hideKnownIndicator(knownColor,knownNumber)}}">
+			<div class="knownnonrainbow">[[knownNumberDisplay(knownNumber)]]</div>
+			<div class="knownrainbowcontainer">
+				<div class="knownrainbow1"><span>[[knownNumberDisplay(knownNumber)]]</span></div>
+				<div class="knownrainbow2"><span>[[knownNumberDisplay(knownNumber)]]</span></div>
+				<div class="knownrainbow3"><span>[[knownNumberDisplay(knownNumber)]]</span></div>
+				<div class="knownrainbow4"><span>[[knownNumberDisplay(knownNumber)]]</span></div>
+				<div class="knownrainbow5"><span>[[knownNumberDisplay(knownNumber)]]</span></div>
+			</div>
+		</div>
+
 	</div>
 	</div>
   </template>
