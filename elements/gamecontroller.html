@@ -126,7 +126,14 @@ paper-button {
                 <fireworks-card id="hintscard" faceup></fireworks-card>
                 <div>
                     <paper-button raised id="hintnumber" on-tap="giveNumberHint">Hint number</paper-button>
-                    <paper-button raised id="hintcolor" on-tap="giveColorHint">Hint color</paper-button>
+                    <paper-button raised id="hintcolor" on-tap="giveColorHint">Hint <span>[[hintColor]]</span></paper-button>
+                    <span id="rainbowhintbuttons">
+                    <paper-button raised on-tap="giveColorHint('red')">Hint red</paper-button>
+                    <paper-button raised on-tap="giveColorHint('yellow')">Hint yellow</paper-button>
+                    <paper-button raised on-tap="giveColorHint('green')">Hint green</paper-button>
+                    <paper-button raised on-tap="giveColorHint('blue')">Hint blue</paper-button>
+                    <paper-button raised on-tap="giveColorHint('white')">Hint white</paper-button>
+                    </span>
                 </div>
 			</div>
 			<div id="playinputs" class="hidden">
@@ -190,8 +197,11 @@ paper-button {
 			type: String
 		},
 		hintCardIndex: {
-			type: Number,
+			type: Number
 		},
+        hintColor: {
+            type: String
+        },
 		movePlay: {
 			type: Number,
 			readOnly: true,
@@ -321,13 +331,14 @@ paper-button {
         this.sendData("stats",this.makeEmptyMove());
     },
 	
-	makeMove: function(movetype, cardindex, hintplayer, hintinfotype) {
+	makeMove: function(movetype, cardindex, hintplayer, hintinfotype, hintcolor) {
 		var move = {Game: this.gameid,
 				Player: this.localPlayer,
 				MoveType: movetype,
 				CardIndex: cardindex,
 				HintPlayer: hintplayer,
 				HintInfoType: hintinfotype,
+                HintColor: hintcolor,
                 Token: this.playerToken
 				};
 	
@@ -529,7 +540,16 @@ paper-button {
 			}
 			else {
                 Polymer.dom(this.$.hintnumber).innerHTML = "Hint " + number;
-                Polymer.dom(this.$.hintcolor).innerHTML = "Hint " + color;
+                if(color == "rainbow") {
+                    this.$.hintcolor.classList.add("hidden");
+                    this.$.rainbowhintbuttons.classList.remove("hidden");
+                }
+                else {
+                    this.hintColor = color
+                    this.$.hintcolor.classList.remove("hidden");
+                    this.$.rainbowhintbuttons.classList.add("hidden");
+                }
+                
 				this.$.hintinputs.classList.remove("hidden");
 			}
 			this.showModal();
@@ -557,18 +577,21 @@ paper-button {
 		this.$.spinner.classList.add("hidden");
 	},
 	
-	giveHint: function(infotype) {
-		var data = this.makeMove(this.moveHint, this.hintCardIndex, this.hintPlayer, infotype);
+	giveHint: function(infotype, hintcolor) {
+		var data = this.makeMove(this.moveHint, this.hintCardIndex, this.hintPlayer, infotype, hintcolor);
 		this.sendData("move",data);
 		this.hideModal();
 		this.showSpinner();
 	},
 	
 	giveNumberHint: function() {
-		this.giveHint(this.infoNumber);
+		this.giveHint(this.infoNumber, '');
 	},
-	giveColorHint: function() {
-		this.giveHint(this.infoColor);
+	giveColorHint: function(color) {
+        if (typeof color === 'undefined') {
+            color = this.hintColor
+        }
+		this.giveHint(this.infoColor, color);
 	},
 	
 	play: function () {
