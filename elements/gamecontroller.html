@@ -85,6 +85,7 @@ input {
 paper-button {
     background: #006;
     color: white;
+    margin: 5px; 
 }
 paper-button.secondary {
     background: white;
@@ -109,6 +110,23 @@ paper-button.secondary {
     border: 1px solid #CCC;
     font-size: 11pt;
 }
+
+  .bluebutton {
+	background: #09F;
+  }
+  .redbutton {
+	background: #F33;
+  }
+  .greenbutton {
+	background: #090;
+  }
+  .yellowbutton {
+	background: #FD4;
+  }
+  .whitebutton {
+	background: white;
+    color: #AAA;
+  }
 
 </style>
   
@@ -150,11 +168,11 @@ paper-button.secondary {
                     <paper-button raised id="hintnumber" on-tap="giveNumberHint">Hint number</paper-button>
                     <paper-button raised id="hintcolor" on-tap="catchColorEvent">Hint <span>[[hintColor]]</span></paper-button>
                     <span id="rainbowhintbuttons">
-                    <paper-button raised on-tap="giveRedHint">Red</paper-button>
-                    <paper-button raised on-tap="giveYellowHint">Yellow</paper-button>
-                    <paper-button raised on-tap="giveGreenHint">Green</paper-button>
-                    <paper-button raised on-tap="giveBlueHint">Blue</paper-button>
-                    <paper-button raised on-tap="giveWhiteHint">White</paper-button>
+                    <paper-button raised on-tap="giveRedHint" class="redbutton">Red</paper-button>
+                    <paper-button raised on-tap="giveYellowHint" class="yellowbutton">Yellow</paper-button>
+                    <paper-button raised on-tap="giveGreenHint" class="greenbutton">Green</paper-button>
+                    <paper-button raised on-tap="giveBlueHint" class="bluebutton">Blue</paper-button>
+                    <paper-button raised on-tap="giveWhiteHint" class="whitebutton">White</paper-button>
                     </span>
                 </div>
 			</div>
