@@ -220,8 +220,11 @@ paper-button.secondary {
             type: String
         },
       	game: {
-      		type: String
+      		type: Object
       	},
+        gameid: {
+            type: String
+        },
       	gamesequence: {
       		type: Number,
       		readOnly: true
@@ -351,7 +354,7 @@ paper-button.secondary {
     },
 	
 	joinGame: function(gameid) {
-		this.game = gameid;
+		this.gameid = gameid;
 		this.sendData("join",this.makeEmptyMove());
         this.$.gameslist.classList.add("hidden");
 	},
@@ -373,7 +376,7 @@ paper-button.secondary {
     },
 	
 	makeMove: function(movetype, cardindex, hintplayer, hintinfotype, hintcolor) {
-		var move = {Game: this.game,
+		var move = {Game: this.gameid,
 				Player: this.localPlayer,
 				MoveType: movetype,
 				CardIndex: cardindex,
@@ -418,7 +421,7 @@ paper-button.secondary {
             
             this.hideSpinner();
             this.$.gameslist.classList.remove("hidden");
-            this.game = ""
+            this.gameid = ""
             this.turn = -1;
             return;
         }
@@ -451,17 +454,17 @@ paper-button.secondary {
             this.showModal();
         }
         
-        if(this.game != json.ID) {
-            this.game = json.ID
+        if(this.gameid != json.ID) {
+            this.gameid = json.ID
             this.turn = -1;
-            history.pushState(null, null, "#!/games/" + this.game)
+            history.pushState(null, null, "#!/games/" + this.gameid)
         }
 		
         if(this.turn == json.Turn) {
             return;
         }
         
-		var newGame = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified);
+		this.game = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified, json.GameMode);
         
         var playerIndex = -1;
         for(player in json.Players) {
@@ -473,7 +476,7 @@ paper-button.secondary {
         
 		for(i in json.Players) {
             player = (playerIndex + parseInt(i)) % json.Players.length;
-			var thisPlayer = newGame.addPlayer(json.Players[player].GoogleID, json.Players[player].Name, json.Players[player].LastMove, []);
+			var thisPlayer = this.game.addPlayer(json.Players[player].GoogleID, json.Players[player].Name, json.Players[player].LastMove, []);
 			if(json.Players[player].GoogleID == json.CurrentPlayer)
 			{
 				thisPlayer.setCurrentPlayer();
@@ -481,14 +484,14 @@ paper-button.secondary {
 			var index = 0;
 			for(card in json.Players[player].Cards) {
 				var card = thisPlayer.addCard(json.Players[player].Cards[card].ID, json.Players[player].Cards[card].Color, json.Players[player].Cards[card].Number, json.Players[player].Cards[card].KnownColor, json.Players[player].Cards[card].KnownNumber, index);
-                if(newGame.cardShouldBeHighlighted(card.id)) {
+                if(this.game.cardShouldBeHighlighted(card.id)) {
                     card.setHighlighted(true);
                 }
                 index++;
 			}
 		}
 		this.destroyGame();
-		Polymer.dom(this.root).querySelector("#destroyable").appendChild(newGame);
+		Polymer.dom(this.root).querySelector("#destroyable").appendChild(this.game);
         this.$.destroyable.classList.remove("hidden");
     
         if(json.State == this.stateNotStarted) {
@@ -581,12 +584,12 @@ paper-button.secondary {
 			}
 			else {
                 Polymer.dom(this.$.hintnumber).innerHTML = "Hint " + number;
-                if(color == "rainbow") {
+                if(this.game.hasRainbows() && color == "rainbow") {
                     this.$.hintcolor.classList.add("hidden");
                     this.$.rainbowhintbuttons.classList.remove("hidden");
                 }
                 else {
-                    this.hintColor = color
+                    this.hintColor = color;
                     this.$.hintcolor.classList.remove("hidden");
                     this.$.rainbowhintbuttons.classList.add("hidden");
                 }
@@ -692,8 +695,8 @@ paper-button.secondary {
         }
         this.done = false
         this.hideModal();
-        if(this.game) {
-            this.joinGame(this.game);
+        if(this.gameid) {
+            this.joinGame(this.gameid);
         }
         else {
             this.polling = false
