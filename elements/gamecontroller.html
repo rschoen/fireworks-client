@@ -223,7 +223,8 @@ paper-button.secondary {
       		type: Object
       	},
         gameid: {
-            type: String
+            type: String,
+            observer: "gameChanged"
         },
       	gamesequence: {
       		type: Number,
@@ -426,7 +427,6 @@ paper-button.secondary {
             
             this.hideSpinner();
             this.$.gameslist.classList.remove("hidden");
-            this.gameid = ""
             this.turn = -1;
             return;
         }
@@ -459,6 +459,10 @@ paper-button.secondary {
             this.$.score.innerHTML = score;
             this.$.end.classList.remove("hidden");
             this.showModal();
+        }
+        
+        if(this.gameid == "") {
+            return;
         }
         
         if(this.gameid != json.ID) {
@@ -516,7 +520,7 @@ paper-button.secondary {
 		if(!this.polling)
 		{
 			this.polling = true;
-			this.poll();
+			this.async(this.poll, 5000);
 		}
 		this.currentPlayer = json.CurrentPlayer;     
 		this.hideSpinner();
@@ -538,7 +542,7 @@ paper-button.secondary {
 	},
 	
     gameTapped: function(e) {
-        this.joinGame(e.model.item.id);
+        //this.joinGame(e.model.item.id);
     },
 		  
 	registerClick: function(event) {
