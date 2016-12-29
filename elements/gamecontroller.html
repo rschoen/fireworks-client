@@ -185,20 +185,20 @@ paper-button.secondary {
             <div id="newgame" class="hidden">
 				<paper-input id="gameid" label="Game name" maxlength=20 char-counter></paper-input>
                 <iron-collapse id="collapse">
-                  <div><select id="mode">
+                  <div><select id="gameMode">
                     <option value=1>Regular game</option>
                     <option value=2>With rainbows</option>
                     <option value=3>Rainbow wildcard</option>
                     <option value=4>Craynabi</option>
                     </select></div>
                     <div id="publiccontainer">Public game: <paper-checkbox id="public" checked></paper-checkbox></div>
-                    <div>Starting hints: <paper-input id="startinghints" class="smallinput" no-label-float auto-validate pattern="[0-9]*" value=8 maxlength=2></paper-input></div>
-                    <div>Starting bombs: <paper-input id="startingbombs" class="smallinput" no-label-float auto-validate pattern="[0-9]*" value=3 maxlength=2></paper-input></div>
+                    <div>Starting hints: <paper-input id="startingHints" class="smallinput" no-label-float auto-validate pattern="[0-9]*" value=8 maxlength=2></paper-input></div>
+                    <div>Starting bombs: <paper-input id="startingBombs" class="smallinput" no-label-float auto-validate pattern="[0-9]*" value=3 maxlength=2></paper-input></div>
                 </iron-collapse>
                
                 <div class="buttoncontainer">
                 <paper-button raised toggles class="secondary" onclick="document.querySelector('#collapse').toggle();">Options</paper-button>
-				<paper-button raised on-tap="submitJoinGame">Create</paper-button>
+				<paper-button raised on-tap="createGame">Create</paper-button>
                 </div>
 		    </div>
 		</div>
@@ -219,7 +219,7 @@ paper-button.secondary {
         playerToken: {
             type: String
         },
-      	gameid: {
+      	game: {
       		type: String
       	},
       	gamesequence: {
@@ -292,10 +292,6 @@ paper-button.secondary {
 		currentPlayer: {
 			type: Number
 		},
-		suggestGame: {
-			type: String,
-            observer: "_suggestGameChanged"
-		},
 		server: {
 			type: String,
 			value: ""
@@ -316,42 +312,50 @@ paper-button.secondary {
         },
         turn: {
             type: Number
-        },
-        joinedGame: {
-            type: String
         }
 	},
     
-    gameTag: function(gameName) {
-        return "/games/"+gameName
+    gameTag: function(gameid) {
+        return "/games/"+gameid
     },
     
     newGameDialog: function() {
         this.$.newgame.classList.remove("hidden");
         this.showModal();
     },
-	
-	joinGame: function(gameid) {
-        if(this.joinedGame == gameid) {
+
+    createGame: function() { 
+        var gameid = this.$.gameid.value;
+        if(gameid == "") {
             return;
         }
-        this.joinedGame = gameid;
-		this.gameid = gameid;
+
+        this.hideModal();
+        this.showSpinner();
+        this.$.gameslist.classList.add("hidden");
+
+        var data = {Game: gameid,
+                Player: this.localPlayer,
+                Token: this.playerToken,
+                StartingHints: this.$.startingHints.value,
+                MaxHints: this.$.startingHints.value,
+                StartingBombs: this.$.startingBombs.value,
+                GameMode: this.$.gameMode.value,
+                Public: this.$.public.checked?true:false
+                };
+
+        var json = JSON.stringify(data)
+
+        this.sendData("create",json)
+
+    },
+	
+	joinGame: function(gameid) {
+		this.game = gameid;
 		this.sendData("join",this.makeEmptyMove());
         this.$.gameslist.classList.add("hidden");
 	},
     
-    submitJoinGame: function(e) { 
-        e.preventDefault();
-        this.suggestGame = this.$.gameid.value;
-        this.hideModal();
-        this.showSpinner();
-        var gameid = this.$.gameid.value;
-		if(gameid != "") {
-			this.joinGame(gameid);
-		}
-    },
-	
 	startGame: function(e) {
 		this.sendData("start",this.makeEmptyMove())
 		this.$.start.classList.add("hidden");
@@ -369,7 +373,7 @@ paper-button.secondary {
     },
 	
 	makeMove: function(movetype, cardindex, hintplayer, hintinfotype, hintcolor) {
-		var move = {Game: this.gameid,
+		var move = {Game: this.game,
 				Player: this.localPlayer,
 				MoveType: movetype,
 				CardIndex: cardindex,
@@ -414,7 +418,7 @@ paper-button.secondary {
             
             this.hideSpinner();
             this.$.gameslist.classList.remove("hidden");
-            this.joinedGame = '';
+            this.game = ""
             this.turn = -1;
             return;
         }
@@ -447,10 +451,10 @@ paper-button.secondary {
             this.showModal();
         }
         
-        if(this.suggestGame != json.ID) {
-            this.suggestGame = json.ID
-            history.pushState(null, null, "#!/games/" + json.ID)
+        if(this.game != json.ID) {
+            this.game = json.ID
             this.turn = -1;
+            history.pushState(null, null, "#!/games/" + this.game)
         }
 		
         if(this.turn == json.Turn) {
@@ -682,18 +686,14 @@ paper-button.secondary {
         
     },
     
-    _suggestGameChanged: function(newvalue, oldvalue) {
-        this.gameChanged();
-    },
-    
     gameChanged: function() {
         if(!this.signedIn) {
             return
         }
         this.done = false
         this.hideModal();
-        if(this.suggestGame) {
-            this.joinGame(this.suggestGame);
+        if(this.game) {
+            this.joinGame(this.game);
         }
         else {
             this.polling = false
