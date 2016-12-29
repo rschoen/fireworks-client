@@ -408,6 +408,7 @@ paper-button.secondary {
         {
             this.$.errortext.innerHTML = this.sanitize(json.error);
             this.$.error.classList.remove("hidden");
+            this.hideSpinner();
             this.showModal();
             return;
         }
