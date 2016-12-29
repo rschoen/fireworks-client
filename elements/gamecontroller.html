@@ -150,13 +150,13 @@ paper-button.secondary {
                 <fireworks-card id="hintscard" faceup></fireworks-card>
                 <div>
                     <paper-button raised id="hintnumber" on-tap="giveNumberHint">Hint number</paper-button>
-                    <paper-button raised id="hintcolor" on-tap="giveColorHint">Hint <span>[[hintColor]]</span></paper-button>
+                    <paper-button raised id="hintcolor" on-tap="catchColorEvent">Hint <span>[[hintColor]]</span></paper-button>
                     <span id="rainbowhintbuttons">
-                    <paper-button raised on-tap="giveColorHint('red')">Hint red</paper-button>
-                    <paper-button raised on-tap="giveColorHint('yellow')">Hint yellow</paper-button>
-                    <paper-button raised on-tap="giveColorHint('green')">Hint green</paper-button>
-                    <paper-button raised on-tap="giveColorHint('blue')">Hint blue</paper-button>
-                    <paper-button raised on-tap="giveColorHint('white')">Hint white</paper-button>
+                    <paper-button raised on-tap="giveRedHint">Hint red</paper-button>
+                    <paper-button raised on-tap="giveYellowHint">Hint yellow</paper-button>
+                    <paper-button raised on-tap="giveGreenHint">Hint green</paper-button>
+                    <paper-button raised on-tap="giveBlueHint">Hint blue</paper-button>
+                    <paper-button raised on-tap="giveWhiteHint">Hint white</paper-button>
                     </span>
                 </div>
 			</div>
@@ -292,6 +292,11 @@ paper-button.secondary {
 			readOnly: true,
 			value: 5
 		},
+        stateNoPlays: {
+            type: Number,
+            readOnly: true,
+            value: 6
+        },
 		currentPlayer: {
 			type: Number
 		},
@@ -340,10 +345,10 @@ paper-button.secondary {
         var data = {Game: gameid,
                 Player: this.localPlayer,
                 Token: this.playerToken,
-                StartingHints: this.$.startingHints.value,
-                MaxHints: this.$.startingHints.value,
-                StartingBombs: this.$.startingBombs.value,
-                GameMode: this.$.gameMode.value,
+                StartingHints: parseInt(this.$.startingHints.value),
+                MaxHints: parseInt(this.$.startingHints.value),
+                StartingBombs: parseInt(this.$.startingBombs.value),
+                GameMode: parseInt(this.$.gameMode.value),
                 Public: this.$.public.checked?true:false
                 };
 
@@ -442,6 +447,8 @@ paper-button.secondary {
                 text = "You got a perfect score!";
             } else if(json.State == this.stateDeckEmpty) {
                 text = "You ran out of moves!";
+            } else if(json.State == this.stateNoPlays) {
+                text = "There are no plays left!";
             }
             var score = 0;
             for(pile in json.Piles)
@@ -464,7 +471,7 @@ paper-button.secondary {
             return;
         }
         
-		this.game = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified, json.GameMode);
+		this.game = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified, json.Mode);
         
         var playerIndex = -1;
         for(player in json.Players) {
@@ -631,12 +638,30 @@ paper-button.secondary {
 	giveNumberHint: function() {
 		this.giveHint(this.infoNumber, '');
 	},
-	giveColorHint: function(color) {
+	catchColorEvent: function(e) {
+        this.giveColorHint();
+    },
+    giveColorHint: function(color) {
         if (typeof color === 'undefined') {
             color = this.hintColor
         }
 		this.giveHint(this.infoColor, color);
 	},
+    giveRedHint: function() {
+        this.giveColorHint('red')
+    },
+    giveBlueHint: function() {
+        this.giveColorHint('blue')
+    },
+    giveYellowHint: function() {
+        this.giveColorHint('yellow')
+    },
+    giveGreenHint: function() {
+        this.giveColorHint('green')
+    },
+    giveWhiteHint: function() {
+        this.giveColorHint('white')
+    },
 	
 	play: function () {
 		this.playOrDiscard(this.movePlay);
