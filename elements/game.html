@@ -103,9 +103,34 @@ fireworks-player {
 .playarea .card5 {
 	left: 210px;
 }
+.playarea .card6 {
+	display: none;
+}
 .deck { 
 	left: 280px;
 }
+
+.playarea.rainbows fireworks-card {
+	transform: scale(0.833);
+    transform-origin: 0 0;
+}
+.playarea.rainbows .card2 {
+	left: 52px;
+}
+.playarea.rainbows .card3 {
+	left: 94px;
+}
+.playarea.rainbows .card4 {
+	left: 136px;
+}
+.playarea.rainbows .card5 {
+	left: 178px;
+}
+.playarea.rainbows .card6 {
+	display: block;
+	left: 220px;
+}
+
 #discards {
 	position: absolute;
 	left: 0px;
@@ -136,6 +161,7 @@ fireworks-player {
 		<fireworks-card color="blue" number="1" class="small-card card3" faceup placeholder></fireworks-card>
 		<fireworks-card color="yellow" number="3" class="small-card card4" faceup placeholder></fireworks-card>
 		<fireworks-card color="white" number="4" class="small-card card5" faceup placeholder></fireworks-card>
+		<fireworks-card color="rainbow" number="3" class="small-card card6" faceup placeholder></fireworks-card>
 		
 		<fireworks-card class="deck small-card" id="deck">{{cardsLeft}}</fireworks-card>
 		<fireworks-counter count="{{hints}}" lowCount="3" class="hints">?</fireworks-counter>
@@ -180,13 +206,37 @@ fireworks-player {
 		
 		colors: {
 			type: Array,
-			readOnly: true,
 			value: ["red", "green", "blue", "yellow", "white"]
+		},
+
+		modeRegular: {
+			type: Number,
+			readOnly: true,
+			value: 1
+		},
+		modeRainbows: {
+			type: Number,
+			readOnly: true,
+			value: 2
+		},
+		modeWildcard: {
+			type: Number,
+			readOnly: true,
+			value: 3
+		},
+		modeHard: {
+			type: Number,
+			readOnly: true,
+			value: 4
 		},
         
         modifiedCards: {
             type: Array
         },
+
+        mode: {
+        	type: Number
+        }
       	
       },
       
@@ -198,7 +248,7 @@ fireworks-player {
         'numPlayersChanged(players.length)'
       ],
 	  
-	  factoryImpl: function(player, hints, bombs, piles, pileCards, discard, cardsLeft, modifiedCards) {
+	  factoryImpl: function(player, hints, bombs, piles, pileCards, discard, cardsLeft, modifiedCards, mode) {
 		this.hints = hints;
 		this.bombs = bombs;
 		this.piles = piles;
@@ -208,6 +258,7 @@ fireworks-player {
 		this.localPlayer = player;
 		this.players = [];
         this.modifiedCards = modifiedCards;
+        this.mode = mode;
 	  },
 	  
 	
@@ -299,6 +350,17 @@ fireworks-player {
         this.$.players.classList.toggle("players5", (numPlayers == 5));
         for(i=0; i<this.players.length; i++) {
         	this.players[i].setNumberOfPlayers(numPlayers)
+        }
+      },
+
+      hasRainbows: function() {
+      	return (this.mode != this.modeRegular);
+      },
+
+      ready: function() {
+        if (this.hasRainbows()) {
+        	this.push("colors","rainbow");
+        	this.$.playarea.classList.add("rainbows");
         }
       }
       
