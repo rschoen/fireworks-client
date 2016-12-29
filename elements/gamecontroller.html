@@ -584,7 +584,7 @@ paper-button.secondary {
 			}
 			else {
                 Polymer.dom(this.$.hintnumber).innerHTML = "Hint " + number;
-                if(this.game.hasRainbows() && color == "rainbow") {
+                if(this.game.rainbowsAreWildcards() && color == "rainbow") {
                     this.$.hintcolor.classList.add("hidden");
                     this.$.rainbowhintbuttons.classList.remove("hidden");
                 }

@@ -294,6 +294,11 @@ fireworks-player {
       },
 
 	  attached: function() {
+	  	if (this.hasRainbows()) {
+        	this.push("colors","rainbow");
+        	this.$.playarea.classList.add("rainbows");
+        }
+
 		for(pile in this.piles) {
 			var pileCount = this.piles[pile];
 			if(pileCount > 0) {
@@ -354,14 +359,11 @@ fireworks-player {
       },
 
       hasRainbows: function() {
-      	return (this.mode != this.modeRegular);
+      	return (this.mode == this.modeRainbows || this.mode == this.modeWildcard || this.mode == this.modeHard);
       },
 
-      ready: function() {
-        if (this.hasRainbows()) {
-        	this.push("colors","rainbow");
-        	this.$.playarea.classList.add("rainbows");
-        }
+      rainbowsAreWildcards: function() {
+      	return (this.mode == this.modeWildcard || this.mode == this.modeHard);
       }
       
     });
