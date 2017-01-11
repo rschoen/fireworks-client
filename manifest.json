@@ -1,0 +1,15 @@
+{
+  "name": "Fireworks!",
+  "short_name": "Fireworks",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#006",
+  "background_color": "#006",
+  "icons": [
+    {
+      "src": "images/fireworks.png",
+      "sizes": "50x49",
+      "type": "image/png"
+    }
+  ]
+}
