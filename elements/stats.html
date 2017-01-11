@@ -138,7 +138,10 @@ td.name { text-align: left; }
           total += i * scores[i];
           games += scores[i]
         }
-        return total/games
+        if (games == 0) {
+            return "--"
+        }
+        return Math.round(total/games*10)/10
       },
 
       _computePercent(num, den) {
