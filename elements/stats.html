@@ -18,8 +18,25 @@ td.name { text-align: left; }
 </style>
   
   <template>
+  <div id="filters">
+  <select id="mode" on-change="updateStats">
+  		<option value="-1">All modes</option>
+   <option value=1>Regular game</option>
+   <option value=2>With rainbows</option>
+   <option value=3>Rainbow wildcard</option>
+   <option value=4>Hard mode</option>
+  </select>
+  <select id="numplayers" on-change="updateStats">
+  	<option value="-1">All game sizes</option>
+  	<option value=2>2-player games</option>
+  	<option value=3>3-player games</option>
+  	<option value=4>4-player games</option>
+  	<option value=5>5-player games</option>
+  	</select>
+  	</div>
   <span id='heading'>Stats</span><paper-button raised on-tap='requestStats'>Refresh</paper-button>
   <h2>Game results</h2>
+  <div id="gametime">Game time: <span>[[_friendlyTime(totalTime)]]</span></div>
   <table class="stats">
   <tr><th></th><th>Games</th><th>Perfect</th><th>Bombed out</th><th>Out of plays</th><th>Avg score</th></tr>
   <template is="dom-repeat" items="{{stats}}" as="item">
@@ -60,6 +77,12 @@ td.name { text-align: left; }
       properties: {
       	stats: {
       		type: Array
+      	},
+      	json: {
+      		type: String
+      	},
+      	totalTime: {
+      		type: Number
       	}
       },
 
@@ -68,13 +91,26 @@ td.name { text-align: left; }
       },
       
       processJSON: function(json) {
+      		this.json = json
+      		this.updateStats();
+      },
+      
+      updateStats: function() {
+      		if(json == "") {
+      			return;
+      		}
+      		
+      		mode = parseInt(this.$.mode.value);
+      		players = parseInt(this.$.numPlayers.value);	
+      		
         this.stats = Array();
-        globalStats = this.makeStatsArray(json.Stats);
+        globalStats = this.makeStatsArray(jsonStats, mode, players);
         globalStats.name = "Overall"
+        this.totalTime = globalStats.totalTime
         this.push("stats", globalStats)
 
         for(var i=0; i<json.Players.length; i++) {
-          userStats = this.makeStatsArray(json.Players[i].Stats);
+          userStats = this.makeStatsArray(json.Players[i].Stats, mode, players);
           userStats.name = json.Players[i].Name;
           this.push("stats", userStats)
         }
@@ -89,6 +125,15 @@ td.name { text-align: left; }
         text = JSON.stringify(rows);
         return "[ " + text.slice(1);
       },
+      
+      _friendlyTime: function(time) {
+      	days = time / 60 / 60 / 24;
+      	fullDays = Math.floor(days);
+      	hours = (days - fullDays) * 24;
+      	fullHours = Math.floor(hours);
+      	minutes = Math.round((hours - fullHours) * 60);
+      	return fullDays + " days, " + fullHours + " hours, and " + minutes + " minutes";
+      },	
 
       createStatsChart: function(data) {
         var chartAttributes = {
@@ -115,7 +160,21 @@ td.name { text-align: left; }
         chartContainer.classList.remove("hidden")
       },
 
-      makeStatsArray: function(s) {
+      makeStatsArray: function(stats, mode, players) {
+      		s = ""
+      		if(mode == -1 && players == -1) {
+      			s = stats.Overall
+      		}
+      		else if(players == -1) {
+      			s = stats.Modes[mode];
+      		}
+      		else if(mode == -1) {
+      			s = stats.NumPlayers[players];
+      		}
+      		else {
+      		 s = stats.ModesAndPlayers[mode][players];
+      		}
+      		
         gs = Array();
         gs.games = s.FinishedGames
         gs.perfectGames = s.FinishedGames - (s.BombsLosses + s.TurnsLosses + s.NoPlaysLosses)
@@ -128,6 +187,7 @@ td.name { text-align: left; }
         gs.discards = s.Discards
         gs.score = this.getMeanScore(s.Scores)
         gs.time = Math.round(s.TurnTime / s.Moves * 10)/10
+        gs.totalTime = s.TurnTime
         return gs
       },
 
