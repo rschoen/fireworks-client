@@ -11,6 +11,10 @@ google-chart {
   font-size: 35pt;
   margin-right: 145px;
 }
+#filters, #gametime {
+  font-size: 10pt;
+  margin: 10px 0;
+}
 table { font-size: 11px; border-collapse: collapse; }
 table td, table th { border: 1px solid #AAA; padding: 3px; }
 td { text-align: center; }
@@ -18,8 +22,9 @@ td.name { text-align: left; }
 </style>
   
   <template>
+  <span id='heading'>Stats</span>
   <div id="filters">
-  <select id="mode" on-change="updateStats">
+  Filter: <select id="mode" on-change="updateStats">
   		<option value="-1">All modes</option>
    <option value=1>Regular game</option>
    <option value=2>With rainbows</option>
@@ -34,12 +39,11 @@ td.name { text-align: left; }
   	<option value=5>5-player games</option>
   	</select>
   	</div>
-  <span id='heading'>Stats</span><paper-button raised on-tap='requestStats'>Refresh</paper-button>
-  <h2>Game results</h2>
   <div id="gametime">Game time: <span>[[_friendlyTime(totalTime)]]</span></div>
+  <h2>Game results</h2>
   <table class="stats">
   <tr><th></th><th>Games</th><th>Perfect</th><th>Bombed out</th><th>Out of plays</th><th>Avg score</th></tr>
-  <template is="dom-repeat" items="{{stats}}" as="item">
+  <template is="dom-repeat" items="{{stats}}" as="item" filter="showGameStats">
   <tr>
   <td class='name'>[[item.name]]</td>
   <td><span>[[item.games]]</span></td>
@@ -54,7 +58,7 @@ td.name { text-align: left; }
 	<h2>Turn stats</h2>
   <table class="stats">
   <tr><th></th><th>Moves</th><th>Plays</th><th>Bombs</th><th>Discards</th><th>Hints</th><th>Avg time</tr>
-  <template is="dom-repeat" items="{{stats}}" as="item">
+  <template is="dom-repeat" items="{{stats}}" as="item" filter="showTurnStats">
   <tr>
   <td class='name'>[[item.name]]</td>
   <td><span>[[item.moves]]</span></td>
@@ -88,6 +92,7 @@ td.name { text-align: left; }
 
       requestStats: function () {
         document.getElementById("gamecontroller").requestStats();
+        this.async(this.requestStats, 30000);
       },
       
       processJSON: function(json) {
@@ -96,25 +101,25 @@ td.name { text-align: left; }
       },
       
       updateStats: function() {
-      		if(json == "") {
+      		if(this.json == "") {
       			return;
       		}
       		
-      		mode = parseInt(this.$.mode.value);
-      		players = parseInt(this.$.numPlayers.value);	
+      	mode = parseInt(this.$.mode.value);
+      	players = parseInt(this.$.numplayers.value);	
       		
         this.stats = Array();
-        globalStats = this.makeStatsArray(jsonStats, mode, players);
+        globalStats = this.makeStatsArray(this.json.Stats, mode, players);
         globalStats.name = "Overall"
         this.totalTime = globalStats.totalTime
         this.push("stats", globalStats)
 
-        for(var i=0; i<json.Players.length; i++) {
-          userStats = this.makeStatsArray(json.Players[i].Stats, mode, players);
-          userStats.name = json.Players[i].Name;
+        for(var i=0; i<this.json.Players.length; i++) {
+          userStats = this.makeStatsArray(this.json.Players[i].Stats, mode, players);
+          userStats.name = this.json.Players[i].Name;
           this.push("stats", userStats)
         }
-        this.createAndAttachStatsChart("chart",json.Stats.Scores)
+        this.createAndAttachStatsChart("chart",globalStats.scores)
       },
 
       _computeDataRows: function(scores) {
@@ -131,7 +136,7 @@ td.name { text-align: left; }
       	fullDays = Math.floor(days);
       	hours = (days - fullDays) * 24;
       	fullHours = Math.floor(hours);
-      	minutes = Math.round((hours - fullHours) * 60);
+      	minutes = Math.floor((hours - fullHours) * 60);
       	return fullDays + " days, " + fullHours + " hours, and " + minutes + " minutes";
       },	
 
@@ -186,8 +191,13 @@ td.name { text-align: left; }
         gs.hints = s.Hints
         gs.discards = s.Discards
         gs.score = this.getMeanScore(s.Scores)
-        gs.time = Math.round(s.TurnTime / s.Moves * 10)/10
+        if(s.Moves > 0) {
+          gs.time = Math.round(s.TurnTime / s.Moves * 10)/10
+        }
+        else gs.time = 0
         gs.totalTime = s.TurnTime
+        
+        gs.scores = s.Scores
         return gs
       },
 
@@ -210,6 +220,14 @@ td.name { text-align: left; }
         }
         percent = Math.round(num / den * 100)
         return "(" + percent + "%)"
+      },
+      
+      showGameStats(item) {
+        return (item.games > 0);
+      },
+      
+      showTurnStats(item) {
+        return (item.moves > 0);
       }
 
     });
