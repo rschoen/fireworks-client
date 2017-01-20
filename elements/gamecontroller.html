@@ -492,7 +492,7 @@ paper-button.secondary {
             return;
         }
         
-		this.game = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified, json.Mode);
+		this.game = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified, json.Mode, json.CurrentScore, json.HighestPossibleScore);
         
         var playerIndex = -1;
         for(player in json.Players) {
