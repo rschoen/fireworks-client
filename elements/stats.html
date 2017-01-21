@@ -22,7 +22,7 @@ td.name { text-align: left; }
 </style>
   
   <template>
-  <span id='heading'>Stats</span>
+  <span id='heading'>Stats</span><paper-button raised on-tap='requestStats'>Refresh</paper-button>
   <div id="filters">
   Filter: <select id="mode" on-change="updateStats">
   		<option value="-1">All modes</option>
@@ -92,7 +92,7 @@ td.name { text-align: left; }
 
       requestStats: function () {
         document.getElementById("gamecontroller").requestStats();
-        this.async(this.requestStats, 30000);
+        //this.async(this.requestStats, 30000);
       },
       
       processJSON: function(json) {
