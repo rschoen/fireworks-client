@@ -179,8 +179,8 @@ paper-button.secondary {
 			<div id="playinputs" class="hidden">
                 <fireworks-card id="playcard"></fireworks-card>
                 <div>
+                    <paper-button raised id="discard" on-tap="discard" class="redbutton">Discard</paper-button>
                     <paper-button raised id="play" on-tap="play">Play</paper-button>
-                    <paper-button raised id="discard" on-tap="discard">Discard</paper-button>
                 </div>
 			</div>
             <div id="error" class="hidden">
@@ -618,7 +618,13 @@ paper-button.secondary {
                 }
                 else {
                     this.hintColor = color;
-                    this.$.hintcolor.classList.remove("hidden");
+                    this.$.hintcolor.classList.remove("redbutton");
+                    this.$.hintcolor.classList.remove("bluebutton");
+                    this.$.hintcolor.classList.remove("yellowbutton");
+                    this.$.hintcolor.classList.remove("greenbutton");
+                    this.$.hintcolor.classList.remove("whitebutton");
+                    this.$.hintcolor.classList.remove("rainbowbutton");
+                    this.$.hintcolor.classList.add(color + "button");
                     this.$.rainbowhintbuttons.classList.add("hidden");
                 }
                 
