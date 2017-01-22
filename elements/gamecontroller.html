@@ -597,6 +597,9 @@ paper-button.secondary {
             if(this.hintPlayer == this.localPlayer) {
                 dialogcard = this.$.playcard;
             } else {
+                if (this.game.hints <= 0) {
+                    return;
+                }
                 dialogcard = this.$.hintscard;
             }
             
