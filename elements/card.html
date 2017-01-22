@@ -9,12 +9,19 @@
 
 
   
-  .card, .back, .front {
+  .card, .back, .front, .overlay {
 	width: 47px;
 	height: 60px;
 	border-radius: 2px;
 	cursor: pointer;
 	user-select: none;
+  }
+  
+  .overlay {
+    position: absolute;
+    background-color: #999;
+    opacity: 0.5;
+    z-index: 5;
   }
   
   .back, .front {
@@ -221,6 +228,7 @@
   
   <template>
 	<div class="card" onClick="//this.parentNode.flip();">
+        <div class="overlay" hidden$="{{_hideOverlay(discard)}}"></div>
 		<div class="back showbackground" id="back"><content></content></div>
 		<div class="front">
 			<div class="contentarea">
@@ -296,6 +304,10 @@
             type: Boolean,
             value: true,
             observer: "_showBackgroundChanged"
+        },
+        discard: { 
+            type: Boolean,
+            value: false
         }
       },
 	  
@@ -397,6 +409,9 @@
             else {
                 this.children[0].classList.remove("highlight");
             }
+        },
+        _hideOverlay: function(discard) {
+            return !discard;
         }
         
 

@@ -351,6 +351,7 @@ fireworks-player {
 				if(card.Color == this.colors[col])
 				{
 					var newCard = new FireworksCard(card.ID, card.Color, card.Number, 0);
+                    newCard.discard = true;
 					newCard.classList.add("discard");
 					newCard.classList.add("small-card");
 					newCard.classList.add("card"+(col+1));
