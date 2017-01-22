@@ -1,7 +1,7 @@
 {
   "name": "Fireworks!",
   "short_name": "Fireworks",
-  "start_url": "/",
+  "start_url": "/fireworks",
   "display": "standalone",
   "theme_color": "#006",
   "background_color": "#006",
