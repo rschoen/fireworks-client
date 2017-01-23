@@ -148,12 +148,12 @@ paper-button.secondary {
     <div id="gameslist" class="hidden">
         <div>Open games:<ul id="opengames">
             <template is="dom-repeat" items="{{openGames}}" as="item">
-            <li><a href$="{{gameTag(item.id)}}" on-tap="gameTapped">[[item.name]]</a> - <span>[[item.players]]</span>
+            <li><a href$="{{gameTag(item.id)}}">[[item.name]]</a> - <span>[[item.players]]</span>
             </template>
         </ul></div>
         <div>Your games:<ul id="yourgames">
             <template is="dom-repeat" items="{{yourGames}}" as="item">
-            <li><a href$="{{gameTag(item.id)}}" on-tap="gameTapped">[[item.name]]</a> - <span>[[item.players]]</span>
+            <li><a href$="{{gameTag(item.id)}}">[[item.name]]</a> - <span>[[item.players]]</span>
             </template>
         </ul></div>
         <paper-button raised on-tap="newGameDialog">Create new game</paper-button>
@@ -431,6 +431,10 @@ paper-button.secondary {
             return;
         }
         if(typeof json.OpenGames !== 'undefined') {
+            if(typeof this.gameid !== 'undefined' && this.gameid != "") {
+                return;
+            }
+        
             this.yourGames = Array();
             this.openGames = Array();
             for(var i in json.PlayersGames) {
@@ -557,11 +561,7 @@ paper-button.secondary {
 		this.sendData("status",this.makeEmptyMove());
 		if(!this.done) this.async(this.poll, 5000);
 	},
-	
-    gameTapped: function(e) {
-        //this.joinGame(e.model.item.id);
-    },
-		  
+    
 	registerClick: function(event) {
 	
 		if(event.target.className.indexOf("fireworks-card") > -1) {
@@ -759,7 +759,7 @@ paper-button.secondary {
             this.polling = false
             this.showSpinner();
             this.destroyGame();
-            this.sendData("list", this.makeEmptyMove());
+            this.refreshGamesList();
         }
     },
     
@@ -772,6 +772,16 @@ paper-button.secondary {
     },
     ready: function() {
         this.requestStats();
+        this.scheduledRefreshGamesList();
+    },
+    refreshGamesList() {
+        this.sendData("list", this.makeEmptyMove());
+    },
+    scheduledRefreshGamesList() {
+        if(typeof this.gameid == 'undefined' || this.gameid == "") {
+            this.refreshGamesList();
+        }
+        this.async(this.scheduledRefreshGamesList, 5000);
     }
 	
     });

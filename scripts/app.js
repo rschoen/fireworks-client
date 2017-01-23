@@ -44,6 +44,10 @@
       drawerPanel.closeDrawer();
     }
   };
+  
+  app.refreshStats = function() {
+    document.getElementById("gamecontroller").requestStats();
+  };
 
 })(document);
 
@@ -112,3 +116,5 @@ var refreshValues = function() {
     onSignIn(googleUser);
   }
 }
+
+

@@ -71,7 +71,7 @@
             <iron-icon icon="icons:content-copy"></iron-icon>
             <span>Games</span>
           </a>	
-          <a data-route="stats" href="/stats">
+          <a data-route="stats" href="/stats" on-tap="refreshStats">
             <iron-icon icon="editor:format-list-numbered"></iron-icon>
             <span>Stats</span>
           </a>
@@ -116,7 +116,7 @@
 		  
             <section data-route="stats">
               <paper-material elevation="1">
-                <fireworks-stats id=stats></fireworks-stats>
+                <fireworks-stats id="stats"></fireworks-stats>
               </paper-material>
             </section>
 
