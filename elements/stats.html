@@ -16,6 +16,7 @@ google-chart {
   margin: 10px 0;
 }
 table { font-size: 11px; border-collapse: collapse; width: 100%; max-width: 500px; }
+table th { text-decoration: underline; color: #0645AD; cursor: pointer; }
 table td, table th { border: 0px solid #AAA; padding: 3px; }
 tr:nth-child(2) { background-color: #EEE; }
 td { text-align: center; }
@@ -44,8 +45,8 @@ span.percent { font-size: 9px; }
   <div id="gametime">Game time: <span>[[_friendlyTime(totalTime)]]</span></div>
   <h2>Games</h2>
   <table class="stats">
-  <tr><th></th><th>Games</th><th>Perfect</th><th>Bombed out</th><th>Out of plays</th><th>Avg score</th></tr>
-  <template is="dom-repeat" items="{{stats}}" as="item" filter="showGameStats" sort="_sortByGames">
+  <tr><th></th><th on-tap="sortGames" data-args="games">Games</th><th on-tap="sortGames" data-args="perfectGames">Perfect</th><th on-tap="sortGames" data-args="bombedGames">Bombed out</th><th on-tap="sortGames" data-args="outOfPlays">Out of plays</th><th on-tap="sortGames" data-args="score">Avg score</th></tr>
+  <template is="dom-repeat" items="{{stats}}" as="item" filter="showGameStats" sort="_sortByGames" id="gameStats">
   <tr>
   <td class='name'>[[item.name]]</td>
   <td><span>[[item.games]]</span></td>
@@ -59,8 +60,8 @@ span.percent { font-size: 9px; }
   <div id="chart"><div></div></div>
 	<h2>Turns</h2>
   <table class="stats">
-  <tr><th></th><th>Moves</th><th>Plays</th><th>Bombs</th><th>Discards</th><th>Hints</th><th>Avg time</tr>
-  <template is="dom-repeat" items="{{stats}}" as="item" filter="showTurnStats" sort="_sortByTurns">
+  <tr><th></th><th on-tap="sortTurns" data-args="moves">Moves</th><th on-tap="sortTurns" data-args="plays">Plays</th><th on-tap="sortTurns" data-args="bombs">Bombs</th><th on-tap="sortTurns" data-args="discards">Discards</th><th on-tap="sortTurns" data-args="hints">Hints</th><th on-tap="sortTurns" data-args="time">Avg time</tr>
+  <template is="dom-repeat" items="{{stats}}" as="item" filter="showTurnStats" sort="_sortByTurns" id="turnStats">
   <tr>
   <td class='name'>[[item.name]]</td>
   <td><span>[[item.moves]]</span></td>
@@ -92,6 +93,22 @@ span.percent { font-size: 9px; }
       	},
         scoresArray: {
             type: Array
+        },
+        sortGamesProperty: {
+            type: String,
+            value: "games"
+        },
+        sortGamesDescending: {
+            type: Boolean,
+            value: true
+        },
+        sortTurnsProperty: {
+            type: String,
+            value: "moves"
+        },
+        sortTurnsDescending: {
+            type: Boolean,
+            value: true
         }
       },
 
@@ -236,20 +253,34 @@ span.percent { font-size: 9px; }
         return (item.moves > 0);
       },
       _sortByGames: function(a, b) {
-        if (a.games > b.games) {
-            return -1
+        if (a.name == "All") {
+            return -1;
         }
-        if (a.games < b.games) {
-            return 1
+        if (b.name == "All") {
+            return 1;
+        }
+        
+        if (a[this.sortGamesProperty] > b[this.sortGamesProperty]) {
+            return this.sortGamesDescending?-1:1
+        }
+        if (a[this.sortGamesProperty] < b[this.sortGamesProperty]) {
+            return this.sortGamesDescending?1:-1
         }
         return 0
       },
       _sortByTurns: function(a, b) {
-        if (a.moves > b.moves) {
-            return -1
+        if (a.name == "All") {
+            return -1;
         }
-        if (a.moves < b.moves) {
-            return 1
+        if (b.name == "All") {
+            return 1;
+        }
+        
+        if (a[this.sortTurnsProperty] > b[this.sortTurnsProperty]) {
+            return this.sortTurnsDescending?-1:1
+        }
+        if (a[this.sortTurnsProperty] < b[this.sortTurnsProperty]) {
+            return this.sortTurnsDescending?1:-1
         }
         return 0
       },
@@ -263,6 +294,30 @@ span.percent { font-size: 9px; }
             this.resizeTO = setTimeout(function() {
                 window.statsObj.createAndAttachStatsChart("chart",window.statsObj.scores)
             }, 500);
+      },
+      
+      sortGames: function(e) {
+        var newSort = e.target.getAttribute('data-args').split(',')[0];
+        if(newSort == this.sortGamesProperty) {
+            this.sortGamesDescending = !this.sortGamesDescending;
+        }
+        else {
+            this.sortGamesProperty = newSort
+            this.sortGamesDescending = true;
+        }
+        this.$.gameStats.render();
+      },
+      
+      sortTurns: function(e) {
+        var newSort = e.target.getAttribute('data-args').split(',')[0];
+        if(newSort == this.sortTurnsProperty) {
+            this.sortTurnsDescending = !this.sortTurnsDescending;
+        }
+        else {
+            this.sortTurnsProperty = newSort
+            this.sortTurnsDescending = true;
+        }
+        this.$.turnStats.render();
       }
 
     });
