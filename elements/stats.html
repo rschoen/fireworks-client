@@ -3,7 +3,7 @@
 
 <style>
 google-chart {
-  width: 350px;
+  width: 100%; max-width: 500px;
   height: 200px;
   margin-top: 10px;
 }
@@ -15,10 +15,12 @@ google-chart {
   font-size: 10pt;
   margin: 10px 0;
 }
-table { font-size: 11px; border-collapse: collapse; }
-table td, table th { border: 1px solid #AAA; padding: 3px; }
+table { font-size: 11px; border-collapse: collapse; width: 100%; max-width: 500px; }
+table td, table th { border: 0px solid #AAA; padding: 3px; }
+tr:nth-child(2) { background-color: #EEE; }
 td { text-align: center; }
 td.name { text-align: left; }
+span.percent { font-size: 9px; }
 </style>
   
   <template>
@@ -40,33 +42,33 @@ td.name { text-align: left; }
   	</select>
   	</div>
   <div id="gametime">Game time: <span>[[_friendlyTime(totalTime)]]</span></div>
-  <h2>Game results</h2>
+  <h2>Games</h2>
   <table class="stats">
   <tr><th></th><th>Games</th><th>Perfect</th><th>Bombed out</th><th>Out of plays</th><th>Avg score</th></tr>
   <template is="dom-repeat" items="{{stats}}" as="item" filter="showGameStats" sort="_sortByGames">
   <tr>
   <td class='name'>[[item.name]]</td>
   <td><span>[[item.games]]</span></td>
-  <td><span>[[item.perfectGames]]</span> <span>[[_computePercent(item.perfectGames,item.games)]]</span></td>
-  <td><span>[[item.bombedGames]]</span> <span>[[_computePercent(item.bombedGames,item.games)]]</span></td>
-  <td><span>[[item.outOfPlays]]</span> <span>[[_computePercent(item.outOfPlays,item.games)]]</span></td>
+  <td><span>[[item.perfectGames]]</span> <span class="percent">[[_computePercent(item.perfectGames,item.games)]]</span></td>
+  <td><span>[[item.bombedGames]]</span> <span class="percent">[[_computePercent(item.bombedGames,item.games)]]</span></td>
+  <td><span>[[item.outOfPlays]]</span> <span class="percent">[[_computePercent(item.outOfPlays,item.games)]]</span></td>
   <td><span>[[item.score]]</span></td>
   </tr>
   </template>
   </table>
   <div id="chart"><div></div></div>
-	<h2>Turn stats</h2>
+	<h2>Turns</h2>
   <table class="stats">
   <tr><th></th><th>Moves</th><th>Plays</th><th>Bombs</th><th>Discards</th><th>Hints</th><th>Avg time</tr>
   <template is="dom-repeat" items="{{stats}}" as="item" filter="showTurnStats" sort="_sortByTurns">
   <tr>
   <td class='name'>[[item.name]]</td>
   <td><span>[[item.moves]]</span></td>
-  <td><span>[[item.plays]]</span> <span>[[_computePercent(item.plays,item.moves)]]</span></td>
-  <td><span>[[item.bombs]]</span> <span>[[_computePercent(item.bombs,item.moves)]]</span></td>
-  <td><span>[[item.discards]]</span> <span>[[_computePercent(item.discards,item.moves)]]</span></td>
-  <td><span>[[item.hints]]</span> <span>[[_computePercent(item.hints,item.moves)]]</span></td>
-  <td><span>[[item.time]]</span>s</span></td>
+  <td><span>[[item.plays]]</span> <span class="percent">[[_computePercent(item.plays,item.moves)]]</span></td>
+  <td><span>[[item.bombs]]</span> <span class="percent">[[_computePercent(item.bombs,item.moves)]]</span></td>
+  <td><span>[[item.discards]]</span> <span class="percent">[[_computePercent(item.discards,item.moves)]]</span></td>
+  <td><span>[[item.hints]]</span> <span class="percent">[[_computePercent(item.hints,item.moves)]]</span></td>
+  <td><span>[[item.time]]</span>s</td>
   </tr>
   </table>
   </template>
@@ -87,7 +89,10 @@ td.name { text-align: left; }
       	},
       	totalTime: {
       		type: Number
-      	}
+      	},
+        scoresArray: {
+            type: Array
+        }
       },
 
       requestStats: function () {
@@ -110,7 +115,7 @@ td.name { text-align: left; }
       		
         this.stats = Array();
         globalStats = this.makeStatsArray(this.json.Stats, mode, players);
-        globalStats.name = "Overall"
+        globalStats.name = "All"
         this.totalTime = globalStats.totalTime
         this.push("stats", globalStats)
 
@@ -119,6 +124,7 @@ td.name { text-align: left; }
           userStats.name = this.json.Players[i].Name;
           this.push("stats", userStats)
         }
+        this.scores = globalStats.scores
         this.createAndAttachStatsChart("chart",globalStats.scores)
       },
 
@@ -144,7 +150,7 @@ td.name { text-align: left; }
         var chartAttributes = {
           'id': "mychart",
           'type': 'column',
-          'options': '{"title": "Overall score distribution", "chartArea": {"width": "80%", "height": "70%"}, "legend": {"position": "none"}, "hAxis": {"showTextEvery": "2"}, "height": "200", "width": "350"}',
+          'options': '{"title": "Score distribution", "chartArea": {"width": "80%", "height": "70%"}, "legend": {"position": "none"}, "hAxis": {"showTextEvery": "2"}}', //, "height": "200", "width": "350"}',
           'rows': this._computeDataRows(data),
           'cols': '[{"label": "Data", "type": "string"},{"label": "Value", "type": "number"}]',
         };
@@ -201,7 +207,7 @@ td.name { text-align: left; }
         return gs
       },
 
-      getMeanScore(scores){
+      getMeanScore: function(scores){
         total = 0
         games = 0
         for(i in scores) {
@@ -214,7 +220,7 @@ td.name { text-align: left; }
         return Math.round(total/games*10)/10
       },
 
-      _computePercent(num, den) {
+      _computePercent: function(num, den) {
         if(den==0) {
           return ""
         }
@@ -222,14 +228,14 @@ td.name { text-align: left; }
         return "(" + percent + "%)"
       },
       
-      showGameStats(item) {
+      showGameStats: function(item) {
         return (item.games > 0);
       },
       
-      showTurnStats(item) {
+      showTurnStats: function(item) {
         return (item.moves > 0);
       },
-      _sortByGames(a, b) {
+      _sortByGames: function(a, b) {
         if (a.games > b.games) {
             return -1
         }
@@ -238,7 +244,7 @@ td.name { text-align: left; }
         }
         return 0
       },
-      _sortByTurns(a, b) {
+      _sortByTurns: function(a, b) {
         if (a.moves > b.moves) {
             return -1
         }
@@ -246,6 +252,17 @@ td.name { text-align: left; }
             return 1
         }
         return 0
+      },
+      ready: function() {
+        window.onresize = this.resized;
+        window.statsObj = this;
+      },
+      
+      resized: function() {
+        if(this.resizeTO) clearTimeout(this.resizeTO);
+            this.resizeTO = setTimeout(function() {
+                window.statsObj.createAndAttachStatsChart("chart",window.statsObj.scores)
+            }, 500);
       }
 
     });
