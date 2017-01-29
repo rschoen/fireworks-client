@@ -45,7 +45,7 @@ span.percent { font-size: 9px; }
   <div id="gametime">Game time: <span>[[_friendlyTime(totalTime)]]</span></div>
   <h2>Games</h2>
   <table class="stats">
-  <tr><th></th><th on-tap="sortGames" data-args="games">Games</th><th on-tap="sortGames" data-args="perfectGames">Perfect</th><th on-tap="sortGames" data-args="bombedGames">Bombed out</th><th on-tap="sortGames" data-args="outOfPlays">Out of plays</th><th on-tap="sortGames" data-args="score">Avg score</th></tr>
+  <tr><th></th><th on-tap="sortGames" data-args="games">Games</th><th on-tap="sortGames" data-args="perfectGames">Perfect</th><th on-tap="sortGames" data-args="bombedGames">Bombed out</th><th on-tap="sortGames" data-args="outOfPlays">Out of plays</th><th on-tap="sortGames" data-args="score">Mean score</th></tr>
   <template is="dom-repeat" items="{{stats}}" as="item" filter="showGameStats" sort="_sortByGames" id="gameStats">
   <tr>
   <td class='name'>[[item.name]]</td>
@@ -60,7 +60,7 @@ span.percent { font-size: 9px; }
   <div id="chart"><div></div></div>
 	<h2>Turns</h2>
   <table class="stats">
-  <tr><th></th><th on-tap="sortTurns" data-args="moves">Moves</th><th on-tap="sortTurns" data-args="plays">Plays</th><th on-tap="sortTurns" data-args="bombs">Bombs</th><th on-tap="sortTurns" data-args="discards">Discards</th><th on-tap="sortTurns" data-args="hints">Hints</th><th on-tap="sortTurns" data-args="time">Avg time</tr>
+  <tr><th></th><th on-tap="sortTurns" data-args="moves">Turns</th><th on-tap="sortTurns" data-args="plays">Plays</th><th on-tap="sortTurns" data-args="bombs">Bombs</th><th on-tap="sortTurns" data-args="discards">Discards</th><th on-tap="sortTurns" data-args="hints">Hints</th><th on-tap="sortTurns" data-args="time">Mean time</tr>
   <template is="dom-repeat" items="{{stats}}" as="item" filter="showTurnStats" sort="_sortByTurns" id="turnStats">
   <tr>
   <td class='name'>[[item.name]]</td>
