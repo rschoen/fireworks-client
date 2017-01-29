@@ -16,7 +16,7 @@ google-chart {
   margin: 10px 0;
 }
 table { font-size: 11px; border-collapse: collapse; width: 100%; max-width: 500px; }
-table th { text-decoration: underline; color: #0645AD; cursor: pointer; }
+table th { text-decoration: underline; color: #0645AD; cursor: pointer; user-select: none; }
 table td, table th { border: 0px solid #AAA; padding: 3px; }
 tr:nth-child(2) { background-color: #EEE; }
 td { text-align: center; }
@@ -153,6 +153,15 @@ span.percent { font-size: 9px; }
         text = JSON.stringify(rows);
         return "[ " + text.slice(1);
       },
+      maxScoreSize: function(scores) {
+        maxSize = 0;
+        for (i in scores) {
+            if (scores[i] > maxSize) {
+                maxSize = scores[i];
+            }
+        }
+        return maxSize;
+      },
       
       _friendlyTime: function(time) {
       	days = time / 60 / 60 / 24;
@@ -164,10 +173,14 @@ span.percent { font-size: 9px; }
       },	
 
       createStatsChart: function(data) {
+        maxsize = this.maxScoreSize(data);
+        gridlines = 5;
+        max = Math.ceil(maxsize / gridlines) * gridlines;
+      
         var chartAttributes = {
           'id': "mychart",
           'type': 'column',
-          'options': '{"title": "Score distribution", "chartArea": {"width": "80%", "height": "70%"}, "legend": {"position": "none"}, "hAxis": {"showTextEvery": "2"}}', //, "height": "200", "width": "350"}',
+          'options': '{"title": "Score distribution", "chartArea": {"width": "80%", "height": "70%"}, "legend": {"position": "none"}, "hAxis": {"showTextEvery": "2", "maxAlternation": 1, "textStyle": {"fontSize": 8}}, "vAxis": {"minValue": 0, "maxValue": ' + max + ', "viewWindowMode": "explicit", "viewWindow": {"min": 0, "max": ' + max + '}, "gridlines": {"count": ' + gridlines + '}}}',
           'rows': this._computeDataRows(data),
           'cols': '[{"label": "Data", "type": "string"},{"label": "Value", "type": "number"}]',
         };
