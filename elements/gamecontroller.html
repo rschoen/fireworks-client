@@ -405,7 +405,8 @@ paper-button.secondary {
 				HintPlayer: hintplayer,
 				HintInfoType: hintinfotype,
                 HintColor: hintcolor,
-                Token: this.playerToken
+                Token: this.playerToken,
+                LastTurn: this.turn
 				};
 	
 		return JSON.stringify(move);
@@ -541,7 +542,7 @@ paper-button.secondary {
 		if(!this.polling)
 		{
 			this.polling = true;
-			this.async(this.poll, 5000);
+			this.async(this.poll, 3*1000);
 		}
 		this.currentPlayer = json.CurrentPlayer;     
 		this.hideSpinner();
@@ -559,7 +560,7 @@ paper-button.secondary {
             return;
         }
 		this.sendData("status",this.makeEmptyMove());
-		if(!this.done) this.async(this.poll, 5000);
+		if(!this.done) this.async(this.poll, 3*1000);
 	},
     
 	registerClick: function(event) {
