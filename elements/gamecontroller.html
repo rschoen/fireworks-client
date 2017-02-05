@@ -775,7 +775,9 @@ paper-button.secondary {
         this.scheduledRefreshGamesList();
     },
     refreshGamesList() {
-        this.sendData("list", this.makeEmptyMove());
+        if (this.localPlayer) {
+            this.sendData("list", this.makeEmptyMove());
+        }
     },
     scheduledRefreshGamesList() {
         if(typeof this.gameid == 'undefined' || this.gameid == "") {
