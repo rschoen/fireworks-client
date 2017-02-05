@@ -114,6 +114,7 @@ var refreshValues = function() {
 
     googleUser = auth2.currentUser.get();
     onSignIn(googleUser);
+    window.setTimeout(refreshValues, 1000 * 60 * 5);
   }
 }
 
