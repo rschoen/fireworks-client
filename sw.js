@@ -1,22 +1,22 @@
 var VERSION = "1.0.1";
 var CACHE_NAME = 'fireworks-cache-v' + VERSION;
 var urlsToCache = [
-  '/',
-  '/elements/card.html',
-  '/elements/counter.html',
-  '/elements/elements.html',
-  '/elements/game.html',
-  '/elements/gamecontroller.html',
-  '/elements/player.html',
-  '/elements/routing.html',
-  '/images/board.jpg',
-  '/images/bombicon.jpg',
-  '/images/fireworks.png',
-  '/images/hanabi.jpg',
-  '/images/hinticon.jpg',
-  '/scripts/app.js',
-  '/styles/app-theme.html',
-  '/styles/main.css'
+  'index.html',
+  'elements/card.html',
+  'elements/counter.html',
+  'elements/elements.html',
+  'elements/game.html',
+  'elements/gamecontroller.html',
+  'elements/player.html',
+  'elements/routing.html',
+  'images/board.jpg',
+  'images/bombicon.jpg',
+  'images/fireworks.png',
+  'images/hanabi.jpg',
+  'images/hinticon.jpg',
+  'scripts/app.js',
+  'styles/app-theme.html',
+  'styles/main.css'
 ];
 
 self.addEventListener('install', function(event) {
