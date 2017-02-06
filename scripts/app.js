@@ -117,24 +117,3 @@ var refreshValues = function() {
     window.setTimeout(refreshValues, 1000 * 60 * 5);
   }
 }
-
-
-
-  // Check that service workers are supported, if so, progressively
-  // enhance and add push messaging support, otherwise continue without it.
-  if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('sw.js').then(function(registration) {
-          // Registration was successful
-          console.log('ServiceWorker registration successful with scope: ', registration.scope);
-          //initializeState();
-        }).catch(function(err) {
-          // registration failed :(
-          console.log('ServiceWorker registration failed: ', err);
-        });
-      });
-  } else {
-    console.log('Service workers aren\'t supported in this browser.');
-  }
-//});
-

@@ -744,6 +744,10 @@ paper-button.secondary {
     setPlayer: function(id, token) {
         this.localPlayer = id
         this.playerToken = token
+        
+        if(this.signedIn) {
+          return;
+        }
         this.showSpinner();
         this.$.destroyable.classList.add("hidden");
         this.signedIn = true
