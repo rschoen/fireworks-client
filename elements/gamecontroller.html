@@ -337,6 +337,9 @@ paper-button.secondary {
         },
         turn: {
             type: Number
+        },
+        pushToken: {
+            type: String
         }
 	},
     
@@ -406,6 +409,7 @@ paper-button.secondary {
 				HintInfoType: hintinfotype,
                 HintColor: hintcolor,
                 Token: this.playerToken,
+                PushToken: this.pushToken,
                 LastTurn: this.turn
 				};
 	
@@ -743,8 +747,11 @@ paper-button.secondary {
         this.showSpinner();
         this.$.destroyable.classList.add("hidden");
         this.signedIn = true
-        this.gameChanged();
-        
+        this.gameChanged();        
+    },
+    
+    setPushToken: function(token) {
+        this.pushToken = token;
     },
     
     gameChanged: function() {

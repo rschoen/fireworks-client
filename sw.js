@@ -85,3 +85,27 @@ self.addEventListener('activate', function(event) {
     })
   );
 });
+
+
+importScripts('https://www.gstatic.com/firebasejs/3.5.2/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/3.5.2/firebase-messaging.js');
+firebase.initializeApp({
+  'messagingSenderId': '168641906858'
+});
+
+
+const messaging = firebase.messaging();
+
+messaging.setBackgroundMessageHandler(function(payload) {
+  console.log('Received background message ', payload);
+  // Customize notification here
+  const notificationTitle = "Fireworks - it's your turn!";
+  const notificationOptions = {
+    body: 'Other players are waiting for you! Take your turn.',
+    icon: '/firebase-logo.png',
+    click_action: 'https://fellyeah.dlinkddns.com:80/#!/games/' + payload.data.Game
+  };
+
+  return self.registration.showNotification(notificationTitle,
+      notificationOptions);
+});
