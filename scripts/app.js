@@ -48,6 +48,17 @@
   app.refreshStats = function() {
     document.getElementById("gamecontroller").requestStats();
   };
+  
+  
+  app.handleResponse = function(r) {
+    var response = r.detail.response;
+    var url = r.detail.xhr.responseURL;
+    var span = document.getElementById("serverversion");
+    if (url.includes("client")) {
+      span = document.getElementById("clientversion");    
+    }
+    span.innerHTML = response;
+  }
 
 })(document);
 
