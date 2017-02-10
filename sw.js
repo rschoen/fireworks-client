@@ -1,4 +1,4 @@
-var VERSION = "1.0.3";
+var VERSION = "1.0.4";
 var CACHE_NAME = 'fireworks-cache-v' + VERSION;
 var urlsToCache = [
   'index.html',
