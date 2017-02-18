@@ -143,6 +143,16 @@ div.gamesgroup {
     margin-bottom: 10px;
 }
 
+div.fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+paper-fab {
+    --paper-fab-background: #f44336;
+}
+
 </style>
   
   <template>
@@ -193,7 +203,9 @@ div.gamesgroup {
         There are no open games. Start one!
         </div>
         
-        <paper-button raised on-tap="newGameDialog">Create new game</paper-button>
+        <div class="fab">
+            <paper-fab icon="add" on-tap="newGameDialog"></paper-fab>
+        </div>
     </div>
 	<div id="modal" class="hidden">
 		<div id="overlay" on-tap="hideModal">
