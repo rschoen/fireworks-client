@@ -58,7 +58,12 @@
       span = document.getElementById("clientversion");    
     }
     span.innerHTML = response;
+  };
+  
+  app.navigate = function(e) {
+      page.show("/games/"+e.detail.id)
   }
+  
 
 })(document);
 

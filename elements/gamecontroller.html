@@ -127,6 +127,21 @@ paper-button.secondary {
 	background: white;
     color: #AAA;
   }
+  
+  
+div.gamesheader { 
+    font-weight: bold;
+    padding: 10px;
+    font-size: 14pt;
+}
+
+div.gameslistcontainer {
+    border: 1px solid #CCC;
+}
+
+div.gamesgroup {
+    margin-bottom: 10px;
+}
 
 </style>
   
@@ -146,16 +161,38 @@ paper-button.secondary {
         <paper-button id="startbutton" on-tap="startGame" disabled raised>Waiting for players...</paper-button>
 	</div>
     <div id="gameslist" class="hidden">
-        <div>Open games:<ul id="opengames">
-            <template is="dom-repeat" items="{{openGames}}" as="item">
-            <li><a href$="{{gameTag(item.id)}}">[[item.name]]</a> - <span>[[item.players]]</span>
-            </template>
-        </ul></div>
-        <div>Your games:<ul id="yourgames">
-            <template is="dom-repeat" items="{{yourGames}}" as="item">
-            <li><a href$="{{gameTag(item.id)}}">[[item.name]]</a> - <span>[[item.players]]</span>
-            </template>
-        </ul></div>
+        <div class="gamesgroup" hidden$=[[isZero(openGamesCount)]]>
+            <div class="gamesheader">Open games</div>
+            <div class="gameslistcontainer">
+                <template is="dom-repeat" items="{{openGames}}" as="item" rendered-item-count="{{openGamesCount}}">
+                  <paper-item on-tap="updateURL" data-args="[[item.id]]">
+                    <paper-item-body two-line>
+                      <div>[[item.name]]</div>
+                      <div secondary>[[item.players]]</div>
+                    </paper-item-body>
+                  </paper-item>
+                </template>
+            </div>
+        </div>
+        
+        <div class="gamesgroup" hidden$=[[isZero(yourGamesCount)]]>
+            <div class="gamesheader">Your games</div>
+            <div class="gameslistcontainer">
+                <template is="dom-repeat" items="{{yourGames}}" as="item" rendered-item-count="{{yourGamesCount}}">
+                  <paper-item on-tap="updateURL" data-args="[[item.id]]">
+                    <paper-item-body two-line>
+                      <div>[[item.name]]</div>
+                      <div secondary>[[item.players]]</div>
+                    </paper-item-body>
+                  </paper-item>
+                </template>
+            </div>
+        </div>
+        
+        <div hidden$="[[anyGames(openGamesCount,yourGamesCount)]]">
+        There are no open games. Start one!
+        </div>
+        
         <paper-button raised on-tap="newGameDialog">Create new game</paper-button>
     </div>
 	<div id="modal" class="hidden">
@@ -340,11 +377,24 @@ paper-button.secondary {
         },
         pushToken: {
             type: String
+        },
+        openGamesCount: {
+            type: Number
+        },
+        yourGamesCount: {
+            type: Number
         }
 	},
     
     gameTag: function(gameid) {
         return "/games/"+gameid
+    },
+    
+    updateURL: function(e) {
+        var gameid = e.model.get('item.id')
+        this.fire('game-navigation', {id: gameid});
+        //this.gameid = gameid;
+        //this.gameChanged();
     },
     
     newGameDialog: function() {
@@ -786,16 +836,24 @@ paper-button.secondary {
         this.requestStats();
         this.scheduledRefreshGamesList();
     },
-    refreshGamesList() {
+    refreshGamesList: function() {
         if (this.localPlayer) {
             this.sendData("list", this.makeEmptyMove());
         }
     },
-    scheduledRefreshGamesList() {
+    scheduledRefreshGamesList: function() {
         if(typeof this.gameid == 'undefined' || this.gameid == "") {
             this.refreshGamesList();
         }
         this.async(this.scheduledRefreshGamesList, 5000);
+    },
+    
+    isZero: function(something) {
+        return (something == 0);
+    },
+    
+    anyGames: function(gameslist1,gameslist2) {
+        return (gameslist1+gameslist2 > 0);
     }
 	
     });
