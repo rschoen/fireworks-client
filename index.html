@@ -127,22 +127,13 @@
             </section>
 		  
             <section data-route="stats">
-              <paper-material elevation="1">
+              <paper-material elevation="1" class="padded">
                 <fireworks-stats id="stats"></fireworks-stats>
               </paper-material>
             </section>
 
-            <section data-route="user-info">
-              <paper-material elevation="1">
-                <h2 class="paper-font-display2">
-                User:<span>{{params.name}}</span>
-                </h2>
-                <div>This is <span>{{params.name}}</span>'s section</div>
-              </paper-material>
-            </section>
-
             <section data-route="instructions">
-              <paper-material elevation="1">
+              <paper-material elevation="1" class="padded">
                 <div id="instructions">
                 <h2>How to play</h2>
                 <p>Fireworks is a collaborative, turn-based card game that you play with 1-4 other players on the internet. In Fireworks everyone can see the cards in your hand <em>except for you</em>, and you have to rely on hints from others plays to understand which cards are which.</p>
@@ -191,7 +182,7 @@
             </section>
             
              <section data-route="about">
-              <paper-material elevation="1">
+              <paper-material elevation="1" class="padded">
                 <p>Fireworks is an open-source implementation of <a href="https://boardgamegeek.com/boardgame/98778/hanabi" target="_blank">Hanabi</a>, a card game by Antoine Bauza released in 2010.</p>
                 <p>Source code for both the game  <a href="https://github.com/rschoen/fireworks-client" target="_blank">client</a> and  <a href="https://github.com/rschoen/fireworks-server" target="_blank">server</a> can be found on GitHub. Bugs and feature requests should be <a href="https://github.com/rschoen/fireworks-client/issues/new" target="_blank">filed against the client</a> unless you're sure it's more appropriate for the server.</p>
                 <p id="versions">Client version: <span id="clientversion">unknown</span> &nbsp; Server version: <span id="serverversion">unknown</span></p>
