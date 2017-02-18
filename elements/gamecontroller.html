@@ -9,7 +9,7 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: rgba(100, 100, 100, 0.1);
+	background: rgba(100, 100, 100, 0.5);
 }
 
 #dialog {
@@ -19,9 +19,7 @@
 	left: 50%;
 	margin-top: -100px;
 	margin-left: -120px;
-	border: 1px solid #333;
 	background: white;
-	border-radius: 3px;
 	padding: 15px;
 	text-align: center;
 }
@@ -68,7 +66,7 @@ input {
 
 
 #destroyable {
-    height: 505px;
+    height: 540px;
 }
 
 #gameid { 
@@ -130,13 +128,22 @@ paper-button.secondary {
   
   
 div.gamesheader { 
-    font-weight: bold;
-    padding: 10px;
-    font-size: 14pt;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: rgba(0,0,0,0.54);
 }
 
-div.gameslistcontainer {
-    border: 1px solid #CCC;
+div.gameslistcontainer paper-item {
+    width: 100%;
+}
+
+div.gameslistcontainer.separator:last-child {
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+    box-sizing: border-box;
+}
+
+paper-item-body { 
+    --paper-item-body-secondary-color: rgba(0,0,0,0.54);
 }
 
 div.gamesgroup {
@@ -153,6 +160,8 @@ paper-fab {
     --paper-fab-background: #f44336;
 }
 
+div.padded { padding: 16px; }
+
 </style>
   
   <template>
@@ -165,7 +174,7 @@ paper-fab {
     debounce-duration="300"></iron-ajax>
 
 	<div id="destroyable" on-tap="registerClick">
-        <span>Please log in to join a game.</span>
+        <div class="padded">Please log in to join a game.</div>
 	</div>
     <div id="start" class="hidden">
         <paper-button id="startbutton" on-tap="startGame" disabled raised>Waiting for players...</paper-button>
@@ -173,7 +182,7 @@ paper-fab {
     <div id="gameslist" class="hidden">
         <div class="gamesgroup" hidden$=[[isZero(openGamesCount)]]>
             <div class="gamesheader">Open games</div>
-            <div class="gameslistcontainer">
+            <div class="gameslistcontainer" id="opengameslist">
                 <template is="dom-repeat" items="{{openGames}}" as="item" rendered-item-count="{{openGamesCount}}">
                   <paper-item on-tap="updateURL" data-args="[[item.id]]">
                     <paper-item-body two-line>
@@ -210,7 +219,7 @@ paper-fab {
 	<div id="modal" class="hidden">
 		<div id="overlay" on-tap="hideModal">
 		</div>
-		<div id="dialog">
+		<paper-card id="dialog" elevation="3">
 			<div id="hintinputs" class="hidden">
                 <fireworks-card id="hintscard" faceup></fireworks-card>
                 <div>
@@ -266,7 +275,7 @@ paper-fab {
 				<paper-button raised on-tap="createGame">Create</paper-button>
                 </div>
 		    </div>
-		</div>
+		</paper-card>
 	</div>
 	<div id="spinner" class="hidden">
 		<paper-spinner active></paper-spinner>
@@ -391,10 +400,12 @@ paper-fab {
             type: String
         },
         openGamesCount: {
-            type: Number
+            type: Number,
+            observer: "checkForSeparator"
         },
         yourGamesCount: {
-            type: Number
+            type: Number,
+            observer: "checkForSeparator"
         }
 	},
     
@@ -866,6 +877,16 @@ paper-fab {
     
     anyGames: function(gameslist1,gameslist2) {
         return (gameslist1+gameslist2 > 0);
+    },
+    checkForSeparator: function() {
+        if(this.yourGamesCount > 0 && this.openGamesCount > 0)
+        {
+            this.$.opengameslist.classList.toggle("separator",true);
+        }
+        else
+        {
+            this.$.opengameslist.classList.toggle("separator",false);
+        }
     }
 	
     });

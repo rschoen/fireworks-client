@@ -52,7 +52,7 @@
   paper-material {
     border-radius: 2px;
     height: 100%;
-    padding: 16px 0 16px 0;
+    padding: 0;
     width: calc(98.66% - 16px);
     margin: 16px auto;
     background: white;
@@ -127,8 +127,8 @@
     paper-material {
       --menu-container-display: none;
       width: calc(97.33% - 32px);
-      padding-left: 16px;
-      padding-right: 16px;
+      padding-left: 0px;
+      padding-right: 0px;
     }
 
     .paper-font-display1 {
@@ -215,5 +215,10 @@
   @media all and (min-width: 1281px) and (max-width: 1600px) { }
   /* desktop-xlarge */
   @media all and (min-width: 1601px) and (max-width: 1920px) { }
+  
+  paper-material.padded {
+    padding: 16px;
+    box-sizing: border-box;
+  }
   
 </style>
