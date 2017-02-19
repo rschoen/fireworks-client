@@ -224,8 +224,8 @@ div.padded { padding: 16px; }
 			<div id="hintinputs" class="hidden">
                 <fireworks-card id="hintscard" faceup></fireworks-card>
                 <div>
-                    <paper-button raised id="hintnumber" on-tap="giveNumberHint">Hint number</paper-button>
-                    <paper-button raised id="hintcolor" on-tap="catchColorEvent">Hint <span>[[hintColor]]</span></paper-button>
+                    <paper-button raised id="hintnumber" on-tap="giveNumberHint">[[hintNumber]]</paper-button>
+                    <paper-button raised id="hintcolor" on-tap="catchColorEvent">[[hintColor]]</paper-button>
                     <span id="rainbowhintbuttons">
                     <paper-button raised on-tap="giveRedHint" class="redbutton">Red</paper-button>
                     <paper-button raised on-tap="giveYellowHint" class="yellowbutton">Yellow</paper-button>
@@ -317,6 +317,9 @@ div.padded { padding: 16px; }
 		},
         hintColor: {
             type: String
+        },
+        hintNumber: {
+            type: Number
         },
 		movePlay: {
 			type: Number,
@@ -693,7 +696,7 @@ div.padded { padding: 16px; }
 				
 			}
 			else {
-                Polymer.dom(this.$.hintnumber).innerHTML = "Hint " + number;
+                this.hintNumber = number;
                 if(this.game.rainbowsAreWildcards() && color == "rainbow") {
                     this.$.hintcolor.classList.add("hidden");
                     this.$.rainbowhintbuttons.classList.remove("hidden");
