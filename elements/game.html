@@ -171,7 +171,7 @@ fireworks-player {
 		<fireworks-card color="white" number="4" class="small-card card5" faceup placeholder></fireworks-card>
 		<fireworks-card color="rainbow" number="3" class="small-card card6" faceup placeholder></fireworks-card>
 		
-		<fireworks-card class="deck small-card" id="deck">{{cardsLeft}}</fireworks-card>
+		<fireworks-card class="deck small-card" id="deck" jake="[[jake]]">{{cardsLeft}}</fireworks-card>
 		<fireworks-counter count="{{hints}}" lowCount="3" class="hints">?</fireworks-counter>
 		<fireworks-counter count="{{bombs}}" lowCount="1" class="bombs">x</fireworks-counter>
     <div id="score"><span>{{currentScore}}</span> / <span>{{highestPossibleScore}}</span></div>
@@ -261,7 +261,11 @@ fireworks-player {
       },
       highestPossibleScore: {
       type: Number
-    }
+    },
+      jake: {
+        type: Boolean,
+        value: false
+      }
       	
       },
       

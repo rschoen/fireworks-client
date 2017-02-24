@@ -33,11 +33,7 @@
   }
   
   div.card {
-	border: 1px solid #AAA;
 	position: relative;
-/*	transform-style: preserve-3d;
-	transition: 0.4s;
-	transform: rotateY(180deg);*/
   }
   
   div.card.highlight {
@@ -54,19 +50,26 @@
   div.back {
 	background-color: #AAA;
 	background-size: 47px 78px;
-/*	transform: rotateY(180deg); */
-	border: 2px solid white;
 	box-sizing: border-box;
 	color: white;
 	font-size: 25pt;
 	text-align: center;
 	z-index: 5;
     padding-top: 5px;
+    border-radius: 2px;
   }
   
   
   div.showbackground {
-	background-image: url("../images/hanabi.jpg");
+	background-image: url("../images/back.jpg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: white;
+    background-position: center;
+  }
+  
+  div.showbackground.jake {
+	background-image: url("../images/jake.jpg");
   }
   
  .faceup div.back {
@@ -308,6 +311,11 @@
         discard: { 
             type: Boolean,
             value: false
+        },
+        jake: {
+            type: Boolean,
+            value: false,
+            observer: "_changeBackground"
         }
       },
 	  
@@ -412,6 +420,9 @@
         },
         _hideOverlay: function(discard) {
             return !discard;
+        },
+        _changeBackground: function() {
+            this.$.back.classList.toggle("jake",this.jake);
         }
         
 

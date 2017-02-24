@@ -579,6 +579,8 @@ div.padded { padding: 16px; }
         }
         
 		this.game = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified, json.Mode, json.CurrentScore, json.HighestPossibleScore);
+        this.game.jake = (json.Name == 'jakenabi');
+        this.$.playcard.jake = this.game.jake;
         
         var playerIndex = -1;
         for(player in json.Players) {
@@ -597,7 +599,7 @@ div.padded { padding: 16px; }
 			}
 			var index = 0;
 			for(card in json.Players[player].Cards) {
-				var card = thisPlayer.addCard(json.Players[player].Cards[card].ID, json.Players[player].Cards[card].Color, json.Players[player].Cards[card].Number, json.Players[player].Cards[card].KnownColor, json.Players[player].Cards[card].KnownNumber, index);
+				var card = thisPlayer.addCard(json.Players[player].Cards[card].ID, json.Players[player].Cards[card].Color, json.Players[player].Cards[card].Number, json.Players[player].Cards[card].KnownColor, json.Players[player].Cards[card].KnownNumber, index, (json.Name == "jakenabi"));
                 if(this.game.cardShouldBeHighlighted(card.id)) {
                     card.setHighlighted(true);
                 }
