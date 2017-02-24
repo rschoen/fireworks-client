@@ -1,4 +1,4 @@
-var VERSION = "1.0.13";
+var VERSION = "1.0.14";
 var CACHE_NAME = 'fireworks-cache-v' + VERSION;
 var urlsToCache = [
   'index.html',
@@ -12,7 +12,8 @@ var urlsToCache = [
   'images/board.jpg',
   'images/bombicon.jpg',
   'images/fireworks.png',
-  'images/hanabi.jpg',
+  'images/back.jpg',
+  'images/jake.jpg',
   'images/hinticon.jpg',
   'scripts/app.js',
   'styles/app-theme.html',
