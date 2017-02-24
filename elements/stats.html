@@ -60,15 +60,15 @@ span.percent { font-size: 9px; }
   <div id="chart"><div></div></div>
 	<h2>Turns</h2>
   <table class="stats">
-  <tr><th></th><th on-tap="sortTurns" data-args="moves">Turns</th><th on-tap="sortTurns" data-args="plays">Plays</th><th on-tap="sortTurns" data-args="bombs">Bombs</th><th on-tap="sortTurns" data-args="discards">Discards</th><th on-tap="sortTurns" data-args="hints">Hints</th><th on-tap="sortTurns" data-args="time">Mean time</tr>
+  <tr><th></th><th on-tap="sortTurns" data-args="turns">Turns</th><th on-tap="sortTurns" data-args="plays">Plays</th><th on-tap="sortTurns" data-args="bombs">Bombs</th><th on-tap="sortTurns" data-args="discards">Discards</th><th on-tap="sortTurns" data-args="hints">Hints</th><th on-tap="sortTurns" data-args="time">Mean time</tr>
   <template is="dom-repeat" items="{{stats}}" as="item" filter="showTurnStats" sort="_sortByTurns" id="turnStats">
   <tr>
   <td class='name'>[[item.name]]</td>
-  <td><span>[[item.moves]]</span></td>
-  <td><span>[[item.plays]]</span> <span class="percent">[[_computePercent(item.plays,item.moves)]]</span></td>
-  <td><span>[[item.bombs]]</span> <span class="percent">[[_computePercent(item.bombs,item.moves)]]</span></td>
-  <td><span>[[item.discards]]</span> <span class="percent">[[_computePercent(item.discards,item.moves)]]</span></td>
-  <td><span>[[item.hints]]</span> <span class="percent">[[_computePercent(item.hints,item.moves)]]</span></td>
+  <td><span>[[item.turns]]</span></td>
+  <td><span>[[item.plays]]</span> <span class="percent">[[_computePercent(item.plays,item.turns)]]</span></td>
+  <td><span>[[item.bombs]]</span> <span class="percent">[[_computePercent(item.bombs,item.turns)]]</span></td>
+  <td><span>[[item.discards]]</span> <span class="percent">[[_computePercent(item.discards,item.turns)]]</span></td>
+  <td><span>[[item.hints]]</span> <span class="percent">[[_computePercent(item.hints,item.turns)]]</span></td>
   <td><span>[[item.time]]</span>s</td>
   </tr>
   </table>
@@ -104,7 +104,7 @@ span.percent { font-size: 9px; }
         },
         sortTurnsProperty: {
             type: String,
-            value: "moves"
+            value: "turns"
         },
         sortTurnsDescending: {
             type: Boolean,
@@ -221,14 +221,14 @@ span.percent { font-size: 9px; }
         gs.perfectGames = s.FinishedGames - (s.BombsLosses + s.TurnsLosses + s.NoPlaysLosses)
         gs.bombedGames = s.BombsLosses
         gs.outOfPlays = s.TurnsLosses + s.NoPlaysLosses
-        gs.moves = s.Moves
+        gs.turns = s.Turns
         gs.plays = s.Plays
         gs.bombs = s.Bombs
         gs.hints = s.Hints
         gs.discards = s.Discards
         gs.score = this.getMeanScore(s.Scores)
-        if(s.Moves > 0) {
-          gs.time = Math.round(s.TurnTime / s.Moves * 10)/10
+        if(s.TimedTurns > 0) {
+          gs.time = Math.round(s.TurnTime / s.TimedTurns * 10)/10
         }
         else gs.time = 0
         gs.totalTime = s.TurnTime
@@ -263,7 +263,7 @@ span.percent { font-size: 9px; }
       },
       
       showTurnStats: function(item) {
-        return (item.moves > 0);
+        return (item.turns > 0);
       },
       _sortByGames: function(a, b) {
         if (a.name == "All") {
