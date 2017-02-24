@@ -108,10 +108,11 @@
 		this.number = number;
 	  },
 	  
-	  addCard: function(id, color, number, knowncolor, knownnumber, index) {
+	  addCard: function(id, color, number, knowncolor, knownnumber, index, jake) {
 		var card = new FireworksCard(id, color, number, index);
 		card.setKnownNumber(knownnumber);
 		card.setKnownColor(knowncolor);
+        card.jake = jake;
 		if(this.number > 0 ) // not the local player
 		{
 			card.flip();
