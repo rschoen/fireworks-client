@@ -247,6 +247,11 @@ fireworks-player {
 			readOnly: true,
 			value: 4
 		},
+        modeRainbowLimited: {
+            type: Number,
+            readOnly: true,
+            value: 5
+        },
         
         modifiedCards: {
             type: Array
@@ -394,7 +399,7 @@ fireworks-player {
       },
 
       hasRainbows: function() {
-      	return (this.mode == this.modeRainbows || this.mode == this.modeWildcard || this.mode == this.modeHard);
+      	return (this.mode == this.modeRainbows || this.mode == this.modeWildcard || this.mode == this.modeHard || this.mode == this.modeRainbowLimited);
       },
 
       rainbowsAreWildcards: function() {
