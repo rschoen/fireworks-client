@@ -107,13 +107,16 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.setBackgroundMessageHandler(function(payload) {
+  var arr = location.href.split("/");
+  var server_address = arr[0] + "//" + arr[2]
   console.log('Received background message ', payload);
   // Customize notification here
   const notificationTitle = "Fireworks - it's your turn!";
   const notificationOptions = {
     body: 'Other players are waiting for you! Take your turn.',
     icon: '/firebase-logo.png',
-    click_action: 'https://fellyeah.dlinkddns.com:80/#!/games/' + payload.data.Game
+    click_action: server_address + "/#!/games/" + payload.data.Game
+    //click_action: "http://localhost:8080/#!/games/" + payload.data.Game
   };
 
   return self.registration.showNotification(notificationTitle,

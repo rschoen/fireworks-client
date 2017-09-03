@@ -123,6 +123,12 @@
 		    <section data-route="games">
                 <paper-material elevation="1" class="game">
                     <fireworks-gamecontroller gameid="{{params.game}}" server="https://fellyeah.dlinkddns.com:80" id="gamecontroller" on-game-navigation="navigate"></fireworks-gamecontroller>
+
+                    <script>
+                        var arr = location.href.split("/");
+                        var server_address = arr[0] + "//" + arr[2]
+                        document.getElementById("gamecontroller").server = server_address
+                    </script>
                 </paper-material>
             </section>
 		  
@@ -227,6 +233,11 @@
                 <p id="versions">Client version: <span id="clientversion">unknown</span> &nbsp; Server version: <span id="serverversion">unknown</span></p>
                 
                 <iron-ajax id="versionRequest" handle-as="text" on-response="handleResponse" url="https://fellyeah.dlinkddns.com:8080/api/version"></iron-ajax>
+                <script>
+                    var arr = location.href.split("/");
+                    var server_address = arr[0] + "//" + arr[2]
+                    document.getElementById("versionRequest").url = server_address + "/api/version";
+                </script>
               </paper-material>
             </section>
 
