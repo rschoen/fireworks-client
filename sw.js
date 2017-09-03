@@ -116,7 +116,6 @@ messaging.setBackgroundMessageHandler(function(payload) {
     body: 'Other players are waiting for you! Take your turn.',
     icon: '/firebase-logo.png',
     click_action: server_address + "/#!/games/" + payload.data.Game
-    //click_action: "http://localhost:8080/#!/games/" + payload.data.Game
   };
 
   return self.registration.showNotification(notificationTitle,
