@@ -19,6 +19,7 @@ table { font-size: 11px; border-collapse: collapse; width: 100%; max-width: 500p
 table th { text-decoration: underline; color: #0645AD; cursor: pointer; user-select: none; }
 table td, table th { border: 0px solid #AAA; padding: 3px; }
 tr:nth-child(2) { background-color: #EEE; }
+tr.selected { font-weight: bold; }
 td { text-align: center; }
 td.name { text-align: left; }
 span.percent { font-size: 9px; }
@@ -48,7 +49,7 @@ span.percent { font-size: 9px; }
   <table class="stats">
   <tr><th></th><th on-tap="sortGames" data-args="games">Games</th><th on-tap="sortGames" data-args="perfectGames">Perfect</th><th on-tap="sortGames" data-args="bombedGames">Bombed out</th><th on-tap="sortGames" data-args="outOfPlays">Out of plays</th><th on-tap="sortGames" data-args="score">Mean score</th></tr>
   <template is="dom-repeat" items="{{stats}}" as="item" filter="showGameStats" sort="_sortByGames" id="gameStats">
-  <tr>
+  <tr on-tap="filterByPlayer" class$="[[item.selectedClass]]">
   <td class='name'>[[item.name]]</td>
   <td><span>[[item.games]]</span></td>
   <td><span>[[item.perfectGames]]</span> <span class="percent">[[_computePercent(item.perfectGames,item.games)]]</span></td>
@@ -110,7 +111,11 @@ span.percent { font-size: 9px; }
         sortTurnsDescending: {
             type: Boolean,
             value: true
-        }
+        },
+		filterPlayer: {
+			type: String,
+			value: 0
+		}
       },
 
       requestStats: function () {
@@ -136,14 +141,21 @@ span.percent { font-size: 9px; }
         globalStats.name = "All"
         this.totalTime = globalStats.totalTime
         this.push("stats", globalStats)
+		
+		var chartScores = globalStats.scores;
 
         for(var i=0; i<this.json.Players.length; i++) {
           userStats = this.makeStatsArray(this.json.Players[i].Stats, mode, players);
           userStats.name = this.json.Players[i].Name;
-          this.push("stats", userStats)
+		  userStats.selectedClass = "";
+		  if(userStats.name == this.filterPlayer) {
+			chartScores = userStats.scores;
+			userStats.selectedClass = "selected";
+		  }
+          this.push("stats", userStats);
         }
         this.scores = globalStats.scores
-        this.createAndAttachStatsChart("chart",globalStats.scores)
+        this.createAndAttachStatsChart("chart",chartScores)
       },
 
       _computeDataRows: function(scores) {
@@ -332,7 +344,13 @@ span.percent { font-size: 9px; }
             this.sortTurnsDescending = true;
         }
         this.$.turnStats.render();
-      }
+      },
+	  
+	  filterByPlayer: function(e) {
+		 this.filterPlayer = e.model.get('item.name')
+		 this.updateStats();
+		 console.log(e);
+	  }
 
     });
   </script>
