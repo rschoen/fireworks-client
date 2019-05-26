@@ -113,7 +113,7 @@ span.percent { font-size: 9px; }
             value: true
         },
 		filterPlayer: {
-			type: String,
+			type: Number,
 			value: 0
 		}
       },
@@ -147,8 +147,9 @@ span.percent { font-size: 9px; }
         for(var i=0; i<this.json.Players.length; i++) {
           userStats = this.makeStatsArray(this.json.Players[i].Stats, mode, players);
           userStats.name = this.json.Players[i].Name;
+		  userStats.playerID = this.json.Players[i].ID;
 		  userStats.selectedClass = "";
-		  if(userStats.name == this.filterPlayer) {
+		  if(userStats.playerID == this.filterPlayer) {
 			chartScores = userStats.scores;
 			userStats.selectedClass = "selected";
 		  }
@@ -347,9 +348,8 @@ span.percent { font-size: 9px; }
       },
 	  
 	  filterByPlayer: function(e) {
-		 this.filterPlayer = e.model.get('item.name')
+		 this.filterPlayer = e.model.get('item.playerID')
 		 this.updateStats();
-		 console.log(e);
 	  }
 
     });
