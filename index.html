@@ -226,7 +226,7 @@
                 <p>Source code for both the game  <a href="https://github.com/rschoen/fireworks-client" target="_blank">client</a> and  <a href="https://github.com/rschoen/fireworks-server" target="_blank">server</a> can be found on GitHub. Bugs and feature requests should be <a href="https://github.com/rschoen/fireworks-client/issues/new" target="_blank">filed against the client</a> unless you're sure it's more appropriate for the server.</p>
                 <p id="versions">Client version: <span id="clientversion">unknown</span> &nbsp; Server version: <span id="serverversion">unknown</span></p>
                 <iron-ajax auto id="serverVersionRequest" handle-as="text" on-response="handleResponse" url="https://fellyeah.dlinkddns.com:8182/api/version"></iron-ajax>
-                <iron-ajax auto id="clientVersionRequest" handle-as="text" on-response="handleResponse" url="https://fellyeah.dlinkddns.com:8182/client/version"></iron-ajax>
+                <iron-ajax auto id="clientVersionRequest" handle-as="text" on-response="handleResponse" url="client/version"></iron-ajax>
               </paper-material>
             </section>
 
