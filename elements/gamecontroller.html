@@ -487,6 +487,10 @@ div.padded { padding: 16px; }
     },
 	
 	makeMove: function(movetype, cardindex, hintplayer, hintinfotype, hintcolor) {
+		updateTime = -1;
+        if ( typeof this.game !== "undefined" ) {
+            updateTime = this.game.updateTime;
+        }
 		var move = {Game: this.gameid,
 				Player: this.localPlayer,
 				MoveType: movetype,
@@ -496,9 +500,10 @@ div.padded { padding: 16px; }
                 HintColor: hintcolor,
                 Token: this.playerToken,
                 PushToken: this.pushToken,
-                LastTurn: this.turn
-				};
-	
+				LastTurn: this.turn,
+                UpdateTime: updateTime,
+                Announcement: "Siigh."
+		}
 		return JSON.stringify(move);
 	},
 	
@@ -583,12 +588,13 @@ div.padded { padding: 16px; }
             history.pushState(null, null, "#!/games/" + this.gameid)
         }
 		
-        if(this.turn >= json.Turn) {
+        if(this.turn >= json.Turn && this.updateTime >= json.UpdateTime) {
             return;
         }
         
 		this.game = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified, json.Mode, json.CurrentScore, json.HighestPossibleScore, json.SighButton);
         this.game.jake = (json.Name == 'jakenabi');
+        this.game.updateTime = json.UpdateTime;
         this.$.playcard.jake = this.game.jake;
         
         var playerIndex = -1;
@@ -656,7 +662,10 @@ div.padded { padding: 16px; }
 	},
     
 	registerClick: function(event) {
-	
+		if(event.target.id == "sighbutton" ) {
+            this.sigh();
+			return;
+        }
 		if(event.target.className.indexOf("fireworks-card") > -1) {
 			var target = event.target;
             
@@ -787,7 +796,9 @@ div.padded { padding: 16px; }
     giveWhiteHint: function() {
         this.giveColorHint('white')
     },
-	
+	sigh: function() {
+		this.sendData("announce", this.makeEmptyMove());
+    },
 	play: function () {
 		this.playOrDiscard(this.movePlay);
 	},
