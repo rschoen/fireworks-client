@@ -83,7 +83,8 @@ fireworks-player {
     margin: 5px; 
 	position: absolute;
 	top: 125px;
-	left: 241px;
+	left: 275px;
+	font-size: x-small;
 }
     #score {
       position: absolute;
@@ -182,7 +183,7 @@ fireworks-player {
 		<fireworks-card class="deck small-card" id="deck" jake="[[jake]]">{{cardsLeft}}</fireworks-card>
 		<fireworks-counter count="{{hints}}" lowCount="3" class="hints">?</fireworks-counter>
 		<fireworks-counter count="{{bombs}}" lowCount="1" class="bombs">x</fireworks-counter>
-        <paper-button id="sighbutton" class="sigh">S</paper-button>
+        <paper-button id="sighbutton" class="sigh" hidden$="{{!sighButton}}">S</paper-button>
     <div id="score"><span>{{currentScore}}</span> / <span>{{highestPossibleScore}}</span></div>
 		<div id="discards">
 		</div>
@@ -282,8 +283,11 @@ fireworks-player {
       jake: {
         type: Boolean,
         value: false
-      }
-      	
+      },
+	  sighButton: {
+		type: Boolean,
+		value: false
+      }	
       },
       
       
@@ -294,13 +298,14 @@ fireworks-player {
         'numPlayersChanged(players.length)'
       ],
 	  
-	  factoryImpl: function(player, hints, bombs, piles, pileCards, discard, cardsLeft, modifiedCards, mode, currentScore, highestPossibleScore) {
+	  factoryImpl: function(player, hints, bombs, piles, pileCards, discard, cardsLeft, modifiedCards, mode, currentScore, highestPossibleScore, sighButton) {
 		this.hints = hints;
 		this.bombs = bombs;
 		this.piles = piles;
     this.pileCards = pileCards;
 		this.discard = discard;
 		this.cardsLeft = cardsLeft;
+		this.sighButton = sighButton;
 		this.localPlayer = player;
 		this.players = [];
     this.modifiedCards = modifiedCards;

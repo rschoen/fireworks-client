@@ -273,6 +273,7 @@ div.padded { padding: 16px; }
                 <iron-collapse id="collapse">
                     <div class="checkboxcontainer"><paper-checkbox id="public" checked></paper-checkbox> Public game</div>
                     <div class="checkboxcontainer"><paper-checkbox id="trackTime" checked></paper-checkbox> Track time</div>
+                    <div class="checkboxcontainer"><paper-checkbox id="sighButton"></paper-checkbox> Sigh button</div>
                     <div><paper-input id="startingHints" class="smallinput" no-label-float auto-validate pattern="[0-9]*" value=8 maxlength=2></paper-input> starting hints</div>
                     <div><paper-input id="startingBombs" class="smallinput" no-label-float auto-validate pattern="[0-9]*" value=3 maxlength=2></paper-input> starting bombs</div>
                 </iron-collapse>
@@ -453,7 +454,8 @@ div.padded { padding: 16px; }
                 StartingBombs: parseInt(this.$.startingBombs.value),
                 GameMode: parseInt(this.$.gameMode.value),
                 Public: this.$.public.checked,
-                IgnoreTime: !this.$.trackTime.checked
+                IgnoreTime: !this.$.trackTime.checked,
+				SighButton: this.$.sighButton.checked
                 };
 
         var json = JSON.stringify(data)
@@ -485,10 +487,6 @@ div.padded { padding: 16px; }
     },
 	
 	makeMove: function(movetype, cardindex, hintplayer, hintinfotype, hintcolor) {
-        updateTime = -1;
-        if ( typeof this.game !== "undefined" ) {
-            updateTime = this.game.updateTime;
-        }
 		var move = {Game: this.gameid,
 				Player: this.localPlayer,
 				MoveType: movetype,
@@ -498,9 +496,7 @@ div.padded { padding: 16px; }
                 HintColor: hintcolor,
                 Token: this.playerToken,
                 PushToken: this.pushToken,
-                LastTurn: this.turn,
-                UpdateTime: updateTime,
-                Announcement: "Siigh."
+                LastTurn: this.turn
 				};
 	
 		return JSON.stringify(move);
@@ -587,13 +583,12 @@ div.padded { padding: 16px; }
             history.pushState(null, null, "#!/games/" + this.gameid)
         }
 		
-        if(this.turn >= json.Turn && this.updateTime >= json.UpdateTime) {
+        if(this.turn >= json.Turn) {
             return;
         }
         
-		this.game = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified, json.Mode, json.CurrentScore, json.HighestPossibleScore);
+		this.game = new FireworksGame(this.localPlayer, json.Hints, json.Bombs, json.Piles, json.PileCards, json.Discard, json.CardsLeft, json.CardsLastModified, json.Mode, json.CurrentScore, json.HighestPossibleScore, json.SighButton);
         this.game.jake = (json.Name == 'jakenabi');
-        this.game.updateTime = json.UpdateTime;
         this.$.playcard.jake = this.game.jake;
         
         var playerIndex = -1;
@@ -661,10 +656,6 @@ div.padded { padding: 16px; }
 	},
     
 	registerClick: function(event) {
-
-        if(event.target.id == "sighbutton" ) {
-            this.sigh();
-        }
 	
 		if(event.target.className.indexOf("fireworks-card") > -1) {
 			var target = event.target;
@@ -679,7 +670,7 @@ div.padded { padding: 16px; }
 			}
             
             
-                if(this.currentPlayer != this.localPlayer || this.done) {
+            if(this.currentPlayer != this.localPlayer || this.done) {
                 return;
             }
             
@@ -797,10 +788,6 @@ div.padded { padding: 16px; }
         this.giveColorHint('white')
     },
 	
-
-    sigh: function() {
-		this.sendData("announce", this.makeEmptyMove());
-    },
 	play: function () {
 		this.playOrDiscard(this.movePlay);
 	},
