@@ -1,4 +1,4 @@
-var VERSION = "1.0.18";
+var VERSION = "1.0.20";
 var CACHE_NAME = 'fireworks-cache-v' + VERSION;
 var urlsToCache = [
   'index.html',
@@ -18,6 +18,10 @@ var urlsToCache = [
   'scripts/app.js',
   'styles/app-theme.html',
   'styles/main.css'
+];
+
+var dirsToCache = [
+  'bower_components'
 ];
 
 self.addEventListener('install', function(event) {
@@ -47,29 +51,26 @@ self.addEventListener('fetch', function(event) {
             return response;
           }
 
-          // IMPORTANT: Clone the request. A request is a stream and
-          // can only be consumed once. Since we are consuming this
-          // once by cache and once by the browser for fetch, we need
-          // to clone the response.
-          var fetchRequest = event.request.clone();
 
-          return fetch(fetchRequest).then(
+						 
+          return fetch(event.request).then(
             function(response) {
               // Check if we received a valid response
               if(!response || response.status !== 200 || response.type !== 'basic' || event.request.method == 'POST') {
                 return response;
               }
 
-              // IMPORTANT: Clone the response. A response is a stream
-              // and because we want the browser to consume the response
-              // as well as the cache consuming the response, we need
-              // to clone it so we have two streams.
-              var responseToCache = response.clone();
 
-              caches.open(CACHE_NAME)
-                .then(function(cache) {
-                  cache.put(event.request, responseToCache);
-                });
+		      for(i in dirsToCache) {
+				  if(event.request.url.indexOf(dirsToCache[i]) > -1 ) {
+					var responseToCache = response.clone();
+
+					  caches.open(CACHE_NAME)
+						.then(function(cache) {
+						  cache.put(event.request, responseToCache);
+						});
+				  }
+			  }
 
               return response;
             }
