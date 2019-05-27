@@ -1,23 +1,12 @@
-var VERSION = "1.0.21";
+var VERSION = "1.0.22";
 var CACHE_NAME = 'fireworks-cache-v' + VERSION;
 var urlsToCache = [
-  'index.html',
-  'elements/card.html',
-  'elements/counter.html',
-  'elements/elements.html',
-  'elements/game.html',
-  'elements/gamecontroller.html',
-  'elements/player.html',
-  'elements/routing.html',
   'images/board.jpg',
   'images/bombicon.jpg',
   'images/fireworks.png',
   'images/back.jpg',
   'images/jake.jpg',
-  'images/hinticon.jpg',
-  'scripts/app.js',
-  'styles/app-theme.html',
-  'styles/main.css'
+  'images/hinticon.jpg'
 ];
 
 var dirsToCache = [
