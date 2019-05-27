@@ -1,16 +1,12 @@
-var VERSION = "1.0.22";
+var VERSION = "1.0.23";
 var CACHE_NAME = 'fireworks-cache-v' + VERSION;
 var urlsToCache = [
-  'images/board.jpg',
-  'images/bombicon.jpg',
-  'images/fireworks.png',
-  'images/back.jpg',
-  'images/jake.jpg',
-  'images/hinticon.jpg'
+  'styles/app-theme.html'
 ];
 
 var dirsToCache = [
-  'bower_components'
+  'bower_components',
+  'images'
 ];
 
 self.addEventListener('install', function(event) {

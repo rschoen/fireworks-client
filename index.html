@@ -362,7 +362,7 @@
   // enhance and add push messaging support, otherwise continue without it.
   if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('sw.js').then(function(registration) {
+        navigator.serviceWorker.register('serviceworker.js').then(function(registration) {
           // Registration was successful
           messaging.useServiceWorker(registration);
           resetUI();
