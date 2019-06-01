@@ -82,13 +82,13 @@ fireworks-player {
     background: #006;
     margin: 5px; 
 	position: absolute;
-	top: 125px;
+	top: 140px;
 	left: 275px;
 	font-size: x-small;
 }
     #score {
       position: absolute;
-      top: 175px;
+      top: 125px;
       left: 277px;
       width: 50px;
       text-align: center;
@@ -183,9 +183,9 @@ fireworks-player {
 		<fireworks-card class="deck small-card" id="deck" jake="[[jake]]">{{cardsLeft}}</fireworks-card>
 		<fireworks-counter count="{{hints}}" lowCount="3" class="hints">?</fireworks-counter>
 		<fireworks-counter count="{{bombs}}" lowCount="1" class="bombs">x</fireworks-counter>
-        <paper-button id="sighbutton" class="sigh" hidden$="{{!sighButton}}">S</paper-button>
     <div id="score"><span>{{currentScore}}</span> / <span>{{highestPossibleScore}}</span></div>
-		<div id="discards">
+    <paper-button id="sighbutton" class="sigh" hidden$="{{!sighButton}}">S</paper-button>
+    <div id="discards">
 		</div>
 		
 	</div>
