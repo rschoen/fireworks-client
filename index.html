@@ -31,9 +31,11 @@
   <link rel="stylesheet" href="styles/main.css">
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   
-  <!-- Google Sign-in -->
+  <!-- old Google Sign-in 
   <meta name="google-signin-client_id" content="168641906858-8egtsbds49ifcjgq7g6n4757q70k14h4.apps.googleusercontent.com">
   <script src="https://apis.google.com/js/platform.js?onload=appStart" async defer></script>
+  -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   
 
   <link rel="import" href="elements/elements.html">
@@ -61,7 +63,8 @@
 </head>
 
 <body unresolved class="fullbleed layout vertical">
-<div class="g-signin2" data-onsuccess="onSignIn" id="gsignin"></div>
+<!--<div class="g-signin2" data-onsuccess="onSignIn" id="gsignin"></div>-->
+
   <span id="browser-sync-binding"></span>
   <template is="dom-bind" id="app">
 
@@ -103,11 +106,15 @@
           <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
           <span class="flex"></span>
 
-          <!-- Toolbar icons -->
+         
           <div id="signin">
             
-            <div class="hidden" id="signout"><a href="#" onclick="signOut();" style="text-decoration: none; color: #FFF;">Sign out</a></div>
+            <!--<div class="hidden" id="signout"><a href="#" onclick="signOut();" style="text-decoration: none; color: #FFF;">Sign out</a></div>-->
+
           </div>
+		  <div id="signout" style="display: none;">
+			<a href="javascript:signOut()">Sign out</a>
+			</div>
 
           <!-- Application name -->
           <div class="middle middle-container center horizontal layout">
@@ -122,7 +129,7 @@
 
 		    <section data-route="games">
                 <paper-material elevation="1" class="game">
-                    <fireworks-gamecontroller gameid="{{params.game}}" server="https://fellyeah.dlinkddns.com:1003" id="gamecontroller" on-game-navigation="navigate"></fireworks-gamecontroller>
+                    <fireworks-gamecontroller gameid="{{params.game}}" server="https://fellyeah.duckdns.org:8182" id="gamecontroller" on-game-navigation="navigate"></fireworks-gamecontroller>
                 </paper-material>
             </section>
 		  
@@ -225,7 +232,7 @@
                 <p>Fireworks is an open-source implementation of <a href="https://boardgamegeek.com/boardgame/98778/hanabi" target="_blank">Hanabi</a>, a card game by Antoine Bauza released in 2010.</p>
                 <p>Source code for both the game  <a href="https://github.com/rschoen/fireworks-client" target="_blank">client</a> and  <a href="https://github.com/rschoen/fireworks-server" target="_blank">server</a> can be found on GitHub. Bugs and feature requests should be <a href="https://github.com/rschoen/fireworks-client/issues/new" target="_blank">filed against the client</a> unless you're sure it's more appropriate for the server.</p>
                 <p id="versions">Client version: <span id="clientversion">unknown</span> &nbsp; Server version: <span id="serverversion">unknown</span></p>
-                <iron-ajax auto id="serverVersionRequest" handle-as="text" on-response="handleResponse" url="https://fellyeah.dlinkddns.com:1003/api/version"></iron-ajax>
+                <iron-ajax auto id="serverVersionRequest" handle-as="text" on-response="handleResponse" url="https://fellyeah.duckdns.org:8182/api/version"></iron-ajax>
                 <iron-ajax auto id="clientVersionRequest" handle-as="text" on-response="handleResponse" url="client/version"></iron-ajax>
               </paper-material>
             </section>
@@ -376,6 +383,17 @@
   } else {
     console.log('Service workers aren\'t supported in this browser.');
   }
+  
+  function signOut() {
+		deleteCookie("google_id")
+		deleteCookie("google_token")
+	 
+  location.reload();
+	}
+	
+function deleteCookie(c) {
+document.cookie = c+"=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
 //});
 </script>
   <!-- endbuild-->
