@@ -1,4 +1,4 @@
-var VERSION = "1.0.27";
+var VERSION = "1.1.28";
 var CACHE_NAME = 'fireworks-cache-v' + VERSION;
 var urlsToCache = [
   'styles/app-theme.html'
@@ -37,7 +37,7 @@ self.addEventListener('fetch', function(event) {
           }
 
 
-						 
+
           return fetch(event.request).then(
             function(response) {
               // Check if we received a valid response

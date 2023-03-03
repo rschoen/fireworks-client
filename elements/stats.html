@@ -7,7 +7,7 @@ google-chart {
   height: 200px;
   margin-top: 10px;
 }
-#heading { 
+#heading {
   font-size: 35pt;
   margin-right: 145px;
 }
@@ -24,7 +24,7 @@ td { text-align: center; }
 td.name { text-align: left; }
 span.percent { font-size: 9px; }
 </style>
-  
+
   <template>
   <span id='heading'>Stats</span>
   <div id="filters">
@@ -75,7 +75,6 @@ span.percent { font-size: 9px; }
   </tr>
   </table>
   </template>
-
   </template>
 
   <script>
@@ -122,29 +121,36 @@ span.percent { font-size: 9px; }
         document.getElementById("gamecontroller").requestStats();
         //this.async(this.requestStats, 30000);
       },
-      
+
       processJSON: function(json) {
       		this.json = json
+          for(var i=0; i<this.json.Players.length; i++) {
+            this.populateSlices(this.json.Players[i].Stats)
+          }
+          //this.makeTotalStatsArray(this.json, mode, players)
+          this.populateSlices(this.json.Stats)
       		this.updateStats();
       },
-      
+
       updateStats: function() {
       		if(this.json == "") {
       			return;
       		}
-      		
-      	mode = parseInt(this.$.mode.value);
-      	players = parseInt(this.$.numplayers.value);	
-      		
+
+      	var mode = parseInt(this.$.mode.value);
+      	var players = parseInt(this.$.numplayers.value);
+
         this.stats = Array();
         globalStats = this.makeStatsArray(this.json.Stats, mode, players);
+
         globalStats.name = "All"
         this.totalTime = globalStats.totalTime
         this.push("stats", globalStats)
-		
-		var chartScores = globalStats.scores;
+
+		      var chartScores = globalStats.scores;
 
         for(var i=0; i<this.json.Players.length; i++) {
+
           userStats = this.makeStatsArray(this.json.Players[i].Stats, mode, players);
           userStats.name = this.json.Players[i].Name;
 		  userStats.playerID = this.json.Players[i].ID;
@@ -176,7 +182,7 @@ span.percent { font-size: 9px; }
         }
         return maxSize;
       },
-      
+
       _friendlyTime: function(time) {
       	days = time / 60 / 60 / 24;
       	fullDays = Math.floor(days);
@@ -184,13 +190,13 @@ span.percent { font-size: 9px; }
       	fullHours = Math.floor(hours);
       	minutes = Math.floor((hours - fullHours) * 60);
       	return fullDays + " days, " + fullHours + " hours, and " + minutes + " minutes";
-      },	
+      },
 
       createStatsChart: function(data) {
         maxsize = this.maxScoreSize(data);
         gridlines = 5;
         max = Math.ceil(maxsize / gridlines) * gridlines;
-      
+
         var chartAttributes = {
           'id': "mychart",
           'type': 'column',
@@ -215,21 +221,106 @@ span.percent { font-size: 9px; }
         chartContainer.classList.remove("hidden")
       },
 
+      combineStatsArray: function(s1, s2) {
+        if (!s2) {
+          return
+        }
+        s1.FinishedGames += s2.FinishedGames
+        s1.BombsLosses += s2.BombsLosses
+        s1.TurnsLosses += s2.TurnsLosses
+        s1.NoPlaysLosses += s2.NoPlaysLosses
+        s1.Turns += s2.Turns
+        s1.Plays += s2.Plays
+        s1.Bombs += s2.Plays
+        s1.Hints += s2.Hints
+        s1.Discards += s2.Discards
+        s1.TurnTime += s2.TurnTime
+        s1.TimedTurns += s2.TimedTurns
+
+        if(!s1.Scores) {
+          s1.Scores = this.emptyScoresList(31)
+        }
+        if(s2.Scores) {
+          for(i=0; i<Math.max(s1.Scores.length,s2.Scores.length); i++) {
+            if (s1.Scores.length <= i) {
+              s1.Scores[i] = s2.Scores[i]
+            }
+            else if (s2.Scores.length > i) {
+              s1.Scores[i] = s1.Scores[i] + s2.Scores[i]
+            }
+          }
+        }
+
+      },
+
+      emptyScoresList: function(length) {
+        scores = []
+        for(i=0; i<length; i++) {
+          scores[i] = 0
+        }
+        return scores
+      },
+
+      makeTotalStatsArray: function (json, mode, players) {
+        for(var p=0; p<json.Players.length; p++) {
+          if(mode == -1 && players == -1) {
+            this.combineStatsArray(json.Stats.Overall, json.Players[p].Stats.Overall)
+          }
+          else if (mode == -1) {
+            this.combineStatsArray(json.Stats.NumPlayers[players], json.Players[p].Stats.NumPlayers[players])
+          }
+          else if (players == -1) {
+            this.combineStatsArray(json.Stats.Modes[mode], json.Players[p].Stats.Modes[mode])
+          }
+          else {
+            this.combineStatsArray(json.Stats.ModesAndPlayers[mode][players], json.Players[p].Stats.ModesAndPlayers[mode][players])
+          }
+        }
+      },
+
+      populateSlices: function(stats) {
+        stats.Overall = this.newEmptyStatsContainer()
+        for(var p=0; p<stats.NumPlayers.length; p++) {
+          stats.NumPlayers[p] = this.newEmptyStatsContainer()
+        }
+        for(var m=0; m<stats.ModesAndPlayers.length; m++) {
+          stats.Modes[m] = this.newEmptyStatsContainer()
+          for(var p=0; p<stats.ModesAndPlayers[m].length; p++) {
+            this.combineStatsArray(stats.Overall, stats.ModesAndPlayers[m][p])
+            this.combineStatsArray(stats.Modes[m], stats.ModesAndPlayers[m][p])
+            this.combineStatsArray(stats.NumPlayers[p], stats.ModesAndPlayers[m][p])
+          }
+        }
+      },
+
       makeStatsArray: function(stats, mode, players) {
-      		s = ""
+      		var s = ""
       		if(mode == -1 && players == -1) {
       			s = stats.Overall
+
+            /*for(m=0; m<stats.ModesAndPlayers.length; m++) {
+              for(p=0; p<stats.ModesAndPlayers[m].length; p++) {
+                //console.log("m: " + m + ", p: " + p)
+                this.combineStatsArray(s, stats.ModesAndPlayers[m][p])
+              }
+            }*/
       		}
       		else if(players == -1) {
       			s = stats.Modes[mode];
+            /*  for(p=0; p<stats.ModesAndPlayers[mode].length; p++) {
+                this.combineStatsArray(s, stats.ModesAndPlayers[mode][p])
+              }*/
       		}
       		else if(mode == -1) {
       			s = stats.NumPlayers[players];
+            /*for(m=0; m<stats.ModesAndPlayers.length; m++) {
+                this.combineStatsArray(s, stats.ModesAndPlayers[m][players])
+            }*/
       		}
       		else {
       		 s = stats.ModesAndPlayers[mode][players];
       		}
-      		
+
         gs = Array();
         gs.games = s.FinishedGames
         gs.perfectGames = s.FinishedGames - (s.BombsLosses + s.TurnsLosses + s.NoPlaysLosses)
@@ -246,9 +337,27 @@ span.percent { font-size: 9px; }
         }
         else gs.time = 0
         gs.totalTime = s.TurnTime
-        
+
         gs.scores = s.Scores
         return gs
+      },
+
+      newEmptyStatsContainer: function(mode) {
+        let s = {
+          FinishedGames: 0,
+          BombsLosses: 0,
+          TurnsLosses: 0,
+          NoPlaysLosses: 0,
+          Turns: 0,
+          Plays: 0,
+          Bombs: 0,
+          Hints: 0,
+          Discards: 0,
+          TurnTime: 0,
+          TimedTurns: 0,
+          Scores: []
+        }
+        return s
       },
 
       getMeanScore: function(scores){
@@ -271,11 +380,11 @@ span.percent { font-size: 9px; }
         percent = Math.round(num / den * 100)
         return "(" + percent + "%)"
       },
-      
+
       showGameStats: function(item) {
         return (item.games > 0);
       },
-      
+
       showTurnStats: function(item) {
         return (item.turns > 0);
       },
@@ -286,7 +395,7 @@ span.percent { font-size: 9px; }
         if (b.name == "All") {
             return 1;
         }
-        
+
         if (a[this.sortGamesProperty] > b[this.sortGamesProperty]) {
             return this.sortGamesDescending?-1:1
         }
@@ -302,7 +411,7 @@ span.percent { font-size: 9px; }
         if (b.name == "All") {
             return 1;
         }
-        
+
         if (a[this.sortTurnsProperty] > b[this.sortTurnsProperty]) {
             return this.sortTurnsDescending?-1:1
         }
@@ -315,14 +424,14 @@ span.percent { font-size: 9px; }
         window.onresize = this.resized;
         window.statsObj = this;
       },
-      
+
       resized: function() {
         if(this.resizeTO) clearTimeout(this.resizeTO);
             this.resizeTO = setTimeout(function() {
                 window.statsObj.createAndAttachStatsChart("chart",window.statsObj.scores)
             }, 500);
       },
-      
+
       sortGames: function(e) {
         var newSort = e.target.getAttribute('data-args').split(',')[0];
         if(newSort == this.sortGamesProperty) {
@@ -334,7 +443,7 @@ span.percent { font-size: 9px; }
         }
         this.$.gameStats.render();
       },
-      
+
       sortTurns: function(e) {
         var newSort = e.target.getAttribute('data-args').split(',')[0];
         if(newSort == this.sortTurnsProperty) {
@@ -346,7 +455,7 @@ span.percent { font-size: 9px; }
         }
         this.$.turnStats.render();
       },
-	  
+
 	  filterByPlayer: function(e) {
 		 this.filterPlayer = e.model.get('item.playerID')
 		 this.updateStats();
