@@ -124,7 +124,7 @@ span.percent { font-size: 9px; }
 
       processJSON: function(json) {
       		this.json = json
-          for(var i=0; i<this.json.Players.length; i++) {
+          for(var i in json.Players) {
             this.populateSlices(this.json.Players[i].Stats)
           }
           //this.makeTotalStatsArray(this.json, mode, players)
@@ -149,16 +149,16 @@ span.percent { font-size: 9px; }
 
 		      var chartScores = globalStats.scores;
 
-        for(var i=0; i<this.json.Players.length; i++) {
+        for(var i in this.json.Players) {
 
           userStats = this.makeStatsArray(this.json.Players[i].Stats, mode, players);
           userStats.name = this.json.Players[i].Name;
-		  userStats.playerID = this.json.Players[i].ID;
-		  userStats.selectedClass = "";
-		  if(userStats.playerID == this.filterPlayer) {
-			chartScores = userStats.scores;
-			userStats.selectedClass = "selected";
-		  }
+    		  userStats.playerID = this.json.Players[i].ID;
+    		  userStats.selectedClass = "";
+    		  if(userStats.playerID == this.filterPlayer) {
+      			chartScores = userStats.scores;
+      			userStats.selectedClass = "selected";
+		      }
           this.push("stats", userStats);
         }
         this.scores = globalStats.scores
@@ -280,6 +280,14 @@ span.percent { font-size: 9px; }
 
       populateSlices: function(stats) {
         stats.Overall = this.newEmptyStatsContainer()
+
+        if(stats.NumPlayers == null) {
+          stats.NumPlayers = [0, 1, 2, 3, 4, 5]
+        }
+        if(stats.Modes == null) {
+          stats.Modes = [0, 1, 2, 3, 4, 5]
+        }
+
         for(var p=0; p<stats.NumPlayers.length; p++) {
           stats.NumPlayers[p] = this.newEmptyStatsContainer()
         }
