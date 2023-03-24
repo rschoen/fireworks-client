@@ -30,13 +30,13 @@
 
   <link rel="stylesheet" href="styles/main.css">
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-  
-  <!-- old Google Sign-in 
+
+  <!-- old Google Sign-in
   <meta name="google-signin-client_id" content="168641906858-8egtsbds49ifcjgq7g6n4757q70k14h4.apps.googleusercontent.com">
   <script src="https://apis.google.com/js/platform.js?onload=appStart" async defer></script>
   -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  
+
 
   <link rel="import" href="elements/elements.html">
   <style>
@@ -48,7 +48,7 @@
   .green { color: green; }
   img.board { width: 100%; max-width: 500px; }
   img.icon { height: 10pt; }
-  
+
   #instructions p, #instructions li { font-size: 10pt; }
   #instructions h3 { -webkit-margin-after: 0em; }
   p#versions {
@@ -57,9 +57,9 @@
     color: #CCC;
   }
   </style>
-  
-  
-  
+
+
+
 </head>
 
 <body unresolved class="fullbleed layout vertical">
@@ -82,7 +82,7 @@
 	      <a data-route="games" href="/games">
             <iron-icon icon="icons:content-copy"></iron-icon>
             <span>Games</span>
-          </a>	
+          </a>
           <a data-route="stats" href="/stats" on-tap="refreshStats">
             <iron-icon icon="editor:format-list-numbered"></iron-icon>
             <span>Stats</span>
@@ -106,9 +106,9 @@
           <paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
           <span class="flex"></span>
 
-         
+
           <div id="signin">
-            
+
             <!--<div class="hidden" id="signout"><a href="#" onclick="signOut();" style="text-decoration: none; color: #FFF;">Sign out</a></div>-->
 
           </div>
@@ -129,10 +129,10 @@
 
 		    <section data-route="games">
                 <paper-material elevation="1" class="game">
-                    <fireworks-gamecontroller gameid="{{params.game}}" server="https://fellyeah.duckdns.org:8182" id="gamecontroller" on-game-navigation="navigate"></fireworks-gamecontroller>
+                    <fireworks-gamecontroller gameid="{{params.game}}" server="http://100.115.92.205:8182" id="gamecontroller" on-game-navigation="navigate"></fireworks-gamecontroller>
                 </paper-material>
             </section>
-		  
+
             <section data-route="stats">
               <paper-material elevation="1" class="padded">
                 <fireworks-stats id="stats"></fireworks-stats>
@@ -146,33 +146,33 @@
                 <p>Fireworks is a collaborative, turn-based card game that you play with 1-4 other players on the internet. In Fireworks everyone can see the cards in your hand <em>except for you</em>, and you have to rely on hints from others plays to understand which cards are which.</p>
                 <h3>Objective</h3>
                 <p>The goal of the game is build stacks of cards of the same color, with ascending cards: the <span class="color blue">blue 1</span> must be played before the <span class="color blue">blue 2</span>, which must be played before the <span class="color blue">blue 3</span>, etc. When the game is over, your score is the number of cards successfully played. A perfect score of 25 is possible, but challenging. Try to get as high a score as possible, and after you master the basics, check out the Advanced Game Modes if you're to up the challenge!</p>
-                
+
                 <h3>Game board</h3>
                 <a href="images/board.jpg" target="_blank"><img class="board" src="images/board.jpg" /></a>
                 <p>In the deck, there are five colors of cards (<span class="color blue">blue</span>, <span class="color red">red</span>, <span class="color white">white</span>, <span class="color green">green</span>, and <span class="color yellow">yellow</span>). In each color, there are three <span class="number">1</span>’s, two <span class="number">2</span>’s, two <span class="number">3</span>’s, two <span class="number">4</span>’s, and one <span class="number">5</span>. During the game you will be building only one pile of each color.</p>
-              
+
                 <h3>Turns</h3>
                 <p>Each player starts with a hand of 5 cards (in a 2- or 3-player game) or 4 cards (in a 4- or 5-player game), turned to face away from them. A player is randomly chosen to go first, and then play continues clockwise after each turn.</p>
                 <p>On their turn, a player can do one of three actions: hint, play, or discard.</p>
-              
+
                 <h4>1. Give a hint to another player</h4>
                 <p>A player can choose to tell another player some information about their cards. To do this, the player chooses the other player, taps one of their cards, and chooses whether to tell the player about that card’s color or number.</p>
                 <p>The catch is that when you tell a player about a card’s number or color, you have to tell that player about <strong>all</strong> of their cards of their color or number. For example, if a player is holding three <span class="color green">green</span> cards, you can’t point out an individual <span class="color green">green</span> card - you must tell them that all three of those cards are <span class="color green">green</span>.</p>
                 <p>When you use a hint, you lose a <strong>hint credit</strong> <img class="icon" src="images/hinticon.jpg" /> . You start the game with 8 hint credits, and gain one back every time a player discards a card. You can’t ever have more than 8 hint credits, though you can still discard cards at that point. If there are 0 hint credits remaining, you cannot give a hint to another player.</p>
                 <p>When you receive a hint about your cards, it may tell you more information than just the actual information conveyed in the hint. The time when a player chooses to give you a hint, the particular hint they chose to give, and any hints they chose not to give can all hold hidden meaning…</p>
-                
+
                 <h4>2. Play a card</h4>
                 <p>A player can tap a card from their hand and choose to play it onto the table. That card is valid to play if its number is 1 more than the last card played of that color. For example, if the last <span class="color blue">blue</span> card played was a <span class="color blue">blue 2</span>, then the only <span class="color blue">blue</span> card that can be played is the <span class="color blue">blue 3</span>. 1’s can only be played before any other card of that color has been played.</p>
                 <p>The player doesn’t need to know the color of a card to play it. For example, a player may choose to play a <span class="number">2</span> without knowing which color it is and which pile it will end up on. As long as the last card played of that color was a <span class="number">1</span>, it’s a valid play.</p>
                 <p>If a player attempts to play a card that is not valid to play, one of the three <strong>bombs</strong> <img class="icon" src="images/bombicon.jpg" />  explodes! If all three bombs explode, the game is over.</p>
-                
+
                 <h4>3. Discard a card</h4>
                 <p>A player can tap a card from their hand and choose to discard it. This generates a <strong>hint credit</strong> <img class="icon" src="images/hinticon.jpg" /> that can be used to hint other players about their cards.</p>
-                
+
                 <p>If a player plays or discards a card during their turn, they end their turn by picking up another card from the deck.</p>
-                
+
                 <h3>Game end</h3>
-                
+
                 <p>Play continues until one of three things happens:</p>
                 <ol>
                   <li>All three <strong>bombs</strong> <img class="icon" src="images/bombicon.jpg" /> have exploded</li>
@@ -181,7 +181,7 @@
                 </ol>
                 <p>In the first two cases, the game is over immediately. In the third case, each player is allowed to take one more turn after the final card has been drawn. The last turn will be taken by the player who had taken the final card in their previous turn.</p>
                 <p>Your final score is the number of cards successfully played. A perfect game is 25!</p>
-                
+
                 <h3>Advanced Game Modes</h3>
                 <p>Already a master of the game and up for more of a challenge? There are a few ways to make the standard game more difficult, so try out different game modes to challenge yourself and your friends. In each of the game modes listed below, a perfect score is now 30 instead of 25!</p>
 
@@ -196,10 +196,10 @@
                 <h4>2. Limited rainbows</h4>
                 <p>The rules are the same as Rainbow mode, but there's only one of each number of
                 <span class="color red">r</span><span class="color yellow">a</span><span class="color green">i</span><span class="color blue">n</span><span class="color white">b</span><span class="color red">o</span><span class="color yellow">w</span>
-                card in the deck. Be careful not to discard any of your 
+                card in the deck. Be careful not to discard any of your
                 <span class="color red">r</span><span class="color yellow">a</span><span class="color green">i</span><span class="color blue">n</span><span class="color white">b</span><span class="color red">o</span><span class="color yellow">w</span>
                 cards!</p>
-                
+
                 <h4>3. Wildcards</h4>
                 <p>In this variation, you cannot identify
                 <span class="color red">r</span><span class="color yellow">a</span><span class="color green">i</span><span class="color blue">n</span><span class="color white">b</span><span class="color red">o</span><span class="color yellow">w</span>
@@ -210,7 +210,7 @@
                 card will also be identified as that color. You'll have to later hint them a different color so they can be sure about the color of their
                 <span class="color red">r</span><span class="color yellow">a</span><span class="color green">i</span><span class="color blue">n</span><span class="color white">b</span><span class="color red">o</span><span class="color yellow">w</span>
                 card.</p>
-                
+
                 <p>You now have to be even more careful when you've been given color hints, because you may be surprised by the actual color of your card when you play!</p>
 
                 <h4>4. Limited wildcards</h4>
@@ -220,13 +220,13 @@
                 cards in the deck, one for each number. Each
                 <span class="color red">r</span><span class="color yellow">a</span><span class="color green">i</span><span class="color blue">n</span><span class="color white">b</span><span class="color red">o</span><span class="color yellow">w</span>
                 card is treated as a wildcard, making this the most difficult variant of the game.</p>
-                
+
                 </div>
 
-                
+
               </paper-material>
             </section>
-            
+
              <section data-route="about">
               <paper-material elevation="1" class="padded">
                 <p>Fireworks is an open-source implementation of <a href="https://boardgamegeek.com/boardgame/98778/hanabi" target="_blank">Hanabi</a>, a card game by Antoine Bauza released in 2010.</p>
@@ -257,7 +257,7 @@
     messagingSenderId: "168641906858"
   };
   firebase.initializeApp(config);
-  
+
     // [START get_messaging_object]
   // Retrieve Firebase Messaging object.
   const messaging = firebase.messaging();
@@ -364,7 +364,7 @@
     });
   }
 
-  
+
   // Check that service workers are supported, if so, progressively
   // enhance and add push messaging support, otherwise continue without it.
   if ('serviceWorker' in navigator) {
@@ -383,13 +383,13 @@
   } else {
     console.log('Service workers aren\'t supported in this browser.');
   }
-  
+
 	function signOut() {
 		deleteCookie("google_id")
 		deleteCookie("google_token")
 		location.reload();
 	}
-	
+
 	function deleteCookie(c) {
 		document.cookie = c+"=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 	}
