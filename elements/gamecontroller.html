@@ -274,8 +274,6 @@ div.padded { padding: 16px; }
                     <div class="checkboxcontainer"><paper-checkbox id="public" checked></paper-checkbox> Public game</div>
                     <div class="checkboxcontainer"><paper-checkbox id="trackTime" checked></paper-checkbox> Track time</div>
                     <div class="checkboxcontainer"><paper-checkbox id="sighButton"></paper-checkbox> Sigh button</div>
-                    <div><paper-input id="startingHints" class="smallinput" no-label-float auto-validate pattern="[0-9]*" value=8 maxlength=2></paper-input> starting hints</div>
-                    <div><paper-input id="startingBombs" class="smallinput" no-label-float auto-validate pattern="[0-9]*" value=3 maxlength=2></paper-input> starting bombs</div>
                 </iron-collapse>
 
                 <div class="buttoncontainer">
@@ -452,9 +450,6 @@ div.padded { padding: 16px; }
         var data = {Game: gameid,
                 Player: this.localPlayer,
                 Token: this.playerToken,
-                StartingHints: parseInt(this.$.startingHints.value),
-                MaxHints: parseInt(this.$.startingHints.value),
-                StartingBombs: parseInt(this.$.startingBombs.value),
                 GameMode: parseInt(this.$.gameMode.value),
                 Public: this.$.public.checked,
                 IgnoreTime: !this.$.trackTime.checked,
@@ -596,7 +591,7 @@ div.padded { padding: 16px; }
             return;
         }
 
-		this.game = new FireworksGame(this.localPlayer, json.Table.HintsLeft, json.Table.BombsLeft, json.Table.Piles, json.Table.PileCards, json.Table.Discard, json.Table.CardsLeft, json.Table.CardsLastModified, json.Mode, json.Score, json.Table.HighestPossibleScore, json.SighButton);
+		this.game = new FireworksGame(this.localPlayer, json.Table.HintsLeft, json.Table.BombsLeft, json.Table.Piles, json.Table.PileCards, json.Table.Discard, json.Table.CardsLeft, json.Table.CardsLastModified, json.Mode, json.CurrentScore, json.Table.HighestPossibleScore, json.SighButton);
         this.game.jake = (json.Name == 'jakenabi');
         this.game.updateTime = json.UpdateTime;
         this.$.playcard.jake = this.game.jake;
