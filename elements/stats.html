@@ -127,7 +127,6 @@ span.percent { font-size: 9px; }
           for(var i in json.Players) {
             this.populateSlices(this.json.Players[i].Stats)
           }
-          //this.makeTotalStatsArray(this.json, mode, players)
           this.populateSlices(this.json.Stats)
       		this.updateStats();
       },
@@ -261,42 +260,23 @@ span.percent { font-size: 9px; }
         return scores
       },
 
-      makeTotalStatsArray: function (json, mode, players) {
-        for(var p=0; p<json.Players.length; p++) {
-          if(mode == -1 && players == -1) {
-            this.combineStatsArray(json.Stats.Overall, json.Players[p].Stats.Overall)
-          }
-          else if (mode == -1) {
-            this.combineStatsArray(json.Stats.NumPlayers[players], json.Players[p].Stats.NumPlayers[players])
-          }
-          else if (players == -1) {
-            this.combineStatsArray(json.Stats.Modes[mode], json.Players[p].Stats.Modes[mode])
-          }
-          else {
-            this.combineStatsArray(json.Stats.ModesAndPlayers[mode][players], json.Players[p].Stats.ModesAndPlayers[mode][players])
-          }
-        }
-      },
+
 
       populateSlices: function(stats) {
         stats.Overall = this.newEmptyStatsContainer()
 
-        if(stats.NumPlayers == null) {
-          stats.NumPlayers = [0, 1, 2, 3, 4, 5]
-        }
-        if(stats.Modes == null) {
-          stats.Modes = [0, 1, 2, 3, 4, 5]
-        }
+        stats.NumPlayers = [0, 1, 2, 3, 4, 5]
+        stats.Modes = [0, 1, 2, 3, 4, 5]
 
         for(var p=0; p<stats.NumPlayers.length; p++) {
           stats.NumPlayers[p] = this.newEmptyStatsContainer()
         }
-        for(var m=0; m<stats.ModesAndPlayers.length; m++) {
+        for(var m=0; m<stats.length; m++) {
           stats.Modes[m] = this.newEmptyStatsContainer()
-          for(var p=0; p<stats.ModesAndPlayers[m].length; p++) {
-            this.combineStatsArray(stats.Overall, stats.ModesAndPlayers[m][p])
-            this.combineStatsArray(stats.Modes[m], stats.ModesAndPlayers[m][p])
-            this.combineStatsArray(stats.NumPlayers[p], stats.ModesAndPlayers[m][p])
+          for(var p=0; p<stats[m].length; p++) {
+            this.combineStatsArray(stats.Overall, stats[m][p])
+            this.combineStatsArray(stats.Modes[m], stats[m][p])
+            this.combineStatsArray(stats.NumPlayers[p], stats[m][p])
           }
         }
       },
@@ -306,27 +286,15 @@ span.percent { font-size: 9px; }
       		if(mode == -1 && players == -1) {
       			s = stats.Overall
 
-            /*for(m=0; m<stats.ModesAndPlayers.length; m++) {
-              for(p=0; p<stats.ModesAndPlayers[m].length; p++) {
-                //console.log("m: " + m + ", p: " + p)
-                this.combineStatsArray(s, stats.ModesAndPlayers[m][p])
-              }
-            }*/
       		}
       		else if(players == -1) {
       			s = stats.Modes[mode];
-            /*  for(p=0; p<stats.ModesAndPlayers[mode].length; p++) {
-                this.combineStatsArray(s, stats.ModesAndPlayers[mode][p])
-              }*/
       		}
       		else if(mode == -1) {
       			s = stats.NumPlayers[players];
-            /*for(m=0; m<stats.ModesAndPlayers.length; m++) {
-                this.combineStatsArray(s, stats.ModesAndPlayers[m][players])
-            }*/
       		}
       		else {
-      		 s = stats.ModesAndPlayers[mode][players];
+      		 s = stats[mode][players];
       		}
 
         gs = Array();
