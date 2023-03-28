@@ -567,9 +567,9 @@ div.padded { padding: 16px; }
                 text = "There are no plays left!";
             }
             var score = 0;
-            for(pile in json.Piles)
+            for(pile in json.Table.Piles)
             {
-                score += json.Piles[pile];
+                score += json.Table.Piles[pile];
             }
             this.$.endtext.innerHTML = text;
             this.$.score.innerHTML = score;
