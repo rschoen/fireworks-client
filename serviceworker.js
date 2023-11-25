@@ -1,4 +1,4 @@
-var VERSION = "1.1.28";
+var VERSION = "1.1.29";
 var CACHE_NAME = 'fireworks-cache-v' + VERSION;
 var urlsToCache = [
   'styles/app-theme.html'
