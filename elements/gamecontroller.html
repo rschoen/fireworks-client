@@ -140,6 +140,7 @@ div.gamesheader {
 div.gameslistcontainer paper-item {
     width: 100%;
     cursor: pointer;
+    box-sizing: border-box;
 }
 
 div.gameslistcontainer.separator:last-child {
@@ -149,6 +150,14 @@ div.gameslistcontainer.separator:last-child {
 
 paper-item-body {
     --paper-item-body-secondary-color: rgba(0,0,0,0.54);
+    float: left;
+}
+
+paper-item iron-icon {
+    float: right;
+    margin: 0 30px;
+    color: red;
+    opacity: 0.3;
 }
 
 div.gamesgroup {
@@ -166,6 +175,11 @@ paper-fab {
 }
 
 div.padded { padding: 16px; }
+
+
+#confirmdeletebuttons {
+    padding-top: 16px;
+}
 
 </style>
 
@@ -189,11 +203,12 @@ div.padded { padding: 16px; }
             <div class="gamesheader">Open games</div>
             <div class="gameslistcontainer" id="opengameslist">
                 <template is="dom-repeat" items="{{openGames}}" as="item" rendered-item-count="{{openGamesCount}}">
-                  <paper-item on-tap="updateURL" data-args="[[item.id]]">
-                    <paper-item-body two-line>
+                  <paper-item>
+                    <paper-item-body on-tap="updateURL" data-args="[[item.id]]" two-line>
                       <div>[[item.name]]</div>
                       <div secondary>[[item.players]]</div>
                     </paper-item-body>
+                    <iron-icon icon="icons:remove-circle-outline" on-tap="confirmDelete" data-args="[[item.id]]"></iron-icon>
                   </paper-item>
                 </template>
             </div>
@@ -203,11 +218,12 @@ div.padded { padding: 16px; }
             <div class="gamesheader">Your games</div>
             <div class="gameslistcontainer">
                 <template is="dom-repeat" items="{{yourGames}}" as="item" rendered-item-count="{{yourGamesCount}}">
-                  <paper-item on-tap="updateURL" data-args="[[item.id]]">
-                    <paper-item-body two-line>
+                  <paper-item>
+                    <paper-item-body two-line on-tap="updateURL" data-args="[[item.id]]">
                       <div>[[item.name]]</div>
                       <div secondary>[[item.players]]</div>
                     </paper-item-body>
+                    <iron-icon  icon="icons:remove-circle-outline" on-tap="confirmDelete" data-args="[[item.id]]"></iron-icon>
                   </paper-item>
                 </template>
             </div>
@@ -255,6 +271,13 @@ div.padded { padding: 16px; }
             <div id="end" class="hidden">
                 <span id="endtext">End text goes here.</span>
                 <div>Final score: <span id="score">0</span></div>
+            </div>
+            <div id="confirmDelete" class="hidden">
+                <span id="confirmdeletetext">Are you sure you want to delete this game? This cannot be undone.</span>
+                <div id="confirmdeletebuttons">
+                    <paper-button raised id="confirmDeleteCancel" on-tap="hideModal" class="whitebutton">Cancel</paper-button>
+                    <paper-button raised id="confirmDeleteDelete" on-tap="deleteGame">DELETE</paper-button>
+                </div>
             </div>
             <div id="discarddialog" class="hidden">
                 <div id="discardcontainer">
@@ -305,6 +328,9 @@ div.padded { padding: 16px; }
         gameid: {
             type: String,
             observer: "gameChanged"
+        },
+        gameToDelete: {
+            type: String
         },
       	gamesequence: {
       		type: Number,
@@ -462,11 +488,40 @@ div.padded { padding: 16px; }
 
     },
 
+    deleteGame: function() {
+        if(this.gameToDelete == "") {
+            return;
+        }
+
+        this.showSpinner();
+
+        var data = {Game: this.gameToDelete,
+                Player: this.localPlayer,
+                Token: this.playerToken
+                };
+
+        var json = JSON.stringify(data)
+
+        this.sendData("delete",json)
+
+        
+        this.hideModal();
+        this.hideSpinner()
+    },
+
 	joinGame: function(gameid) {
 		this.gameid = gameid;
 		this.sendData("join",this.makeEmptyMove());
         this.$.gameslist.classList.add("hidden");
 	},
+
+    
+    confirmDelete: function(e) {
+        this.gameToDelete = e.model.get('item.id')
+        this.$.confirmDelete.classList.remove("hidden");
+        this.$.confirmdeletetext.innerHTML = "Are you sure you want to delete the game <strong>" + this.gameToDelete.substring(0, this.gameToDelete.length - 11) + "</strong>? This cannot be undone."
+        this.showModal();
+    },
 
 	startGame: function(e) {
 		this.sendData("start",this.makeEmptyMove())
