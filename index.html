@@ -245,61 +245,42 @@
 
   <!-- build:js scripts/app.js -->
   <script src="scripts/app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/3.6.8/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/3.6.8/firebase-messaging.js"></script>
-<script>
-  // Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyCesgKjhcJEErup8M5sLI0pK0JtoHRNPxA",
+  <script>const module = {};</script>
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+  import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAAR9ug59MJGzloy1_YiDZJDwebFSWcfv4",
     authDomain: "fireworks-151422.firebaseapp.com",
     databaseURL: "https://fireworks-151422.firebaseio.com",
+    projectId: "fireworks-151422",
     storageBucket: "fireworks-151422.appspot.com",
-    messagingSenderId: "168641906858"
+    messagingSenderId: "168641906858",
+    appId: "1:168641906858:web:5b7754f3db0783fc56e8d3",
+    measurementId: "G-4NPTP167DK"
   };
-  firebase.initializeApp(config);
 
-    // [START get_messaging_object]
-  // Retrieve Firebase Messaging object.
-  const messaging = firebase.messaging();
-  // [END get_messaging_object]
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
 
-  // [START refresh_token]
-  // Callback fired if Instance ID token is updated.
-  messaging.onTokenRefresh(function() {
-    messaging.getToken()
-    .then(function(refreshedToken) {
-      console.log('Token refreshed.');
-      // Indicate that the new Instance ID token has not yet been sent to the
-      // app server.
-      // Send Instance ID token to app server.
-      sendTokenToServer(refreshedToken);
-      // [START_EXCLUDE]
-      // [END_EXCLUDE]
-    })
-    .catch(function(err) {
-      console.log('Unable to retrieve refreshed token ', err);
-    });
+  // Initialize Firebase Cloud Messaging and get a reference to the service
+  const messaging = getMessaging(app);
+  var swRegistration = null;
+
+  onMessage(messaging, (payload) => {
+    console.log('Message received. ', payload);
   });
-  // [END refresh_token]
-  // [START receive_message]
-  // Handle incoming messages. Called when:
-  // - a message is received while the app has focus
-  // - the user clicks on an app notification created by a sevice worker
-  //   `messaging.setBackgroundMessageHandler` handler.
-  messaging.onMessage(function(payload) {
-    console.log("Message received. ", payload);
-    // [START_EXCLUDE]
-    // Update the UI to include the received message.
-    // [END_EXCLUDE]
-  });
-  // [END receive_message]
+
   function resetUI() {
-    // [START get_token]
-    // Get Instance ID token. Initially this makes a network call, once retrieved
-    // subsequent calls to getToken will return from cache.
-    messaging.getToken()
-    .then(function(currentToken) {
+    var options = { vapidKey: "BLjFyv5ZqqNbMgpVOvE_OwUagiwXGqXpEkDrUClUKyiKx2-XeVT2mkCMfLP8uInjzHB5NPB6bEKolgsOuZt6mbQ" }
+    if(swRegistration != null) {
+      options.serviceWorkerRegistration = swRegistration
+    }
+
+    getToken(messaging, options).then((currentToken) => {
       if (currentToken) {
+        console.log('Token refreshed.');
         sendTokenToServer(currentToken);
       } else {
         // Show permission request.
@@ -307,63 +288,37 @@
         // Show permission UI.
         requestPermission();
       }
-    })
-    .catch(function(err) {
+    }).catch((err) => {
       console.log('An error occurred while retrieving token. ', err);
     });
   }
-  // [END get_token]
 
-  // Send the Instance ID token your application server, so that it can:
-  // - send messages back to this app
-  // - subscribe/unsubscribe the token from topics
-  function sendTokenToServer(currentToken) {
+  function sendTokenToServer(currentToken, backoff = 1) {
       console.log('Sending token to server...');
-      document.getElementById("gamecontroller").setPushToken(currentToken);
+      console.log(currentToken);
+      const gamecontroller = document.getElementById("gamecontroller")
+      if(gamecontroller == null) {
+        console.log('Not ready yet, waiting');
+        setTimeout(function() { sendTokenToServer(currentToken, backoff*2); }, backoff * 1000);
+      }
+      else {
+        console.log('Token sent successfully.');
+        gamecontroller.setPushToken(currentToken);
+      }
 
   }
 
   function requestPermission() {
     console.log('Requesting permission...');
-    // [START request_permission]
-    messaging.requestPermission()
-    .then(function() {
-      console.log('Notification permission granted.');
-      // TODO(developer): Retrieve an Instance ID token for use with FCM.
-      // [START_EXCLUDE]
-      // In many cases once an app has been granted notification permission, it
-      // should update its UI reflecting this.
-      resetUI();
-      // [END_EXCLUDE]
-    })
+    Notification.requestPermission().then((permission) => {
+      if (permission === 'granted') {
+        console.log('Notification permission granted.');
+        resetUI();
+      }})
     .catch(function(err) {
       console.log('Unable to get permission to notify.', err);
     });
-    // [END request_permission]
   }
-  function deleteToken() {
-    // Delete Instance ID token.
-    // [START delete_token]
-    messaging.getToken()
-    .then(function(currentToken) {
-      messaging.deleteToken(currentToken)
-      .then(function() {
-        console.log('Token deleted.');
-        // [START_EXCLUDE]
-        // Once token is deleted update UI.
-        resetUI();
-        // [END_EXCLUDE]
-      })
-      .catch(function(err) {
-        console.log('Unable to delete token. ', err);
-      });
-      // [END delete_token]
-    })
-    .catch(function(err) {
-      console.log('Error retrieving Instance ID token. ', err);
-    });
-  }
-
 
   // Check that service workers are supported, if so, progressively
   // enhance and add push messaging support, otherwise continue without it.
@@ -371,19 +326,18 @@
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('serviceworker.js').then(function(registration) {
           // Registration was successful
-          messaging.useServiceWorker(registration);
+          swRegistration = registration;
           resetUI();
           console.log('ServiceWorker registration successful with scope: ', registration.scope);
-          //initializeState();
         }).catch(function(err) {
-          // registration failed :(
           console.log('ServiceWorker registration failed: ', err);
         });
       });
   } else {
     console.log('Service workers aren\'t supported in this browser.');
   }
-
+</script>
+<script>
 	function signOut() {
 		deleteCookie("google_id")
 		deleteCookie("google_token")
